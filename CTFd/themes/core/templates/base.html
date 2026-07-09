@@ -38,6 +38,349 @@
   </script>
 
   {{ Configs.theme_header }}
+
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Cyberpunk Theme Design — inspired by DROP CTF */
+    :root, [data-bs-theme="dark"], [data-bs-theme="light"] {
+      --bg-primary: #060814;
+      --bg-surface: #0c0f1d;
+      --bg-elevated: #12162b;
+      --accent-cyan: #00f0ff;
+      --accent-cyan-dim: rgba(0, 240, 255, 0.15);
+      --accent-pink: #ff0055;
+      --accent-pink-dim: rgba(255, 0, 85, 0.15);
+      --accent-green: #00ff66;
+      --accent-green-dim: rgba(0, 255, 102, 0.15);
+      --accent-yellow: #ffe600;
+      --border-subtle: rgba(0, 240, 255, 0.12);
+      --border-accent: rgba(0, 240, 255, 0.35);
+      --text-main: #c8d1e0;
+      --text-muted: #6b7a90;
+      --text-bright: #f1f5f9;
+      --shadow-card: 0 0 15px rgba(0, 240, 255, 0.1);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif !important;
+      background-color: #060814 !important;
+      background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(rgba(255, 0, 85, 0.01) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(255, 0, 85, 0.01) 2px, transparent 2px) !important;
+      background-size: 30px 30px, 30px 30px, 150px 150px, 150px 150px !important;
+      background-attachment: fixed !important;
+      color: var(--text-main) !important;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Horizontal Scanline Overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+      background-size: 100% 4px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    /* Force dark backgrounds on all wrapper elements */
+    main, .container, .container-fluid, .content-wrapper,
+    .page-body, .main-content {
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    /* Solid Dark Navbar */
+    .navbar {
+      background: rgba(6, 8, 20, 0.95) !important;
+      backdrop-filter: blur(8px) !important;
+      border-bottom: 2px solid var(--accent-cyan) !important;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) !important;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Outfit', sans-serif !important;
+      color: var(--text-bright) !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+    }
+
+    /* Jumbotron */
+    .jumbotron {
+      background: rgba(12, 15, 29, 0.8) !important;
+      border-bottom: 2px solid var(--accent-cyan) !important;
+      box-shadow: 0 5px 15px rgba(0, 240, 255, 0.05) !important;
+      margin-bottom: 3rem !important;
+      padding: 3.5rem 0 !important;
+      position: relative !important;
+    }
+
+    .jumbotron h1 {
+      font-size: 2.75rem !important;
+      letter-spacing: 0.05em !important;
+      font-weight: 800 !important;
+      color: var(--text-bright) !important;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.3) !important;
+    }
+
+    .jumbotron h1::before {
+      content: "// ";
+      color: var(--accent-pink) !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-weight: 500 !important;
+    }
+
+    .jumbotron h1::after {
+      content: "_";
+      color: var(--accent-cyan) !important;
+      animation: blink 1s infinite !important;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    /* Cards */
+    .card, .toast, .dropdown-menu {
+      background: rgba(12, 15, 29, 0.9) !important;
+      border: 1px solid var(--border-accent) !important;
+      border-radius: 4px !important;
+      color: var(--text-main) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 240, 255, 0.05) !important;
+      position: relative !important;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -1px; left: -1px; width: 10px; height: 10px;
+      border-top: 2px solid var(--accent-pink);
+      border-left: 2px solid var(--accent-pink);
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      bottom: -1px; right: -1px; width: 10px; height: 10px;
+      border-bottom: 2px solid var(--accent-pink);
+      border-right: 2px solid var(--accent-pink);
+    }
+
+    .modal-header, .modal-footer, .card-header, .card-footer {
+      border-color: var(--border-subtle) !important;
+      background: transparent !important;
+    }
+
+    /* Modal */
+    .modal-content {
+      background: rgba(12, 15, 29, 0.98) !important;
+      border: 1px solid var(--border-accent) !important;
+      border-radius: 4px !important;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.2) !important;
+      position: relative;
+    }
+
+    .modal-content::before {
+      content: "";
+      position: absolute;
+      top: -1px; left: -1px; width: 15px; height: 15px;
+      border-top: 3px solid var(--accent-pink);
+      border-left: 3px solid var(--accent-pink);
+    }
+
+    .modal-title {
+      font-weight: 800 !important;
+      color: var(--text-bright) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+    }
+
+    /* Forms & Inputs */
+    .form-control, .form-select {
+      background-color: rgba(6, 8, 20, 0.8) !important;
+      border: 1px solid var(--border-accent) !important;
+      color: #ffffff !important;
+      border-radius: 2px !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+      background-color: rgba(12, 15, 29, 0.95) !important;
+      border-color: var(--accent-pink) !important;
+      box-shadow: 0 0 8px rgba(255, 0, 85, 0.3) !important;
+      color: #ffffff !important;
+    }
+
+    .form-label, label {
+      font-family: 'JetBrains Mono', monospace !important;
+      color: var(--accent-cyan) !important;
+      text-transform: uppercase !important;
+      font-size: 0.85rem !important;
+      letter-spacing: 0.05em !important;
+    }
+
+    /* Links */
+    a {
+      color: var(--accent-cyan) !important;
+      text-decoration: none !important;
+      transition: all 0.2s ease;
+    }
+
+    a:hover {
+      color: #ffffff !important;
+      text-shadow: 0 0 8px var(--accent-cyan) !important;
+    }
+
+    /* Navbar link underline animation */
+    .navbar-nav .nav-link {
+      position: relative;
+    }
+
+    .navbar-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 50%;
+      background: var(--accent-cyan);
+      transition: width 0.3s ease;
+      transform: translateX(-50%);
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after {
+      width: 70%;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--accent-cyan) !important;
+      border: 1px solid var(--accent-cyan) !important;
+      color: #000000 !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      border-radius: 2px !important;
+      transition: all 0.2s ease !important;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)) !important;
+    }
+
+    .btn-primary:hover {
+      background: transparent !important;
+      color: var(--accent-cyan) !important;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+    }
+
+    .btn-outline-secondary {
+      border: 1px solid var(--accent-pink) !important;
+      color: var(--accent-pink) !important;
+      background: transparent !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      border-radius: 2px !important;
+      transition: all 0.2s ease !important;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)) !important;
+    }
+
+    .btn-outline-secondary:hover {
+      background: var(--accent-pink) !important;
+      color: #000000 !important;
+      box-shadow: 0 0 15px rgba(255, 0, 85, 0.4) !important;
+    }
+
+    /* Tables */
+    .table {
+      color: var(--text-main) !important;
+      border-collapse: separate !important;
+      border-spacing: 0 8px !important;
+      background: transparent !important;
+      --bs-table-bg: transparent !important;
+      --bs-table-striped-bg: transparent !important;
+      --bs-table-accent-bg: transparent !important;
+    }
+
+    .table thead th {
+      border-bottom: 2px solid var(--accent-cyan) !important;
+      color: var(--accent-cyan) !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      text-transform: uppercase !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.05em !important;
+      background: transparent !important;
+    }
+
+    .table tbody tr {
+      background: rgba(12, 15, 29, 0.9) !important;
+      border: 1px solid var(--border-subtle) !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background: rgba(18, 22, 42, 0.9) !important;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(0, 240, 255, 0.08) !important;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.15) !important;
+    }
+
+    .table td, .table th {
+      background: transparent !important;
+      border: none !important;
+      padding: 1.2rem 1.5rem !important;
+      color: var(--text-main) !important;
+    }
+
+    .table td a {
+      color: var(--accent-cyan) !important;
+      font-weight: 700 !important;
+    }
+
+    .table td a:hover {
+      color: #ffffff !important;
+      text-shadow: 0 0 8px var(--accent-cyan) !important;
+    }
+
+    /* Code styling */
+    code {
+      font-family: 'JetBrains Mono', monospace !important;
+      background: rgba(6, 8, 20, 0.9) !important;
+      border: 1px solid var(--border-accent) !important;
+      padding: 0.2rem 0.5rem !important;
+      border-radius: 2px !important;
+      color: var(--accent-yellow) !important;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-cyan-dim);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-cyan);
+    }
+  </style>
 </head>
 <body>
 {% include "components/navbar.html" %}

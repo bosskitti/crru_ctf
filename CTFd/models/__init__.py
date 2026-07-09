@@ -562,7 +562,7 @@ class Users(db.Model):
             db.session.query(Solves.user_id, score)
             .join(Users, Solves.user_id == Users.id)
             .join(Challenges, Solves.challenge_id == Challenges.id)
-            .filter(Users.id == self.id)
+            .filter(Users.id == self.id, Challenges.category != "Tutorial")
         )
 
         award_score = db.func.sum(Awards.value).label("award_score")

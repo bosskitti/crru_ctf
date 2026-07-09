@@ -1,0 +1,1215 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+{{ super() }}
+<style>
+	.lesson-container {
+		display: flex !important;
+		flex-wrap: nowrap !important;
+		width: 100% !important;
+		min-height: calc(100vh - 65px) !important;
+		position: relative !important;
+	}
+
+	.lesson-sidebar {
+		background: rgba(20, 23, 41, 0.85) !important;
+		backdrop-filter: blur(8px) !important;
+		border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+		width: 25% !important;
+		min-width: 280px !important;
+		max-width: 350px !important;
+		flex-shrink: 0 !important;
+		padding: 2rem 1.25rem !important;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		overflow-y: auto !important;
+		height: calc(100vh - 65px) !important;
+		position: sticky !important;
+		top: 65px !important;
+	}
+	
+	.lesson-body {
+		flex-grow: 1 !important;
+		padding: 3rem 2.5rem !important;
+		min-width: 0 !important; /* Prevents flex-item from overflowing */
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		background: #060814 !important;
+	}
+
+	/* Collapsed states */
+	.sidebar-collapsed .lesson-sidebar {
+		width: 0 !important;
+		min-width: 0 !important;
+		max-width: 0 !important;
+		padding: 2rem 0 !important;
+		opacity: 0 !important;
+		border-right: none !important;
+		pointer-events: none !important;
+	}
+
+	#sidebar-toggle {
+		position: fixed !important;
+		top: 85px !important;
+		left: 300px !important; /* Open state: next to 280px sidebar + padding */
+		z-index: 1050 !important;
+		background: rgba(20, 23, 41, 0.95) !important;
+		backdrop-filter: blur(8px) !important;
+		border: 1px solid rgba(0, 240, 255, 0.3) !important;
+		color: #00f0ff !important;
+		width: 40px !important;
+		height: 40px !important;
+		display: inline-flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		border-radius: 50% !important; /* Make it circular like a floating action button */
+		cursor: pointer !important;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2) !important;
+	}
+
+	#sidebar-toggle:hover {
+		border-color: #00f0ff !important;
+		color: #ffffff !important;
+		box-shadow: 0 0 15px rgba(0, 240, 255, 0.5) !important;
+		background: rgba(0, 240, 255, 0.15) !important;
+		transform: scale(1.05) !important;
+	}
+
+	/* When collapsed, slide the button to the left edge */
+	.sidebar-collapsed #sidebar-toggle {
+		left: 20px !important;
+		border-color: rgba(255, 255, 255, 0.1) !important;
+		color: #8a94a6 !important;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+		background: rgba(15, 17, 26, 0.8) !important;
+	}
+	
+	.sidebar-collapsed #sidebar-toggle:hover {
+		border-color: #00f0ff !important;
+		color: #00f0ff !important;
+		box-shadow: 0 0 12px rgba(0, 240, 255, 0.3) !important;
+		background: rgba(0, 240, 255, 0.05) !important;
+	}
+
+	@media (max-width: 768px) {
+		.lesson-container {
+			flex-direction: column !important;
+		}
+		.lesson-sidebar {
+			width: 100% !important;
+			max-width: 100% !important;
+			min-width: 100% !important;
+			height: auto !important;
+			position: relative !important;
+			top: 0 !important;
+		}
+		.sidebar-collapsed .lesson-sidebar {
+			display: none !important;
+		}
+		#sidebar-toggle {
+			top: 80px !important;
+			left: 20px !important;
+		}
+		.sidebar-collapsed #sidebar-toggle {
+			left: 20px !important;
+		}
+	}
+
+	.active-lesson-link {
+		border-left: 3px solid #00f0ff !important;
+		background: linear-gradient(90deg, rgba(0, 240, 255, 0.1) 0%, rgba(0, 240, 255, 0) 100%) !important;
+		color: #ffffff !important;
+		font-weight: 600 !important;
+	}
+
+	.lesson-link {
+		color: #8a94a6 !important;
+		transition: all 0.2s ease;
+		border-radius: 6px;
+	}
+	
+	.lesson-link:hover {
+		color: #ffffff !important;
+		background: rgba(255, 255, 255, 0.04) !important;
+		text-shadow: none !important;
+	}
+
+	/* Markdown Custom Typography Styles */
+	.lesson-content h1, .lesson-content h2, .lesson-content h3 {
+		color: #ffffff !important;
+		font-weight: 700 !important;
+		margin-top: 1.8rem !important;
+		margin-bottom: 0.8rem !important;
+		letter-spacing: -0.025em !important;
+	}
+	.lesson-content h1 { font-size: 1.8rem !important; }
+	.lesson-content h2 { font-size: 1.5rem !important; border-left: 3px solid #ab20fd !important; padding-left: 10px !important; }
+	.lesson-content h3 { font-size: 1.25rem !important; }
+
+	.lesson-content p {
+		font-size: 1.05rem !important;
+		line-height: 1.75 !important;
+		color: #cbd5e1 !important;
+		margin-bottom: 1.25rem !important;
+	}
+
+	.lesson-content code {
+		font-family: 'JetBrains Mono', monospace !important;
+		font-size: 0.9em !important;
+		background: rgba(255, 255, 255, 0.06) !important;
+		border: 1px solid rgba(255, 255, 255, 0.08) !important;
+		padding: 0.15rem 0.4rem !important;
+		border-radius: 4px !important;
+		color: #f472b6 !important;
+	}
+
+	.lesson-content pre {
+		background: #0f111a !important;
+		border: 1px solid rgba(255, 255, 255, 0.05) !important;
+		border-radius: 8px !important;
+		padding: 1.25rem !important;
+		margin: 1.5rem 0 !important;
+		overflow-x: auto !important;
+	}
+
+	.lesson-content pre code {
+		background: transparent !important;
+		border: none !important;
+		padding: 0 !important;
+		color: #00f0ff !important;
+		font-size: 0.92em !important;
+	}
+
+	.lesson-content blockquote {
+		border-left: 4px solid #00f0ff !important;
+		background: rgba(0, 240, 255, 0.03) !important;
+		padding: 1rem 1.25rem !important;
+		margin: 1.5rem 0 !important;
+		border-radius: 0 8px 8px 0 !important;
+	}
+
+	.lesson-content blockquote p {
+		margin-bottom: 0 !important;
+		font-style: italic !important;
+		color: #94a3b8 !important;
+	}
+
+	.lesson-content img {
+		max-width: 100% !important;
+		height: auto !important;
+		border-radius: 8px !important;
+		margin: 1.5rem auto !important;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+		border: 1px solid rgba(255, 255, 255, 0.05) !important;
+		display: block;
+	}
+
+	/* Table styling for markdown rendered tables */
+	.lesson-content table {
+		width: 100% !important;
+		margin: 1.5rem 0 !important;
+		border-collapse: collapse !important;
+		background: rgba(15, 17, 26, 0.35) !important;
+		border: 1px solid rgba(255, 255, 255, 0.06) !important;
+		border-radius: 10px !important;
+		overflow: hidden !important;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+	}
+
+	.lesson-content th, .lesson-content td {
+		padding: 12px 16px !important;
+		text-align: left !important;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+	}
+
+	.lesson-content th {
+		background: rgba(0, 240, 255, 0.04) !important;
+		color: #00f0ff !important;
+		font-weight: 700 !important;
+		text-transform: uppercase !important;
+		font-size: 0.85rem !important;
+		letter-spacing: 0.05em !important;
+		border-bottom: 2px solid rgba(0, 240, 255, 0.15) !important;
+	}
+
+	.lesson-content td {
+		color: #cbd5e1 !important;
+		font-size: 0.95rem !important;
+	}
+
+	.lesson-content tr:hover {
+		background: rgba(255, 255, 255, 0.02) !important;
+	}
+
+	.lesson-content tr:last-child td {
+		border-bottom: none !important;
+	}
+
+	.challenge-cta-card {
+		background: linear-gradient(135deg, rgba(17, 20, 36, 0.9) 0%, rgba(30, 16, 58, 0.8) 100%) !important;
+		border: 1px solid rgba(0, 240, 255, 0.25) !important;
+		box-shadow: 0 0 25px rgba(0, 240, 255, 0.05) !important;
+		border-radius: 16px !important;
+	}
+
+	/* Question block styling similar to DropCTF premium dark styling */
+	.question-cell {
+		background: linear-gradient(135deg, rgba(20, 23, 41, 0.9) 0%, rgba(38, 20, 58, 0.75) 100%) !important;
+		border: 1px solid rgba(251, 191, 36, 0.25) !important;
+		box-shadow: 0 0 25px rgba(251, 191, 36, 0.04) !important;
+		border-radius: 12px !important;
+		padding: 1.5rem !important;
+	}
+	.question-input {
+		background: rgba(15, 17, 26, 0.8) !important;
+		border: 1px solid rgba(255, 255, 255, 0.12) !important;
+		color: #ffffff !important;
+		font-family: 'JetBrains Mono', monospace !important;
+		font-size: 0.95rem !important;
+		border-radius: 8px 0 0 8px !important;
+	}
+	.question-input:focus {
+		border-color: #fbbf24 !important;
+		box-shadow: 0 0 10px rgba(251, 191, 36, 0.15) !important;
+		outline: none !important;
+		color: #ffffff !important;
+		background: rgba(15, 17, 26, 0.95) !important;
+	}
+	.question-cell .btn-warning {
+		background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
+		border: none !important;
+		border-radius: 0 8px 8px 0 !important;
+		color: #000000 !important;
+		font-weight: 700 !important;
+		box-shadow: 0 0 10px rgba(251, 191, 36, 0.2) !important;
+		transition: all 0.2s ease;
+	}
+	.question-cell .btn-warning:hover {
+		box-shadow: 0 0 15px rgba(251, 191, 36, 0.35) !important;
+		transform: translateY(-1px);
+	}
+	.feedback-msg {
+		border-radius: 8px !important;
+		font-size: 0.9rem !important;
+		font-weight: 600 !important;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+	<div class="row g-0 lesson-container" style="margin-left: 0; margin-right: 0;">
+		<button id="sidebar-toggle" title="Toggle Sidebar" type="button">
+			<i class="fas fa-bars"></i>
+		</button>
+		
+		<!-- Sidebar Navigation -->
+		<div class="lesson-sidebar">
+			<div class="mb-4">
+				<a href="{{ url_for('tutorials.list_modules') }}" class="btn btn-outline-secondary w-100 btn-sm">
+					<i class="fas fa-arrow-left"></i> All Modules
+				</a>
+			</div>
+			
+			<div class="mb-4 px-2">
+				<span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 800; color: #00f0ff;">Current Module</span>
+				<h5 class="text-white font-weight-bold mt-1 mb-0">{{ module.title }}</h5>
+			</div>
+			
+			<div class="nav flex-column nav-pills">
+				{% for item in lessons %}
+					{% set pos = loop.index %}
+					<a href="{{ url_for('tutorials.view_lesson', module_id=module.id, lesson_position=pos) }}" 
+					   class="nav-link lesson-link py-2.5 px-3 mb-1 d-flex align-items-start {% if pos == lesson_position %}active-lesson-link{% endif %}"
+					   style="justify-content: space-between; gap: 8px;">
+						<div class="d-flex align-items-start mr-2" style="min-width: 0; flex: 1;">
+							<span class="font-monospace text-xs mr-2" style="font-size: 0.8rem; opacity: 0.5; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">{{ "%02d" | format(pos) }}</span>
+							<span style="white-space: normal; word-break: break-word; font-size: 0.9rem;">{{ item.title }}</span>
+						</div>
+						<span class="badge badge-pill lesson-progress-badge" data-lesson-id="{{ item.id }}" style="font-size: 0.7rem; padding: 3px 6px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.2); color: #8a94a6; min-width: 45px; text-align: center; margin-top: 2px; flex-shrink: 0;">
+							0%
+						</span>
+					</a>
+				{% endfor %}
+			</div>
+		</div>
+
+		<!-- Lesson Body -->
+		<div class="lesson-body">
+			{% if lesson %}
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb bg-transparent p-0 mb-4">
+						<li class="breadcrumb-item"><a href="{{ url_for('tutorials.list_modules') }}">Tutorials</a></li>
+						<li class="breadcrumb-item"><a href="{{ url_for('tutorials.view_lesson', module_id=module.id, lesson_position=1) }}" class="text-truncate" style="max-width: 150px; display: inline-block; vertical-align: bottom;">{{ module.title }}</a></li>
+						<li class="breadcrumb-item active text-white" aria-current="page">Lesson {{ lesson_position }}</li>
+					</ol>
+				</nav>
+
+				<h1 class="text-white font-weight-black mb-1" style="font-weight: 800; font-size: 2.25rem;">{{ lesson.title }}</h1>
+				<div class="mb-4" style="height: 2px; width: 80px; background: linear-gradient(to right, #00f0ff, #ab20fd);"></div>
+
+				<!-- Lesson Progress Bar -->
+				<div class="lesson-progress-container mb-4" id="lesson-progress-container" style="display: none; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); padding: 15px; border-radius: 10px;">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<span class="text-muted font-weight-bold" style="font-size: 0.85rem;"><i class="fas fa-tasks mr-1 text-info"></i> Lesson Progress</span>
+						<span id="lesson-progress-text" style="font-size: 0.85rem; color: #00f0ff; font-weight: bold; font-family: 'JetBrains Mono', monospace;">0% (0/0 Solved)</span>
+					</div>
+					<div class="progress shadow-sm" style="height: 8px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; overflow: hidden;">
+						<div id="lesson-progress-bar" class="progress-bar" role="progressbar" style="width: 0%; background: linear-gradient(90deg, #00f0ff 0%, #ab20fd 100%); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
+				</div>
+
+				<!-- Lesson Content (Jupyter/Colab Notebook Style cells) -->
+				<div class="lesson-content my-4">
+					{% for block in lesson_blocks %}
+						{% if block.type == 'markdown' %}
+							<div class="markdown-cell mb-4">
+								{{ block.html | safe }}
+							</div>
+						{% elif block.type == 'code' %}
+							<div class="code-cell mb-4" style="border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden; background: #0f111a;">
+								<div class="code-cell-header d-flex justify-content-between align-items-center px-3 py-2" style="background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+									<span class="text-info font-weight-bold font-monospace" style="font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;">
+										<i class="fas {% if 'bash' in block.title.lower() or 'terminal' in block.title.lower() or 'cmd' in block.title.lower() or 'command' in block.title.lower() or 'sudo' in block.title.lower() or 'pip' in block.title.lower() %}fa-terminal{% else %}fa-code{% endif %} mr-1"></i> {{ block.title }}
+									</span>
+									<button class="btn btn-sm btn-outline-info py-0.5 px-2" style="font-size: 0.75rem; border-radius: 4px;" onclick="copyCodeCell(this)">
+										<i class="far fa-copy mr-1"></i> Copy
+									</button>
+								</div>
+								<!-- Code Value hidden for copy function -->
+								<textarea class="d-none raw-code-value">{{ block.value }}</textarea>
+								<div class="code-cell-body p-0">
+									{{ block.html | safe }}
+								</div>
+							</div>
+						{% elif block.type == 'question' %}
+							<div class="question-cell mb-4">
+								<div class="d-flex align-items-center mb-3">
+									<div class="d-flex justify-content-center align-items-center mr-2 text-warning" style="font-size: 1rem; background: rgba(251, 191, 36, 0.1); width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.25);">
+										<i class="fas fa-question-circle"></i>
+									</div>
+									<span class="text-warning font-weight-bold" style="font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase;">{{ block.title | default('Interactive Question') }}</span>
+								</div>
+								
+								<div class="question-prompt mb-3">
+									{{ block.html | safe }}
+								</div>
+								
+								<div class="input-group">
+									<input type="text" class="form-control question-input" placeholder="Type your answer here..." data-hash="{{ block.hash }}">
+									<div class="input-group-append">
+										<button class="btn btn-warning px-4 text-dark font-weight-bold" type="button" onclick="submitQuestionAnswer(this)">
+											<i class="fas fa-paper-plane mr-1"></i> Submit
+										</button>
+									</div>
+								</div>
+								
+								<div class="feedback-msg mt-3" style="display: none;"></div>
+							</div>
+						{% elif block.type == 'challenge' %}
+							{% if block.challenge %}
+								{% set c = block.challenge %}
+								<!-- Dynamic Lab Instance Console Cell -->
+								<div class="challenge-cta-card p-4 p-md-5 my-5" data-challenge-id="{{ c.id }}">
+									<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4 mb-4" style="gap: 15px;">
+										<div class="d-flex align-items-start">
+											<div class="d-flex justify-content-center align-items-center mr-3 text-info" style="font-size: 1.5rem; background: rgba(0, 240, 255, 0.1); width: 50px; height: 50px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.25);">
+												<i class="fas fa-terminal"></i>
+											</div>
+											<div>
+												<span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 800; color: #00f0ff;">Practice Lab Console</span>
+												<h4 class="text-white font-weight-bold mt-1 mb-0">{{ c.name }}</h4>
+												<p class="text-muted mb-0" style="font-size: 0.8rem;">Category: {{ c.category }} &bull; Value: {{ c.value }} Points</p>
+											</div>
+										</div>
+									</div>
+
+									<!-- Dynamic Container Control Interface -->
+									<div class="whale-cell-panel" style="width: 100%;">
+										<!-- LOADING STATE -->
+										<div class="whale-cell-loading text-center py-3" style="color: var(--text-muted);">
+											<i class="fas fa-spinner fa-spin mr-2"></i> Connecting to hypervisor daemon...
+										</div>
+
+										<!-- INSTANCE STOPPED -->
+										<div class="whale-cell-stopped" style="display: none;">
+											<div class="p-4" style="background: rgba(6, 8, 20, 0.4); border: 1px dashed rgba(0, 240, 255, 0.2); border-radius: 8px; text-align: center;">
+												<p class="text-muted mb-3" style="font-size: 0.95rem;">เครื่องจำลองของแล็บนี้ยังไม่ได้เปิดใช้งาน คุณสามารถเปิดเพื่อทดลองเจาะระบบได้ทันที</p>
+												<button class="btn btn-primary btn-lg px-4 py-2.5 font-weight-bold whale-cell-boot-btn" type="button">
+													<i class="fas fa-play mr-2" style="font-size: 0.85rem;"></i> Launch Lab Instance
+												</button>
+											</div>
+										</div>
+
+										<!-- INSTANCE STARTED -->
+										<div class="whale-cell-started" style="display: none;">
+											<div class="p-4 mb-4" style="background: rgba(6, 8, 20, 0.6); border: 1px solid var(--accent-cyan); border-radius: 8px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);">
+												<div class="row align-items-center">
+													<div class="col-md-7 mb-3 mb-md-0">
+														<div class="d-flex align-items-center mb-2">
+															<span class="badge badge-success mr-2" style="background: rgba(0, 255, 102, 0.1) !important; border: 1px solid rgba(0, 255, 102, 0.3) !important; color: #00ff66 !important; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; display: inline-flex; align-items: center;">
+																<span class="spinner-grow spinner-grow-sm mr-1.5" style="width: 8px; height: 8px; color: #00ff66; margin-right: 5px;" role="status"></span> Active
+															</span>
+															<span class="text-muted" style="font-size: 0.85rem;">Lab Instance is running online</span>
+														</div>
+														<div class="mt-3">
+															<span class="text-muted d-block mb-1.5" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Access Link:</span>
+															<div class="d-flex align-items-center">
+																<a href="#" target="_blank" class="btn btn-sm btn-info px-3 py-2 font-weight-bold whale-cell-access-link" style="font-size: 0.9rem; text-transform: none; letter-spacing: 0; border-radius: 4px !important;">
+																	<i class="fas fa-external-link-alt mr-1"></i> Open Web Lab Interface
+																</a>
+															</div>
+														</div>
+													</div>
+													<div class="col-md-5 text-md-right mt-3 mt-md-0">
+														<div class="mb-3 d-inline-block text-left">
+															<span class="text-muted d-block mb-1" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Remaining Time:</span>
+															<span class="whale-cell-count-down" style="font-family: 'JetBrains Mono', monospace !important; font-weight: 700; color: #00f0ff !important; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); font-size: 1.4rem; background: rgba(12, 15, 29, 0.8); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.3); display: inline-block;">00:00:00</span>
+														</div>
+														<div class="d-flex justify-content-md-end mt-2" style="gap: 8px;">
+															<button type="button" class="btn btn-sm btn-outline-info whale-cell-renew-btn">
+																<i class="fas fa-clock mr-1"></i> Extend Time
+															</button>
+															<button type="button" class="btn btn-sm btn-outline-danger whale-cell-destroy-btn">
+																<i class="fas fa-stop mr-1"></i> Shutdown
+															</button>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!-- Flag Submission Sub-panel -->
+											<div class="flag-submit-panel p-4" style="background: rgba(251, 191, 36, 0.03); border: 1px solid rgba(251, 191, 36, 0.15); border-radius: 8px;">
+												<div class="d-flex align-items-center mb-3">
+													<div class="d-flex justify-content-center align-items-center mr-2 text-warning" style="font-size: 1rem; background: rgba(251, 191, 36, 0.1); width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.25);">
+														<i class="fas fa-flag"></i>
+													</div>
+													<span class="text-warning font-weight-bold" style="font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase;">Submit Flag</span>
+												</div>
+												<div class="input-group">
+													<input type="text" class="form-control flag-input" placeholder="Enter flag (e.g. flag{...}) here..." style="background: rgba(15, 17, 26, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; font-family: 'JetBrains Mono', monospace !important; font-size: 0.95rem !important; border-radius: 8px 0 0 8px !important;">
+													<div class="input-group-append">
+														<button class="btn btn-warning px-4 text-dark font-weight-bold flag-submit-btn" type="button">
+															<i class="fas fa-paper-plane mr-1"></i> Submit
+														</button>
+													</div>
+												</div>
+												<div class="flag-feedback-msg mt-3" style="display: none; border-radius: 8px !important; font-size: 0.9rem !important; font-weight: 600 !important;"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+				</div>
+
+				<!-- Challenge Mapping Call-to-Action -->
+				<!-- Fallback Challenge Mapping at the bottom if no challenge cell is present in the flow -->
+				{% set ns = namespace(has_challenge_cell=false) %}
+				{% for block in lesson_blocks %}
+					{% if block.type == 'challenge' %}
+						{% set ns.has_challenge_cell = true %}
+					{% endif %}
+				{% endfor %}
+
+				{% if challenge and not ns.has_challenge_cell %}
+					<!-- Dynamic Lab Instance Console Card (Fallback) -->
+					<div class="challenge-cta-card p-4 p-md-5 my-5" data-challenge-id="{{ challenge.id }}">
+						<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4 mb-4" style="gap: 15px;">
+							<div class="d-flex align-items-start">
+								<div class="d-flex justify-content-center align-items-center mr-3 text-info" style="font-size: 1.5rem; background: rgba(0, 240, 255, 0.1); width: 50px; height: 50px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.25);">
+									<i class="fas fa-terminal"></i>
+								</div>
+								<div>
+									<span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 800; color: #00f0ff;">Practice Lab Console</span>
+									<h4 class="text-white font-weight-bold mt-1 mb-0">{{ challenge.name }}</h4>
+									<p class="text-muted mb-0" style="font-size: 0.8rem;">Category: {{ challenge.category }} &bull; Value: {{ challenge.value }} Points</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Dynamic Container Control Interface -->
+						<div class="whale-cell-panel" style="width: 100%;">
+							<!-- LOADING STATE -->
+							<div class="whale-cell-loading text-center py-3" style="color: var(--text-muted);">
+								<i class="fas fa-spinner fa-spin mr-2"></i> Connecting to hypervisor daemon...
+							</div>
+
+							<!-- INSTANCE STOPPED -->
+							<div class="whale-cell-stopped" style="display: none;">
+								<div class="p-4" style="background: rgba(6, 8, 20, 0.4); border: 1px dashed rgba(0, 240, 255, 0.2); border-radius: 8px; text-align: center;">
+									<p class="text-muted mb-3" style="font-size: 0.95rem;">เครื่องจำลองของแล็บนี้ยังไม่ได้เปิดใช้งาน คุณสามารถเปิดเพื่อทดลองเจาะระบบได้ทันที</p>
+									<button class="btn btn-primary btn-lg px-4 py-2.5 font-weight-bold whale-cell-boot-btn" type="button">
+										<i class="fas fa-play mr-2" style="font-size: 0.85rem;"></i> Launch Lab Instance
+									</button>
+								</div>
+							</div>
+
+							<!-- INSTANCE STARTED -->
+							<div class="whale-cell-started" style="display: none;">
+								<div class="p-4 mb-4" style="background: rgba(6, 8, 20, 0.6); border: 1px solid var(--accent-cyan); border-radius: 8px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);">
+									<div class="row align-items-center">
+										<div class="col-md-7 mb-3 mb-md-0">
+											<div class="d-flex align-items-center mb-2">
+												<span class="badge badge-success mr-2" style="background: rgba(0, 255, 102, 0.1) !important; border: 1px solid rgba(0, 255, 102, 0.3) !important; color: #00ff66 !important; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; display: inline-flex; align-items: center;">
+													<span class="spinner-grow spinner-grow-sm mr-1.5" style="width: 8px; height: 8px; color: #00ff66; margin-right: 5px;" role="status"></span> Active
+												</span>
+												<span class="text-muted" style="font-size: 0.85rem;">Lab Instance is running online</span>
+											</div>
+											<div class="mt-3">
+												<span class="text-muted d-block mb-1.5" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Access Link:</span>
+												<div class="d-flex align-items-center">
+													<a href="#" target="_blank" class="btn btn-sm btn-info px-3 py-2 font-weight-bold whale-cell-access-link" style="font-size: 0.9rem; text-transform: none; letter-spacing: 0; border-radius: 4px !important;">
+														<i class="fas fa-external-link-alt mr-1"></i> Open Web Lab Interface
+													</a>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-5 text-md-right mt-3 mt-md-0">
+											<div class="mb-3 d-inline-block text-left">
+												<span class="text-muted d-block mb-1" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Remaining Time:</span>
+												<span class="whale-cell-count-down" style="font-family: 'JetBrains Mono', monospace !important; font-weight: 700; color: #00f0ff !important; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); font-size: 1.4rem; background: rgba(12, 15, 29, 0.8); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.3); display: inline-block;">00:00:00</span>
+											</div>
+											<div class="d-flex justify-content-md-end mt-2" style="gap: 8px;">
+												<button type="button" class="btn btn-sm btn-outline-info whale-cell-renew-btn">
+													<i class="fas fa-clock mr-1"></i> Extend Time
+												</button>
+												<button type="button" class="btn btn-sm btn-outline-danger whale-cell-destroy-btn">
+													<i class="fas fa-stop mr-1"></i> Shutdown
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Flag Submission Sub-panel -->
+								<div class="flag-submit-panel p-4" style="background: rgba(251, 191, 36, 0.03); border: 1px solid rgba(251, 191, 36, 0.15); border-radius: 8px;">
+									<div class="d-flex align-items-center mb-3">
+										<div class="d-flex justify-content-center align-items-center mr-2 text-warning" style="font-size: 1rem; background: rgba(251, 191, 36, 0.1); width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.25);">
+											<i class="fas fa-flag"></i>
+										</div>
+										<span class="text-warning font-weight-bold" style="font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase;">Submit Flag</span>
+									</div>
+									<div class="input-group">
+										<input type="text" class="form-control flag-input" placeholder="Enter flag (e.g. flag{...}) here..." style="background: rgba(15, 17, 26, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; font-family: 'JetBrains Mono', monospace !important; font-size: 0.95rem !important; border-radius: 8px 0 0 8px !important;">
+										<div class="input-group-append">
+											<button class="btn btn-warning px-4 text-dark font-weight-bold flag-submit-btn" type="button">
+												<i class="fas fa-paper-plane mr-1"></i> Submit
+											</button>
+										</div>
+									</div>
+									<div class="flag-feedback-msg mt-3" style="display: none; border-radius: 8px !important; font-size: 0.9rem !important; font-weight: 600 !important;"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+
+				<!-- Step-by-Step Navigation Buttons -->
+				<div class="d-flex justify-content-between align-items-center mt-5 pt-4" style="border-top: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 5rem !important; position: relative !important; z-index: 100 !important;">
+					<div>
+						{% if prev_position %}
+							<a href="{{ url_for('tutorials.view_lesson', module_id=module.id, lesson_position=prev_position) }}" class="btn btn-outline-secondary">
+								<i class="fas fa-chevron-left mr-1"></i> Previous Lesson
+							</a>
+						{% else %}
+							<a href="{{ url_for('tutorials.list_modules') }}" class="btn btn-outline-secondary">
+								<i class="fas fa-chevron-left mr-1"></i> Back to Modules
+							</a>
+						{% endif %}
+					</div>
+					<div>
+						{% if next_position %}
+							<a href="{{ url_for('tutorials.view_lesson', module_id=module.id, lesson_position=next_position) }}" class="btn btn-primary px-4" style="background: #00f0ff !important; border-color: #00f0ff !important; color: #02040a !important; font-weight: 800 !important; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3) !important;">
+								Next Lesson <i class="fas fa-chevron-right ml-1"></i>
+							</a>
+						{% else %}
+							<a href="{{ url_for('tutorials.list_modules') }}" class="btn btn-success px-4" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; border: none !important; color: #000000 !important; font-weight: bold; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2) !important;">
+								Finish Module <i class="fas fa-check-circle ml-1"></i>
+							</a>
+						{% endif %}
+					</div>
+				</div>
+			{% else %}
+				<div class="text-center py-5" style="background: rgba(17, 20, 36, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 3rem !important;">
+					<div class="d-inline-flex justify-content-center align-items-center mb-4" style="font-size: 2.5rem; color: #00f0ff; background: rgba(0, 240, 255, 0.1); width: 70px; height: 70px; border-radius: 50%;">
+						<i class="fas fa-book"></i>
+					</div>
+					<h3 class="text-white">No lessons in this module yet.</h3>
+					<p class="text-muted mb-4">Please wait until the administrator adds lessons to this module.</p>
+					<a href="{{ url_for('tutorials.list_modules') }}" class="btn btn-primary px-4">Back to Modules</a>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    const moduleQuestions = {{ module_questions | tojson | safe }};
+    const currentLessonId = {{ lesson.id if lesson else 'null' }};
+
+    function getSolvedQuestions() {
+      try {
+        return JSON.parse(localStorage.getItem('solved_questions') || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveSolvedQuestion(hash, answer) {
+      const solved = getSolvedQuestions();
+      solved[hash] = answer;
+      localStorage.setItem('solved_questions', JSON.stringify(solved));
+    }
+
+    function getProgressForLesson(lessonId) {
+      const hashes = moduleQuestions[lessonId] || [];
+      if (hashes.length === 0) {
+        return { S: 0, N: 0, percent: 100 };
+      }
+      const solved = getSolvedQuestions();
+      let S = 0;
+      hashes.forEach(h => {
+        if (solved[h] !== undefined) {
+          S++;
+        }
+      });
+      return { S, N: hashes.length, percent: Math.round((S / hashes.length) * 100) };
+    }
+
+    function updateProgressUI() {
+      // Update sidebar badges
+      document.querySelectorAll('.lesson-progress-badge').forEach(badge => {
+        const lessonId = badge.getAttribute('data-lesson-id');
+        const progress = getProgressForLesson(lessonId);
+        if (progress.N === 0) {
+          badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          badge.style.color = '#10b981';
+          badge.innerHTML = '<i class="fas fa-check" style="font-size: 0.6rem;"></i>';
+        } else {
+          if (progress.percent === 100) {
+            badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            badge.style.color = '#10b981';
+            badge.innerHTML = '<i class="fas fa-check" style="font-size: 0.6rem;"></i>';
+          } else if (progress.percent > 0) {
+            badge.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+            badge.style.color = '#00f0ff';
+            badge.innerHTML = progress.percent + '%';
+          } else {
+            badge.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            badge.style.color = '#8a94a6';
+            badge.innerHTML = '0%';
+          }
+        }
+      });
+
+      // Update current lesson progress bar
+      if (currentLessonId) {
+        const progress = getProgressForLesson(currentLessonId);
+        const container = document.getElementById('lesson-progress-container');
+        if (container) {
+          if (progress.N > 0) {
+            container.style.display = 'block';
+            const textEl = document.getElementById('lesson-progress-text');
+            const barEl = document.getElementById('lesson-progress-bar');
+            if (textEl) textEl.innerText = `${progress.percent}% (${progress.S}/${progress.N} Solved)`;
+            if (barEl) {
+              barEl.style.width = progress.percent + '%';
+              barEl.setAttribute('aria-valuenow', progress.percent);
+            }
+          } else {
+            container.style.display = 'none';
+          }
+        }
+      }
+    }
+
+    function initSolvedQuestions() {
+      const solved = getSolvedQuestions();
+      document.querySelectorAll('.question-input').forEach(input => {
+        const hash = input.getAttribute('data-hash');
+        if (solved[hash] !== undefined) {
+          input.value = solved[hash];
+          input.disabled = true;
+          input.classList.add('is-valid');
+          input.style.borderColor = '#10b981';
+          
+          const cell = input.closest('.question-cell');
+          if (cell) {
+            const submitBtn = cell.querySelector('.btn-warning');
+            if (submitBtn) submitBtn.disabled = true;
+            
+            const feedback = cell.querySelector('.feedback-msg');
+            if (feedback) {
+              feedback.className = "feedback-msg mt-3 alert alert-success py-2 text-dark";
+              feedback.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Correct answer! Well done.';
+              feedback.style.display = 'block';
+            }
+          }
+        }
+      });
+    }
+
+    function copyCodeCell(button) {
+      const codeArea = button.closest('.code-cell').querySelector('.raw-code-value');
+      if (codeArea) {
+        navigator.clipboard.writeText(codeArea.value).then(() => {
+          const originalText = button.innerHTML;
+          button.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+          button.classList.replace('btn-outline-info', 'btn-success');
+          button.style.color = '#000000';
+          setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.replace('btn-success', 'btn-outline-info');
+            button.style.color = '';
+          }, 2000);
+        });
+      }
+    }
+
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message.trim());
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
+    }
+
+    async function submitQuestionAnswer(button) {
+      const cell = button.closest('.question-cell');
+      const input = cell.querySelector('.question-input');
+      const feedback = cell.querySelector('.feedback-msg');
+      const targetHash = input.getAttribute('data-hash');
+      const value = input.value.trim();
+      
+      if (!value) {
+        feedback.className = "feedback-msg mt-3 alert alert-warning py-2 text-dark";
+        feedback.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Please enter an answer.';
+        feedback.style.display = 'block';
+        return;
+      }
+      
+      try {
+        const computedHash = await sha256(value);
+        if (computedHash === targetHash) {
+          feedback.className = "feedback-msg mt-3 alert alert-success py-2 text-dark";
+          feedback.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Correct answer! Well done.';
+          feedback.style.display = 'block';
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+          input.style.borderColor = '#10b981';
+          input.disabled = true;
+          button.disabled = true;
+
+          // Save solved status
+          saveSolvedQuestion(targetHash, value);
+          updateProgressUI();
+        } else {
+          feedback.className = "feedback-msg mt-3 alert alert-danger py-2 text-white bg-danger border-0";
+          feedback.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Incorrect answer. Try again!';
+          feedback.style.display = 'block';
+          input.classList.remove('is-valid');
+          input.classList.add('is-invalid');
+          input.style.borderColor = '#dc3545';
+        }
+      } catch (e) {
+        console.error(e);
+        feedback.className = "feedback-msg mt-3 alert alert-danger py-2 text-white bg-danger border-0";
+        feedback.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Error checking answer.';
+        feedback.style.display = 'block';
+      }
+    }
+
+    let activeIntervals = {};
+
+    function formatTime(seconds) {
+        var h = Math.floor(seconds / 3600);
+        var m = Math.floor((seconds % 3600) / 60);
+        var s = seconds % 60;
+        
+        var hDisplay = h < 10 ? "0" + h : h;
+        var mDisplay = m < 10 ? "0" + m : m;
+        var sDisplay = s < 10 ? "0" + s : s;
+        
+        return hDisplay + ":" + mDisplay + ":" + sDisplay;
+    }
+
+    function checkWhaleInstance(card) {
+        const challengeId = card.getAttribute('data-challenge-id');
+        if (!challengeId) return;
+
+        const url = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
+        
+        const loadingEl = card.querySelector('.whale-cell-loading');
+        const stoppedEl = card.querySelector('.whale-cell-stopped');
+        const startedEl = card.querySelector('.whale-cell-started');
+
+        if (loadingEl) loadingEl.style.display = 'block';
+        if (stoppedEl) stoppedEl.style.display = 'none';
+        if (startedEl) startedEl.style.display = 'none';
+
+        if (activeIntervals[challengeId]) {
+            clearInterval(activeIntervals[challengeId]);
+            delete activeIntervals[challengeId];
+        }
+
+        CTFd.fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            return response.json();
+        }).then(function (response) {
+            if (loadingEl) loadingEl.style.display = 'none';
+            
+            if (response.success && response.data && response.data.remaining_time !== undefined) {
+                const data = response.data;
+                
+                // access link
+                const accessLink = card.querySelector('.whale-cell-access-link');
+                let urlVal = data.user_access;
+                if (urlVal.includes('href="')) {
+                    const match = urlVal.match(/href="([^"]+)"/);
+                    if (match) urlVal = match[1];
+                } else if (urlVal.includes("href='")) {
+                    const match = urlVal.match(/href='([^']+)'/);
+                    if (match) urlVal = match[1];
+                }
+                if (accessLink) {
+                    accessLink.href = urlVal;
+                    accessLink.innerHTML = `<i class="fas fa-external-link-alt mr-1"></i> Open Web Lab Interface`;
+                }
+
+                if (startedEl) startedEl.style.display = 'block';
+
+                let seconds = parseInt(data.remaining_time);
+                const countdownSpan = card.querySelector('.whale-cell-count-down');
+                if (countdownSpan) {
+                    countdownSpan.innerText = formatTime(seconds);
+                    countdownSpan.setAttribute('data-seconds', seconds);
+
+                    activeIntervals[challengeId] = setInterval(() => {
+                        const s_str = countdownSpan.getAttribute('data-seconds');
+                        if (!s_str) return;
+                        let second = parseInt(s_str) - 1;
+                        if (second <= 0) {
+                            clearInterval(activeIntervals[challengeId]);
+                            checkWhaleInstance(card);
+                            return;
+                        }
+                        countdownSpan.innerText = formatTime(second);
+                        countdownSpan.setAttribute('data-seconds', second);
+                    }, 1000);
+                }
+                
+                // Check if solved
+                checkChallengeSolvedState(card, challengeId);
+
+            } else {
+                if (stoppedEl) stoppedEl.style.display = 'block';
+            }
+        }).catch(function (error) {
+            console.error("Error fetching Whale container status:", error);
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (stoppedEl) stoppedEl.style.display = 'block';
+        });
+    }
+
+    function checkChallengeSolvedState(card, challengeId) {
+        CTFd.fetch(`/api/v1/challenges/${challengeId}`, {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(res => {
+            if (res.success && res.data && res.data.solved) {
+                markFlagSolved(card);
+            }
+        }).catch(e => console.error("Error checking solve status:", e));
+    }
+
+    function markFlagSolved(card) {
+        const input = card.querySelector('.flag-input');
+        const submitBtn = card.querySelector('.flag-submit-btn');
+        const feedback = card.querySelector('.flag-feedback-msg');
+        
+        if (input) {
+            input.value = "FLAG SUBMITTED & SOLVED";
+            input.disabled = true;
+            input.classList.add('is-valid');
+            input.style.borderColor = '#10b981';
+            input.style.background = 'rgba(16, 185, 129, 0.05) !important';
+        }
+        if (submitBtn) submitBtn.disabled = true;
+        if (feedback) {
+            feedback.className = "flag-feedback-msg mt-3 alert alert-success py-2 text-dark";
+            feedback.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Correct flag! You have solved this challenge.';
+            feedback.style.display = 'block';
+        }
+    }
+
+    function bootWhaleInstanceCell(card) {
+        const challengeId = card.getAttribute('data-challenge-id');
+        const bootBtn = card.querySelector('.whale-cell-boot-btn');
+        const originalText = bootBtn ? bootBtn.innerHTML : '';
+
+        if (bootBtn) {
+            bootBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Deploying container...';
+            bootBtn.disabled = true;
+        }
+
+        const url = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
+        CTFd.fetch(url, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'CSRF-Token': window.init.csrfNonce
+            },
+            body: JSON.stringify({})
+        }).then(function (response) {
+            return response.json();
+        }).then(function (response) {
+            if (response.success) {
+                CTFd._functions.events.eventAlert({
+                    title: "Success",
+                    html: "Your instance has been deployed successfully!",
+                    button: "OK"
+                });
+                checkWhaleInstance(card);
+            } else {
+                CTFd._functions.events.eventAlert({
+                    title: "Fail",
+                    html: response.message,
+                    button: "OK"
+                });
+            }
+        }).catch(function (error) {
+            console.error("Error booting Whale container:", error);
+        }).finally(function () {
+            if (bootBtn) {
+                bootBtn.innerHTML = originalText;
+                bootBtn.disabled = false;
+            }
+        });
+    }
+
+    function renewWhaleInstanceCell(card) {
+        const challengeId = card.getAttribute('data-challenge-id');
+        const renewBtn = card.querySelector('.whale-cell-renew-btn');
+        const originalText = renewBtn ? renewBtn.innerHTML : '';
+
+        if (renewBtn) {
+            renewBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Extending...';
+            renewBtn.disabled = true;
+        }
+
+        const url = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
+        CTFd.fetch(url, {
+            method: 'PATCH',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'CSRF-Token': window.init.csrfNonce
+            },
+            body: JSON.stringify({})
+        }).then(function (response) {
+            return response.json();
+        }).then(function (response) {
+            if (response.success) {
+                CTFd._functions.events.eventAlert({
+                    title: "Success",
+                    html: "Your instance has been extended successfully!",
+                    button: "OK"
+                });
+                checkWhaleInstance(card);
+            } else {
+                CTFd._functions.events.eventAlert({
+                    title: "Fail",
+                    html: response.message,
+                    button: "OK"
+                });
+            }
+        }).catch(function (error) {
+            console.error("Error renewing Whale container:", error);
+        }).finally(function () {
+            if (renewBtn) {
+                renewBtn.innerHTML = originalText;
+                renewBtn.disabled = false;
+            }
+        });
+    }
+
+    function destroyWhaleInstanceCell(card) {
+        const challengeId = card.getAttribute('data-challenge-id');
+        const destroyBtn = card.querySelector('.whale-cell-destroy-btn');
+        const originalText = destroyBtn ? destroyBtn.innerHTML : '';
+
+        if (destroyBtn) {
+            destroyBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Shutting down...';
+            destroyBtn.disabled = true;
+        }
+
+        const url = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
+        CTFd.fetch(url, {
+            method: 'DELETE',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'CSRF-Token': window.init.csrfNonce
+            },
+            body: JSON.stringify({})
+        }).then(function (response) {
+            return response.json();
+        }).then(function (response) {
+            if (response.success) {
+                CTFd._functions.events.eventAlert({
+                    title: "Success",
+                    html: "Your instance has been shut down!",
+                    button: "OK"
+                });
+                checkWhaleInstance(card);
+            } else {
+                CTFd._functions.events.eventAlert({
+                    title: "Fail",
+                    html: response.message,
+                    button: "OK"
+                });
+            }
+        }).catch(function (error) {
+            console.error("Error destroying Whale container:", error);
+        }).finally(function () {
+            if (destroyBtn) {
+                destroyBtn.innerHTML = originalText;
+                destroyBtn.disabled = false;
+            }
+        });
+    }
+
+    function submitChallengeFlag(card) {
+        const challengeId = card.getAttribute('data-challenge-id');
+        const input = card.querySelector('.flag-input');
+        const submitBtn = card.querySelector('.flag-submit-btn');
+        const feedback = card.querySelector('.flag-feedback-msg');
+        const flagVal = input ? input.value.trim() : '';
+
+        if (!flagVal) {
+            if (feedback) {
+                feedback.className = "flag-feedback-msg mt-3 alert alert-warning py-2 text-dark";
+                feedback.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Please enter a flag.';
+                feedback.style.display = 'block';
+            }
+            return;
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Checking...';
+        }
+
+        CTFd.fetch('/api/v1/challenges/attempt', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'CSRF-Token': window.init.csrfNonce
+            },
+            body: JSON.stringify({
+                challenge_id: parseInt(challengeId),
+                submission: flagVal
+            })
+        }).then(res => res.json()).then(res => {
+            if (res.success && res.data && res.data.status === 'correct') {
+                markFlagSolved(card);
+                CTFd._functions.events.eventAlert({
+                    title: "Correct Flag!",
+                    html: "Congratulations! You have solved this lab and earned your points!",
+                    button: "Awesome"
+                });
+            } else {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Submit';
+                }
+                if (feedback) {
+                    feedback.className = "flag-feedback-msg mt-3 alert alert-danger py-2 text-white bg-danger border-0";
+                    feedback.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Incorrect flag. Try again!';
+                    feedback.style.display = 'block';
+                }
+            }
+        }).catch(err => {
+            console.error("Error submitting flag:", err);
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Submit';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSolvedQuestions();
+      updateProgressUI();
+
+      // Sidebar collapse toggle logic
+      const container = document.querySelector('.lesson-container');
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      
+      if (container && sidebarToggle) {
+        // Load initial state
+        const isCollapsed = localStorage.getItem('lesson_sidebar_collapsed') === 'true';
+        if (isCollapsed) {
+          container.classList.add('sidebar-collapsed');
+          sidebarToggle.innerHTML = '<i class="fas fa-columns"></i>';
+        }
+        
+        sidebarToggle.addEventListener('click', () => {
+          const currentlyCollapsed = container.classList.toggle('sidebar-collapsed');
+          localStorage.setItem('lesson_sidebar_collapsed', currentlyCollapsed);
+          if (currentlyCollapsed) {
+            sidebarToggle.innerHTML = '<i class="fas fa-columns"></i>';
+          } else {
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+          }
+        });
+      }
+      
+      // Initialize all challenge cards
+      document.querySelectorAll('.challenge-cta-card').forEach(card => {
+          const bootBtn = card.querySelector('.whale-cell-boot-btn');
+          if (bootBtn) bootBtn.addEventListener('click', () => bootWhaleInstanceCell(card));
+
+          const renewBtn = card.querySelector('.whale-cell-renew-btn');
+          if (renewBtn) renewBtn.addEventListener('click', () => renewWhaleInstanceCell(card));
+
+          const destroyBtn = card.querySelector('.whale-cell-destroy-btn');
+          if (destroyBtn) destroyBtn.addEventListener('click', () => destroyWhaleInstanceCell(card));
+
+          const flagSubmitBtn = card.querySelector('.flag-submit-btn');
+          if (flagSubmitBtn) flagSubmitBtn.addEventListener('click', () => submitChallengeFlag(card));
+
+          const flagInput = card.querySelector('.flag-input');
+          if (flagInput) {
+              flagInput.addEventListener('keypress', (e) => {
+                  if (e.key === 'Enter') {
+                      submitChallengeFlag(card);
+                  }
+              });
+          }
+
+          checkWhaleInstance(card);
+      });
+    });
+  </script>
+{% endblock %}

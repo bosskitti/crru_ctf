@@ -1,0 +1,126 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>
+			{% if module %}
+				Edit Module: {{ module.title }}
+			{% else %}
+				Create New Module
+			{% endif %}
+		</h1>
+	</div>
+</div>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-6 border-right">
+			<h3>Module Settings</h3>
+			<form method="POST">
+				<input type="hidden" name="nonce" value="{{ Session.nonce }}">
+				
+				<div class="form-group">
+					<label for="title"><b>Module Title</b></label>
+					<input class="form-control" type="text" name="title" id="title" placeholder="Enter module title" value="{{ module.title if module else '' }}" required>
+				</div>
+
+				<div class="form-group">
+					<label for="category"><b>Category</b></label>
+					<input class="form-control" type="text" name="category" id="category" placeholder="e.g. Web Hacking, Crypto" value="{{ module.category if module else '' }}">
+				</div>
+
+				<div class="form-group">
+					<label for="description"><b>Description</b></label>
+					<textarea class="form-control" name="description" id="description" rows="4" placeholder="Brief description of this module">{{ module.description if module else '' }}</textarea>
+				</div>
+
+				<div class="form-group">
+					<label for="position"><b>Position (Ordering)</b></label>
+					<input class="form-control" type="number" name="position" id="position" value="{{ module.position if module else 0 }}" required>
+					<small class="form-text text-muted">Lower numbers will be displayed first.</small>
+				</div>
+				<div class="form-group">
+					<label for="level"><b>Module Level</b></label>
+					<input class="form-control" type="text" name="level" id="level" placeholder="e.g. Basic, Normal, Hard" list="level-options" value="{{ module.level if module else 'Basic' }}" required>
+					<datalist id="level-options">
+						<option value="Basic">
+						<option value="Normal">
+						<option value="Hard">
+					</datalist>
+				</div>
+
+				<div class="form-group">
+					<label for="level_color"><b>Level Badge Color</b></label>
+					<div class="d-flex align-items-center">
+						<input class="form-control form-control-color me-2" type="color" name="level_color" id="level_color" value="{{ module.level_color if module else '#00f0ff' }}" style="width: 50px; height: 38px; padding: 0.2rem; min-width: 50px;">
+						<span class="text-muted small ms-2">Choose a custom color code for the level badge.</span>
+					</div>
+				</div>
+
+				<div class="form-group form-check">
+					<input class="form-check-input" type="checkbox" name="hidden" id="hidden" {% if module and module.hidden %}checked{% endif %}>
+					<label class="form-check-label" for="hidden"><b>Hide from Users</b></label>
+				</div>
+
+				<button class="btn btn-primary" type="submit">Save Module</button>
+				<a class="btn btn-outline-secondary" href="{{ url_for('tutorials.admin_list_modules') }}">Cancel</a>
+			</form>
+		</div>
+
+		<div class="col-md-6">
+			{% if module %}
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h3>Lessons</h3>
+					<a class="btn btn-success btn-sm" href="{{ url_for('tutorials.admin_create_lesson', module_id=module.id) }}">
+						<i class="fas fa-plus"></i> Add Lesson
+					</a>
+				</div>
+
+				<div class="table-responsive">
+					<table class="table table-striped border">
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th class="text-center">Order</th>
+								<th class="text-center">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for lesson in lessons %}
+							<tr>
+								<td>
+									<a href="{{ url_for('tutorials.admin_edit_lesson', lesson_id=lesson.id) }}">
+										{{ lesson.title }}
+									</a>
+								</td>
+								<td class="text-center">{{ lesson.position }}</td>
+								<td class="text-center">
+									<a class="btn btn-sm btn-outline-secondary" href="{{ url_for('tutorials.admin_edit_lesson', lesson_id=lesson.id) }}">
+										<i class="fas fa-pencil-alt"></i> Edit
+									</a>
+									<form action="{{ url_for('tutorials.admin_delete_lesson', lesson_id=lesson.id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this lesson?');">
+										<input type="hidden" name="nonce" value="{{ Session.nonce }}">
+										<button class="btn btn-sm btn-outline-danger" type="submit">
+											<i class="fas fa-trash-alt"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="3" class="text-center">No lessons in this module yet. <a href="{{ url_for('tutorials.admin_create_lesson', module_id=module.id) }}">Create one</a>!</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			{% else %}
+				<div class="alert alert-info">
+					Please save the module settings first to add lessons.
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}

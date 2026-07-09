@@ -1,6 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+  #score-graph {
+    background: rgba(12, 15, 29, 0.95) !important;
+    border: 1px solid var(--accent-cyan) !important;
+    border-radius: 4px !important;
+    padding: 1.5rem !important;
+    margin-bottom: 2.5rem !important;
+    min-height: 350px !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1) !important;
+  }
+  
+  .table th, .table td {
+    padding: 1.2rem 1.5rem !important;
+  }
+
+  .nav-pills .nav-link {
+    background: rgba(6, 8, 20, 0.8) !important;
+    border: 1px solid var(--border-accent) !important;
+    color: #8f9cae !important;
+    margin: 0 0.35rem !important;
+    border-radius: 2px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    transition: all 0.2s ease !important;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px)) !important;
+  }
+
+  .nav-pills .nav-link.active {
+    background: var(--accent-cyan) !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+    border-color: var(--accent-cyan) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+  }
+</style>
+
   <div class="jumbotron">
     <div class="container">
       <h1>

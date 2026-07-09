@@ -1,16 +1,35 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<style>
+  .navbar {
+    background: rgba(6, 8, 20, 0.95) !important;
+    backdrop-filter: blur(8px) !important;
+    border-bottom: 2px solid var(--accent-cyan) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) !important;
+  }
+  .navbar-nav .nav-link {
+    color: #8f9cae !important;
+    font-weight: 600 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    text-transform: uppercase !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.05em !important;
+    transition: all 0.2s ease !important;
+  }
+  .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+    color: var(--accent-cyan) !important;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6) !important;
+  }
+  .theme-switch {
+    display: none !important;
+  }
+</style>
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top">
   <div class="container">
     <a href="{{ url_for('views.static_html', route='/') }}" class="navbar-brand">
-      {% if Configs.ctf_logo %}
-        <img
-            class="img-responsive ctf_logo"
-            src="{{ url_for('views.files', path=Configs.ctf_logo) }}"
-            alt="{{ Configs.ctf_name }}"
-            height="25"
-        >
-      {% else %}
-        {{ Configs.ctf_name }}
-      {% endif %}
+      <span class="text-xl font-extrabold tracking-wider text-white uppercase d-flex align-items-center" style="font-weight: 800; font-size: 1.25rem; font-family: 'Outfit', sans-serif;">
+        CYBER<span style="color: var(--accent-pink) !important; text-shadow: 0 0 10px rgba(255, 0, 85, 0.5) !important;">LEARN</span>
+        <span style="width:8px; height:8px; background-color: var(--accent-cyan); border-radius:50%; display:inline-block; margin-left: 4px; box-shadow: 0 0 8px var(--accent-cyan);"></span>
+      </span>
     </a>
 
     <button

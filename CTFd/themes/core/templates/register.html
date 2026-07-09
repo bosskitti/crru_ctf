@@ -1,32 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>
-        {% trans %}Register{% endtrans %}
-      </h1>
-    </div>
-  </div>
+<style>
+  main, .container, body {
+    background: transparent !important;
+  }
+  main form {
+    background: rgba(12, 15, 29, 0.95) !important;
+    border: 1px solid var(--accent-cyan) !important;
+    padding: 3rem !important;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.15) !important;
+    margin-top: 2rem !important;
+    position: relative !important;
+    clip-path: polygon(0 0, calc(100% - 25px) 0, 100% 25px, 100% 100%, 25px 100%, 0 calc(100% - 25px)) !important;
+  }
+  main form::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 20px; height: 20px;
+    border-top: 3px solid var(--accent-pink);
+    border-left: 3px solid var(--accent-pink);
+  }
+</style>
 
-  <div class="container">
+  <div class="container" style="margin-top: 5rem;">
     <div class="row">
       <div class="col-md-6 offset-md-3">
         {% include "components/errors.html" %}
-
+ 
         {% if integrations.mlc() %}
           <a class="btn btn-secondary btn-lg btn-block w-100" href="{{ url_for('auth.oauth_login') }}">
             Login with Major League Cyber
           </a>
-
+ 
           <hr>
         {% endif %}
-
+ 
         {% with form = Forms.auth.RegistrationForm() %}
-
+ 
           {% from "macros/forms.html" import render_extra_fields %}
-
+ 
           <form method="post" accept-charset="utf-8" role="form">
+            <h2 class="text-center mb-4" style="font-weight: 800; font-family: 'JetBrains Mono', monospace !important; color: var(--accent-cyan) !important; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;">[// CREATE_CREDENTIALS]</h2>
 
             <div class="mb-3">
               <b>

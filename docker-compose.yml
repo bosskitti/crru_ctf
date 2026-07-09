@@ -1,6 +1,7 @@
 services:
   ctfd:
     build: .
+    user: root
     restart: always
     ports:
       - "8000:8000"
@@ -13,10 +14,12 @@ services:
       - ACCESS_LOG=-
       - ERROR_LOG=-
       - REVERSE_PROXY=true
+      - GUNICORN_CMD_ARGS=--timeout 120
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
-      - .:/opt/CTFd:ro
+      - .:/opt/CTFd
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       permissions:
         condition: service_completed_successfully
@@ -27,6 +30,7 @@ services:
     networks:
         default:
         internal:
+        frp-network:
 
   # TODO: CTFd 4.0 Migrate to named volumes. Users will likely need to manually migrate existing files
   permissions:
@@ -46,6 +50,9 @@ services:
       - 80:80
     depends_on:
       - ctfd
+    networks:
+      default:
+      frp-network:
 
   db:
     image: mariadb:10.11
@@ -71,7 +78,40 @@ services:
     networks:
         internal:
 
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel --no-autoupdate run --token eyJhIjoiMmIwY2QzZmM5N2JmZjM4ZmVmMTkzOWMxZThmZDIzOWUiLCJ0IjoiZTgwNTQ5YzktZmI4MS00OTFmLWIxMDgtYTE4MDZhYTM3ZDU2IiwicyI6Ill6SmhNV1poWmpZdFpqWm1aaTAwTm1KbExXRmlNamt0TlRFMk1HRm1aakJrTkdReiJ9
+    depends_on:
+      - nginx
+
+  frps:
+    image: fatedier/frps:v0.52.3
+    restart: always
+    command: ["-c", "/etc/frp/frps.ini"]
+    ports:
+      - "7000:7000"
+      - "10000-10100:10000-10100"
+    volumes:
+      - ./conf/frp/frps.ini:/etc/frp/frps.ini
+    networks:
+      - frp-network
+
+  frpc:
+    image: fatedier/frpc:v0.52.3
+    restart: always
+    command: ["-c", "/etc/frp/frpc.ini"]
+    volumes:
+      - ./conf/frp/frpc.ini:/etc/frp/frpc.ini
+    depends_on:
+      - frps
+    networks:
+      - frp-network
+
 networks:
     default:
     internal:
         internal: true
+    frp-network:
+        name: ctfd_frp-containers
+        external: true
