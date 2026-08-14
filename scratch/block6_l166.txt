@@ -1,0 +1,12 @@
+---
+
+### 🔐 File and Directory Permission Commands
+
+<style>.perm-sec-intro{width:100%;max-width:1050px;margin:1rem auto 0;display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:10px;background:rgba(251,191,36,0.03);border:1px solid rgba(251,191,36,0.15);box-sizing:border-box;}.perm-sec-intro-icon{font-size:1.5rem;flex-shrink:0;}.perm-sec-intro-body strong{display:block;font-size:0.9rem;color:#e2e8f0;margin-bottom:5px;}.perm-sec-intro-body p{margin:0;font-size:0.85rem;color:#94a3b8;line-height:1.7;}.perm-sec-intro-body code{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#fbbf24;background:rgba(251,191,36,0.08);padding:1px 5px;border-radius:3px;}</style>
+<div class="perm-sec-intro">
+<span class="perm-sec-intro-icon">🛡️</span>
+<div class="perm-sec-intro-body">
+<strong>Permission System ใน Linux</strong>
+<p>Linux กำหนด <strong>สิทธิ์การเข้าถึง (Permission)</strong> ให้กับทุกไฟล์และ directory เพื่อควบคุมว่า <em>ใคร</em> จะสามารถ <em>ทำอะไร</em> ได้บ้าง โดยแบ่งออกเป็น 3 ระดับ ได้แก่ <code>owner</code> (เจ้าของ), <code>group</code> (กลุ่ม), และ <code>others</code> (ผู้อื่น) และ 3 ประเภทสิทธิ์ ได้แก่ <code>r</code> (read), <code>w</code> (write), <code>x</code> (execute) — การเข้าใจ Permission เป็นพื้นฐานสำคัญของ Linux Security</p>
+</div>
+</div>

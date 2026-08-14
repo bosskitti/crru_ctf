@@ -1,0 +1,892 @@
+<div style="text-align: center; margin-bottom: 2rem; padding: 24px; background: linear-gradient(135deg, rgba(6,182,212,0.15) 0%, rgba(59,130,246,0.15) 100%); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; box-shadow: 0 0 20px rgba(6,182,212,0.15);">
+<h2 style="margin: 0; font-size: 1.9rem; font-weight: 800; color: #ffffff; text-shadow: 0 0 12px rgba(6,182,212,0.6); letter-spacing: 0.03em;">🌐 Web Application Security & OWASP</h2>
+<p style="margin: 8px 0 0 0; font-size: 0.92rem; color: #94a3b8; font-weight: 500;">ทำความเข้าใจเชิงความมั่นคงปลอดภัยบนเว็บแอปพลิเคชันและมาตรฐานความเสี่ยงระดับสากล</p>
+</div>
+
+### 🔍 ภาพรวมวิทยาการการโจมตีเว็บ (Web Exploitation Overviews)
+การโจมตีแอปพลิเคชันเว็บมีเป้าหมายเพื่อแทรกแซง หาจุดอ่อนในระบบปฏิบัติการ ซอฟต์แวร์ หรือการคอนฟิกเพื่อเข้ายึดครองสิทธิ์:
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 1.5rem auto;">
+<div style="background: linear-gradient(to bottom right, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+<strong style="color: #00f0ff; font-size: 0.98rem; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-shadow: 0 0 8px rgba(0,240,255,0.3);">🔓 Access Control</strong>
+<span style="color: #cbd5e1; font-size: 0.82rem; line-height: 1.6;">การลอบเข้าสู่แผงควบคุมระบบโดยข้ามขั้นตอนการตรวจสิทธิ์ ทำให้แฮกเกอร์จัดการข้อมูลและระบบแทนแอดมินได้</span>
+</div>
+<div style="background: linear-gradient(to bottom right, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+<strong style="color: #3b82f6; font-size: 0.98rem; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-shadow: 0 0 8px rgba(59,130,246,0.3);">💾 Data Exfiltration</strong>
+<span style="color: #cbd5e1; font-size: 0.82rem; line-height: 1.6;">การดึงพารามิเตอร์ลับ รหัสผ่านแฮช หรือข้อมูลส่วนบุคคลของเหยื่อออกจากตารางฐานข้อมูลลับของเซิร์ฟเวอร์</span>
+</div>
+<div style="background: linear-gradient(to bottom right, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+<strong style="color: #a855f7; font-size: 0.98rem; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-shadow: 0 0 8px rgba(168,85,247,0.3);">🐚 Remote Code Execution</strong>
+<span style="color: #cbd5e1; font-size: 0.82rem; line-height: 1.6;">การฝังโค้ดเชลล์ประสงค์ร้ายลงในระบบเพื่อเรียกใช้คำสั่งควบคุมสั่งการหน้าต่าง Terminal ของเว็บโฮสต์จากระยะไกล</span>
+</div>
+</div>
+
+---
+
+### 🛡️ ความเปรียบต่างวิวัฒนาการ OWASP Top 10 (2021 vs 2025/2026)
+กรอบมาตรฐานความเสี่ยงระดับสากลได้รับการอัปเดตเพื่อสะท้อนวิวัฒนาการของการโจมตีในเทคโนโลยีคลาวด์ยุคใหม่:
+
+<div style="overflow-x: auto; margin: 1.5rem auto; max-width: 1000px; border: 1px solid rgba(6,182,212,0.25); border-radius: 12px; background: #05070f; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+<table style="width: 100%; border-collapse: collapse; text-align: left; font-family: sans-serif; font-size: 0.85rem;">
+<thead>
+<tr style="background: rgba(6,182,212,0.08); border-bottom: 1px solid rgba(6,182,212,0.2);">
+<th style="padding: 14px 18px; font-weight: bold; color: #a855f7; width: 42%; text-shadow: 0 0 6px rgba(168,85,247,0.3);">อันดับเดิมในปี 2021 (OWASP 2021)</th>
+<th style="padding: 14px 18px; font-weight: bold; color: #00f0ff; width: 16%; text-align: center; text-shadow: 0 0 6px rgba(0,240,255,0.3);">แนวโน้ม</th>
+<th style="padding: 14px 18px; font-weight: bold; color: #10b981; width: 42%; text-shadow: 0 0 6px rgba(16,185,129,0.3);">อันดับล่าสุดในการประกาศใช้ (2025 - Present)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.005);">
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A01:2021</strong> - Broken Access Control</td>
+<td style="padding: 14px 18px; text-align: center; vertical-align: middle;">
+  <span style="color: #94a3b8; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 4px rgba(148,163,184,0.4); letter-spacing: -2px;">➔</span>
+</td>
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A01:2025</strong> - Broken Access Control <span style="font-size:0.75rem; color:#10b981; font-weight:bold; margin-left:6px; background:rgba(16,185,129,0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.2);">(คงที่อันดับ 1)</span></td>
+</tr>
+<tr style="border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.015);">
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A02:2021</strong> - Cryptographic Failures</td>
+<td style="padding: 14px 18px; text-align: center; vertical-align: middle;">
+  <span style="color: #10b981; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 8px rgba(16,185,129,0.6);">↗</span>
+</td>
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A02:2025</strong> - Security Misconfiguration <span style="font-size:0.75rem; color:#f97316; font-weight:bold; margin-left:6px; background:rgba(249,115,22,0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(249,115,22,0.2);">(ขึ้นจากอันดับ 5)</span></td>
+</tr>
+<tr style="border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.005);">
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A05:2021</strong> - Security Misconfiguration</td>
+<td style="padding: 14px 18px; text-align: center; vertical-align: middle;">
+  <span style="color: #ef4444; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 8px rgba(239,68,68,0.6);">↘</span>
+</td>
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A04:2025</strong> - Cryptographic Failures <span style="font-size:0.75rem; color:#a855f7; font-weight:bold; margin-left:6px; background:rgba(168,85,247,0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(168,85,247,0.2);">(ลดลงจากอันดับ 2)</span></td>
+</tr>
+<tr style="border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.015);">
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A03:2021</strong> - Injection</td>
+<td style="padding: 14px 18px; text-align: center; vertical-align: middle;">
+  <span style="color: #94a3b8; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 4px rgba(148,163,184,0.4); letter-spacing: -2px;">➔</span>
+</td>
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #ffffff;">A05:2025</strong> - Injection <span style="font-size:0.75rem; color:#10b981; font-weight:bold; margin-left:6px; background:rgba(16,185,129,0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.2);">(คงที่อันดับ 5)</span></td>
+</tr>
+<tr style="background: rgba(255,255,255,0.005);">
+<td style="padding: 14px 18px; color: #94a3b8; vertical-align: middle; font-style: italic;">(พิกัดความเสี่ยงใหม่)</td>
+<td style="padding: 14px 18px; text-align: center; vertical-align: middle;">
+  <span style="background: rgba(168,85,247,0.2); border: 1px solid #a855f7; color: #d8b4fe; padding: 3px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: bold; text-shadow: 0 0 8px rgba(168,85,247,0.5); letter-spacing: 0.05em;">NEW</span>
+</td>
+<td style="padding: 14px 18px; color: #cbd5e1; vertical-align: middle;"><strong style="color: #34d399;">A03:2025</strong> - Software Supply Chain Failures <span style="font-size:0.75rem; color:#34d399; font-weight:bold; margin-left:6px; background:rgba(52,211,153,0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(52,211,153,0.2);">(ความปลอดภัยซัพพลายเชน)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+---
+
+### 🛡️ คลังความรู้เจาะลึก 10 อันดับความเสี่ยงความเปราะบาง (OWASP Top 10 Complete Suite)
+คำอธิบายเชิงสถาปัตยกรรม แผนภาพกราฟิกจำลองเวกเตอร์ (Vector Graphic Diagram) และระดับความรุนแรงของภัยคุกคาม:
+
+<style>
+.owasp-card {
+  background: #05070f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .owasp-card {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<div style="display: flex; flex-direction: column; gap: 24px; margin: 1.5rem auto;">
+
+<!-- A01 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A01:2025 - Broken Access Control (การควบคุมสิทธิ์บกพร่อง)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 95%; height: 100%; background: linear-gradient(90deg, #ef4444, #f43f5e); box-shadow: 0 0 6px #f43f5e;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f43f5e; font-weight: 800; text-shadow: 0 0 4px rgba(244,63,94,0.4);">CRITICAL (9.5/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+ผู้ใช้ธรรมดาสามารถเข้าถึงและดัดแปลงทรัพยากรส่วนตัว หรือฟังก์ชันการทำงานที่พวกเขาไม่ควรได้รับสิทธิ์เข้าใช้งาน<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+การรั่วไหลของข้อมูลสมาชิก (Data leakage), การเข้าสิทธิ์หลังบ้านโดยข้ามการตรวจสิทธิ์ (Bypassing authentication)<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- <strong>URL Bypass:</strong> เดาพาธแอดมินตรงๆ เช่น การพิมพ์ <code style="color:#00f0ff;">/admin</code> บน URL ลิงก์ตรงๆ<br>
+- <strong>Tampering parameters:</strong> การแก้ไขตัวแปร ID ใน URL หรือเปลี่ยนค่า JWT cookie เพื่อเลื่อนสิทธิ์แอดมิน<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+เว็บแอปพลิเคชันมี URL โปรไฟล์ผู้ใช้ระบุค่าตัวเลขดิบ เช่น <code style="color:#00f0ff;">/profile/view/12345</code> แฮกเกอร์แอบเปลี่ยนเลขตัวหลังเป็น <code style="color:#00f0ff;">12346</code> และระบบยอมให้เปิดอ่านโปรไฟล์ผู้อื่นได้โดยไม่มีการรันคำสั่งเช็คยืนยันตัวตน
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Access Control vs Broken Access Control</div>
+<svg viewBox="0 0 420 180" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<rect x="10" y="10" width="190" height="160" rx="8" fill="none" stroke="rgba(255,255,255,0.05)"/>
+<text x="105" y="30" fill="#a7f3d0" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Access Control (ปกติ)</text>
+<g transform="translate(20, 65)">
+<rect x="0" y="10" width="26" height="16" rx="2" fill="#1e293b" stroke="#00f0ff" stroke-width="1.5"/>
+<line x1="5" y1="13" x2="21" y2="13" stroke="#00f0ff" stroke-width="1"/>
+<polygon points="-4,28 30,28 26,26 0,26" fill="#334155" stroke="#00f0ff" stroke-width="1"/>
+<circle cx="13" cy="4" r="5" fill="#475569"/>
+<path d="M5,12 C5,8 21,8 21,12 Z" fill="#475569"/>
+<text x="13" y="38" fill="#8892b0" font-size="8" font-family="sans-serif" text-anchor="middle">User</text>
+</g>
+<g transform="translate(90, 55)">
+<rect x="0" y="0" width="28" height="42" rx="4" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+<line x1="4" y1="8" x2="24" y2="8" stroke="#10b981" stroke-width="1.5"/>
+<line x1="4" y1="16" x2="24" y2="16" stroke="#10b981" stroke-width="1.5"/>
+<rect x="9" y="26" width="10" height="8" rx="1" fill="#10b981"/>
+<path d="M11,26 L11,22 A3,3 0 0,1 17,22 L17,26" fill="none" stroke="#10b981" stroke-width="1.5"/>
+<text x="14" y="52" fill="#8892b0" font-size="8" font-family="sans-serif" text-anchor="middle">Server</text>
+</g>
+<g transform="translate(155, 65)">
+<circle cx="13" cy="5" r="6" fill="#ef4444"/>
+<path d="M3,18 C3,10 23,10 23,18 Z" fill="#ef4444"/>
+<path d="M3,15 L23,15" stroke="#ef4444" stroke-width="1.5"/>
+<text x="13" y="38" fill="#fca5a5" font-size="8" font-family="sans-serif" text-anchor="middle">Hacker</text>
+</g>
+<line x1="50" y1="82" x2="86" y2="82" stroke="#10b981" stroke-width="1.5"/>
+<polygon points="86,79 92,82 86,85" fill="#10b981"/>
+<text x="68" y="76" fill="#10b981" font-size="7" font-family="sans-serif" text-anchor="middle">Granted</text>
+<path d="M152,82 L122,82" stroke="#ef4444" stroke-width="1.5"/>
+<line x1="132" y1="77" x2="142" y2="87" stroke="#ef4444" stroke-width="2"/>
+<line x1="142" y1="77" x2="132" y2="87" stroke="#ef4444" stroke-width="2"/>
+<text x="140" y="73" fill="#ef4444" font-size="7" font-family="sans-serif" text-anchor="middle">Blocked</text>
+
+<rect x="220" y="10" width="190" height="160" rx="8" fill="none" stroke="rgba(255,255,255,0.05)"/>
+<text x="315" y="30" fill="#fca5a5" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Broken Access Control</text>
+<g transform="translate(230, 65)">
+<rect x="0" y="10" width="26" height="16" rx="2" fill="#1e293b" stroke="#00f0ff" stroke-width="1.5"/>
+<line x1="5" y1="13" x2="21" y2="13" stroke="#00f0ff" stroke-width="1"/>
+<polygon points="-4,28 30,28 26,26 0,26" fill="#334155" stroke="#00f0ff" stroke-width="1"/>
+<circle cx="13" cy="4" r="5" fill="#475569"/>
+<path d="M5,12 C5,8 21,8 21,12 Z" fill="#475569"/>
+<text x="13" y="38" fill="#8892b0" font-size="8" font-family="sans-serif" text-anchor="middle">User</text>
+</g>
+<g transform="translate(300, 55)">
+<rect x="0" y="0" width="28" height="42" rx="4" fill="#0f172a" stroke="#ef4444" stroke-width="1.5"/>
+<line x1="4" y1="8" x2="24" y2="8" stroke="#ef4444" stroke-width="1.5"/>
+<line x1="4" y1="16" x2="24" y2="16" stroke="#ef4444" stroke-width="1.5"/>
+<rect x="9" y="26" width="10" height="8" rx="1" fill="#ef4444"/>
+<path d="M15,26 L15,19 A3,3 0 0,1 21,21" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+<text x="14" y="52" fill="#8892b0" font-size="8" font-family="sans-serif" text-anchor="middle">Server</text>
+</g>
+<g transform="translate(365, 65)">
+<circle cx="13" cy="5" r="6" fill="#ef4444"/>
+<path d="M3,18 C3,10 23,10 23,18 Z" fill="#ef4444"/>
+<path d="M3,15 L23,15" stroke="#ef4444" stroke-width="1.5"/>
+<text x="13" y="38" fill="#fca5a5" font-size="8" font-family="sans-serif" text-anchor="middle">Hacker</text>
+</g>
+<line x1="260" y1="82" x2="296" y2="82" stroke="#10b981" stroke-width="1.5"/>
+<path d="M362,82 L332,82" stroke="#10b981" stroke-width="1.5"/>
+<text x="347" y="76" fill="#10b981" font-size="7" font-family="sans-serif" text-anchor="middle">Bypass!</text>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A02 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A02:2025 - Security Misconfiguration (การตั้งค่าสิทธิ์ความปลอดภัยผิดพลาด)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 85%; height: 100%; background: linear-gradient(90deg, #f97316, #eab308); box-shadow: 0 0 6px #f97316;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f97316; font-weight: 800; text-shadow: 0 0 4px rgba(249,115,22,0.4);">HIGH (8.5/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+ระบบแอปพลิเคชัน, ฐานข้อมูลหลังบ้าน หรือเว็บเซิร์ฟเวอร์ไม่ได้ตั้งค่าความมั่นคงปลอดภัยอย่างรัดกุม ปล่อยให้ใช้งานคอนฟิกเริ่มต้นดีฟอลต์<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+ข้อมูลความลับถูกขโมย หรือแฮกเกอร์มองเห็นโครงสร้างโฟลเดอร์ของระบบทั้งหมดได้ทันที<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- ลืมเปลี่ยนรหัสผ่านเริ่มต้นของระบบ (เช่น ชื่อผู้ใช้ <code style="color:#00f0ff;">admin</code> และรหัสผ่าน <code style="color:#00f0ff;">admin</code>)<br>
+- ปล่อย Directory listing ทำงาน ทำให้เปิดอ่านโครงสร้างไฟล์ย่อยบนหน้าเว็บได้<br>
+- เปิดโหมด Debug ค้างไว้ในระบบจริง เผยแพร่โค้ดและข้อมูลส่วนเชื่อมต่อฐานข้อมูลดิบ<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+เว็บเซิร์ฟเวอร์เปิดโหมด Debug ทิ้งไว้ เมื่อแฮกเกอร์จงใจสร้างข้อผิดพลาดให้ระบบพัง ตัวเว็บหลังบ้านจะพ่น Stack trace และ Database Password ออกมาทางบราวเซอร์ ทำให้แฮกเกอร์ลอบนำไปเจาะฐานข้อมูลได้สำเร็จ
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Security Misconfiguration</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(30, 50)">
+<circle cx="15" cy="10" r="8" fill="#ef4444"/>
+<path d="M3,28 C3,18 27,18 27,28 Z" fill="#ef4444"/>
+<text x="15" y="44" fill="#fca5a5" font-size="8" font-family="sans-serif" text-anchor="middle">Attacker</text>
+</g>
+<line x1="70" y1="75" x2="155" y2="75" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4,2"/>
+<text x="112" y="66" fill="#f97316" font-size="8" font-family="monospace" text-anchor="middle">Access via Default</text>
+<rect x="170" y="35" width="16" height="80" rx="3" fill="#334155" stroke="#94a3b8"/>
+<line x1="170" y1="55" x2="186" y2="55" stroke="#ef4444" stroke-width="2"/>
+<line x1="170" y1="75" x2="186" y2="75" stroke="#ef4444" stroke-width="2"/>
+<line x1="170" y1="95" x2="186" y2="95" stroke="#ef4444" stroke-width="2"/>
+<g transform="translate(210, 25)">
+<rect x="0" y="0" width="65" height="40" rx="4" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="32" y="15" fill="#00f0ff" font-size="7" font-family="sans-serif" text-anchor="middle">Server (Active)</text>
+<text x="32" y="30" fill="#ef4444" font-size="6" font-family="monospace" text-anchor="middle">Admin:Admin</text>
+<line x1="-15" y1="20" x2="0" y2="20" stroke="#f43f5e" stroke-width="1.5"/>
+</g>
+<g transform="translate(210, 85)">
+<rect x="0" y="0" width="65" height="40" rx="4" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="32" y="15" fill="#00f0ff" font-size="7" font-family="sans-serif" text-anchor="middle">Database Server</text>
+<text x="32" y="30" fill="#ef4444" font-size="6" font-family="monospace" text-anchor="middle">Debug: Active</text>
+<line x1="-15" y1="20" x2="0" y2="20" stroke="#f43f5e" stroke-width="1.5"/>
+</g>
+<g transform="translate(315, 55)">
+<rect x="0" y="0" width="40" height="40" rx="2" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+<ellipse cx="20" cy="10" rx="15" ry="5" fill="#a855f7"/>
+<ellipse cx="20" cy="20" rx="15" ry="5" fill="#a855f7"/>
+<ellipse cx="20" cy="30" rx="15" ry="5" fill="#a855f7"/>
+<text x="20" y="48" fill="#cbd5e1" font-size="6" font-family="sans-serif" text-anchor="middle">Leak!</text>
+</g>
+<line x1="275" y1="45" x2="315" y2="70" stroke="#f43f5e" stroke-width="1.5"/>
+<line x1="275" y1="105" x2="315" y2="75" stroke="#f43f5e" stroke-width="1.5"/>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A03 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A03:2025 - Software Supply Chain Failures (ความล้มเหลวด้านซอฟต์แวร์และข้อมูล)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 90%; height: 100%; background: linear-gradient(90deg, #ef4444, #f97316); box-shadow: 0 0 6px #ef4444;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f43f5e; font-weight: 800; text-shadow: 0 0 4px rgba(244,63,94,0.4);">CRITICAL (9.0/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+การเรียกใช้ปลั๊กอิน ไลบรารีซอร์สโค้ด หรืออัปเดตระบบจากภายนอกโดยไม่มีการตรวจเช็คลายมือชื่อดิจิทัลรับรอง (Integrity Verification)<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+การถูกโจมตีแบบซัพพลายเชน (Supply Chain Attack) โดยแฮกเกอร์ลอบนำส่งมัลแวร์มาติดตั้งแฝงผ่านกระบวนการบิวด์อัตโนมัติ<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- การติดตั้งปลั๊กอินดัดแปลงหลังบ้านที่อ้างว่าปล่อยให้ใช้งานฟรี<br>
+- การเรียกใช้ไฟล์ JavaScript หรือคอมโพเนนต์คลาวด์จากผู้พัฒนาที่ไม่น่าเชื่อถือ<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+ช่องทาง CI/CD pipeline ถูกผู้ไม่ประสงค์ดีเจาะระบบลักลอบฝังมัลแวร์ลงในแพ็กเกจอัปเดต เมื่อเครื่องเซิร์ฟเวอร์หลักทำการอัปเกรดแอปพลิเคชันระบบอัตโนมัติ จะส่งผลให้มัลแวร์ทำงานส่งข้อมูลความลับออกไปทันที
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Software Supply Chain</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(15, 55)">
+<rect x="0" y="0" width="70" height="35" rx="4" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="35" y="21" fill="#cbd5e1" font-size="8" font-family="sans-serif" text-anchor="middle">Source Repo</text>
+</g>
+<g transform="translate(100, 10)">
+<circle cx="15" cy="8" r="6" fill="#ef4444"/>
+<path d="M5,22 C5,14 25,14 25,22 Z" fill="#ef4444"/>
+<text x="15" y="32" fill="#ef4444" font-size="7" font-family="sans-serif" text-anchor="middle">Malicious User</text>
+</g>
+<path d="M115,45 Q135,70 160,70" fill="none" stroke="#ef4444" stroke-dasharray="3,1" stroke-width="1.5"/>
+<line x1="85" y1="72" x2="145" y2="72" stroke="#3b82f6" stroke-width="1.5"/>
+<g transform="translate(150, 55)">
+<rect x="0" y="0" width="75" height="35" rx="4" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="37" y="21" fill="#cbd5e1" font-size="8" font-family="sans-serif" text-anchor="middle">CI/CD Pipeline</text>
+</g>
+<line x1="225" y1="72" x2="280" y2="72" stroke="#ef4444" stroke-width="1.5"/>
+<g transform="translate(285, 55)">
+<rect x="0" y="0" width="70" height="35" rx="4" fill="#0f172a" stroke="#ef4444" stroke-width="1.5"/>
+<text x="35" y="21" fill="#fca5a5" font-size="8" font-family="sans-serif" text-anchor="middle">Prod Server</text>
+</g>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A04 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A04:2025 - Cryptographic Failures (ความล้มเหลวในการเข้ารหัสข้อมูล)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 92%; height: 100%; background: linear-gradient(90deg, #ef4444, #f43f5e); box-shadow: 0 0 6px #f43f5e;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f43f5e; font-weight: 800; text-shadow: 0 0 4px rgba(244,63,94,0.4);">CRITICAL (9.2/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+การเข้ารหัสข้อมูลไม่แน่นหนาพอ หรือการรับส่งข้อมูลที่เป็นความลับผ่านช่องทางปกติที่ไม่มีการเข้ารหัสความปลอดภัย<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+ข้อมูลรั่วไหลระหว่างทาง (Data leak), รหัสผ่านหลุดร่วงเผยแพร่สู่ภายนอก (Password exposure)<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- Storing passwords in plaintext: บันทึกรหัสผ่านสมาชิกไว้ในฐานข้อมูลเป็นข้อความธรรมดา หรือใช้แฮชที่แคร็กได้ง่าย เช่น MD5<br>
+- การรับส่งข้อมูลความลับผ่านช่องทางโปรโตคอลที่ไม่เข้ารหัส เช่น HTTP (Port 80)<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+เว็บแอปจัดเก็บรหัสผ่านผู้เรียนไว้เป็นข้อความธรรมดา หรือนำไปแฮชด้วย MD5 แฮกเกอร์ที่เจาะฐานข้อมูลได้จะขโมยรายชื่อรหัสผ่านนี้ไปแคร็กเปรียบเทียบใน Wordlist ยอดฮิตได้อย่างรวดเร็ว ทำให้เข้าถึงรหัสผ่านจริงของสมาชิกทั้งหมดบนระบบได้ทันที
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Cryptographic Failures</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(20, 30)">
+<rect x="0" y="0" width="110" height="90" rx="4" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="55" y="18" fill="#00f0ff" font-size="8" font-family="sans-serif" text-anchor="middle" font-weight="bold">Database (MD5 Hash)</text>
+<text x="10" y="40" fill="#a855f7" font-size="7" font-family="monospace">admin: 21232f297a...</text>
+<text x="10" y="60" fill="#a855f7" font-size="7" font-family="monospace">user1: 5f4dcc3b5a...</text>
+<text x="10" y="80" fill="#a855f7" font-size="7" font-family="monospace">pass2: 7815696ecb...</text>
+</g>
+<line x1="140" y1="75" x2="220" y2="75" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,1"/>
+<g transform="translate(230, 50)">
+<circle cx="15" cy="10" r="8" fill="#ef4444"/>
+<path d="M3,28 C3,18 27,18 27,28 Z" fill="#ef4444"/>
+<text x="15" y="44" fill="#fca5a5" font-size="8" font-family="sans-serif" text-anchor="middle">Hacker</text>
+</g>
+<line x1="270" y1="75" x2="310" y2="75" stroke="#34d399" stroke-width="1.5"/>
+<g transform="translate(320, 50)">
+<rect x="0" y="0" width="60" height="50" rx="3" fill="#1e293b" stroke="#34d399" stroke-width="1.5"/>
+<text x="30" y="16" fill="#34d399" font-size="7" font-family="monospace" text-anchor="middle">Cracked!</text>
+<text x="30" y="32" fill="#ffffff" font-size="6" font-family="monospace" text-anchor="middle">"admin"</text>
+<text x="30" y="42" fill="#ffffff" font-size="6" font-family="monospace" text-anchor="middle">"password"</text>
+</g>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A05 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A05:2025 - Injection (การยิงแทรกคำสั่งประมวลผล)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 94%; height: 100%; background: linear-gradient(90deg, #ef4444, #f43f5e); box-shadow: 0 0 6px #f43f5e;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f43f5e; font-weight: 800; text-shadow: 0 0 4px rgba(244,63,94,0.4);">CRITICAL (9.4/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+แอปพลิเคชันเว็บรับอินพุตข้อมูลโดยไม่มีคำสั่งสกัดลบ (Sanitization) อักขระพิเศษ แล้วนำไปป้อนเป็นตัวแปรคำสั่งประมวลผลระบบตรงๆ<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+ข้อมูลสูญหาย ดึงประวัติไฟล์สำคัญภายนอก หรือถูกยึดระบบหลังบ้านได้ทันที<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างประเภทสำคัญ (Key Categories):</strong>
+- <strong>SQL Injection (SQLi):</strong> การแทรกสตริง SQL คิวรีเพื่อหลบเงื่อนไขและดึงตารางข้อมูลลับ<br>
+- <strong>OS Command Injection:</strong> การฝังเซมิโคลอนและคำสั่งระบบปฏิบัติการ Linux ในช่องฟอร์มปิง IP<br>
+- <strong>Cross-Site Scripting (XSS):</strong> การฝังสคริปต์ JavaScript เพื่อไปรันประมวลผลบน Client ของเหยื่อ<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+ในแบบฟอร์มเข้าสู่ระบบ ตรรกะตรวจเช็คความถูกต้องของชื่อผู้ใช้และรหัสผ่านนำอินพุตผู้ใช้ไปเขียนคิวรีดิบ แฮกเกอร์แอบใส่ข้อความสัญลักษณ์ <code style="color:#00f0ff;">' OR '1'='1</code> เข้าที่ฟิลด์ชื่อผู้ใช้ ทำให้คำสั่ง SQL เปลี่ยนรูปแบบการคำนวณและประมวลผลสิทธิ์เป็นจริงเสมอ นำไปสู่การ Bypass เข้าแผงแอดมินทันทีโดยไม่ต้องรหัสผ่านจริง
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: SQL Injection</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(15, 45)">
+<rect x="0" y="0" width="100" height="60" rx="3" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+<text x="50" y="16" fill="#cbd5e1" font-size="7" font-family="sans-serif" text-anchor="middle">Login Username Input</text>
+<rect x="10" y="28" width="80" height="20" rx="2" fill="#1e293b" stroke="#ef4444"/>
+<text x="50" y="41" fill="#fca5a5" font-size="6" font-family="monospace" text-anchor="middle">' OR '1'='1' --</text>
+</g>
+<line x1="125" y1="75" x2="195" y2="75" stroke="#ef4444" stroke-width="1.5"/>
+<text x="160" y="67" fill="#ef4444" font-size="6" font-family="monospace" text-anchor="middle">Bypass Query</text>
+<g transform="translate(205, 35)">
+<rect x="0" y="0" width="115" height="80" rx="3" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="57" y="18" fill="#00f0ff" font-size="7" font-family="monospace" text-anchor="middle">SELECT * FROM users</text>
+<text x="57" y="38" fill="#fca5a5" font-size="6" font-family="monospace" text-anchor="middle">WHERE user='' OR '1'='1'</text>
+<text x="57" y="58" fill="#34d399" font-size="6" font-family="monospace" text-anchor="middle">[Result: True ALWAYS]</text>
+</g>
+<line x1="330" y1="75" x2="360" y2="75" stroke="#34d399" stroke-width="1.5"/>
+<circle cx="375" cy="75" r="10" fill="#34d399"/>
+<text x="375" y="78" fill="#ffffff" font-size="7" font-family="sans-serif" text-anchor="middle">✔️</text>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A06 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A06:2025 - Insecure Design (การออกแบบระบบที่ไม่ปลอดภัย)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 82%; height: 100%; background: linear-gradient(90deg, #f97316, #eab308); box-shadow: 0 0 6px #f97316;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f97316; font-weight: 800; text-shadow: 0 0 4px rgba(249,115,22,0.4);">HIGH (8.2/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+ความบกพร่องของตรรกะระบบตั้งแต่ขั้นตอนการออกแบบโครงสร้างสถาปัตยกรรม (Architecture) หรือการขาดการทำ Threat Modeling<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+การถูกเจาะระบบโดยที่ไม่มีส่วนใดในบรรทัดโค้ดหลักเกิดข้อผิดพลาดทางไวยากรณ์ (Syntax)<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- แอปพลิเคชันธุรกรรมการเงินยอมให้ตั้งค่าขอเปลี่ยนรหัสผ่านใหม่ได้ทันทีโดยไม่ต้องส่งอีเมลยืนยันตัวตนหรือกรอกรหัสผ่านเก่า<br>
+- การขาด Rate Limiting เปิดโอกาสให้แฮกเกอร์ใช้โปรแกรมยิงเพื่อเดารหัสหรือส่งทราฟฟิกป่วนระบบอย่างเสรี<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+เว็บระบบสมัครสมาชิกระบุพารามิเตอร์ตรวจสอบไม่มีการจำกัดจำนวนครั้งการล็อกอิน แฮกเกอร์เขียนสคริปต์สั้นๆ รันคำสั่งเดารหัสผ่านซ้ำเป็นล้านรอบอย่างรวดเร็วเพื่อ Brute Force โดยที่ระบบตรวจเฝ้าระวังไม่รับรู้ นำไปสู่การเข้ายึดระบบได้สำเร็จในที่สุด
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Insecure Design (No Rate Limit)</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(20, 50)">
+<circle cx="15" cy="10" r="8" fill="#ef4444"/>
+<path d="M3,28 C3,18 27,18 27,28 Z" fill="#ef4444"/>
+<text x="15" y="44" fill="#fca5a5" font-size="7" font-family="sans-serif" text-anchor="middle">Brute Force Bot</text>
+</g>
+<path d="M60,60 L140,40" stroke="#ef4444" stroke-width="1"/>
+<path d="M60,70 L140,65" stroke="#ef4444" stroke-width="1"/>
+<path d="M60,80 L140,85" stroke="#ef4444" stroke-width="1"/>
+<path d="M60,90 L140,110" stroke="#ef4444" stroke-width="1"/>
+<g transform="translate(150, 35)">
+<rect x="0" y="0" width="105" height="80" rx="3" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="52" y="20" fill="#00f0ff" font-size="8" font-family="sans-serif" text-anchor="middle">Web Server</text>
+<text x="52" y="45" fill="#ef4444" font-size="6" font-family="monospace" text-anchor="middle">Requests: Endless</text>
+<text x="52" y="65" fill="#cbd5e1" font-size="6" font-family="monospace" text-anchor="middle">No Lock Policy</text>
+</g>
+<line x1="260" y1="75" x2="310" y2="75" stroke="#ef4444" stroke-width="1.5"/>
+<g transform="translate(320, 50)">
+<rect x="0" y="0" width="60" height="50" rx="3" fill="#1e293b" stroke="#ef4444" stroke-width="1.5"/>
+<text x="30" y="20" fill="#ef4444" font-size="7" font-family="monospace" text-anchor="middle">CRACKED!</text>
+<text x="30" y="38" fill="#ffffff" font-size="6" font-family="monospace" text-anchor="middle">Pass: 123456</text>
+</g>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A07 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A07:2025 - Authentication Failures (ความล้มเหลวในการระบุตัวตน)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 88%; height: 100%; background: linear-gradient(90deg, #ef4444, #f97316); box-shadow: 0 0 6px #f97316;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f97316; font-weight: 800; text-shadow: 0 0 4px rgba(249,115,22,0.4);">HIGH (8.8/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+ระบบแอปพลิเคชันไม่ป้องกันความแข็งแกร่งของรหัสผ่าน หรือไม่มีระบบล็อกบัญชีเมื่อมีความพยายามเข้าสู่ระบบที่ล้มเหลวหลายครั้ง<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+ผู้ใช้ทั่วไปถูกแฮกเกอร์โจรกรรมบัญชี หรือสวมสิทธิ์แทนเจ้าของที่แท้จริงได้โดยง่าย<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- ยินยอมให้ตั้งค่ารหัสผ่านที่เดาง่ายมาก เช่น <code style="color:#00f0ff;">123456</code> หรือ <code style="color:#00f0ff;">password123</code><br>
+- ไม่ล็อกหรือระงับไอดี (Account lockout) ชั่วคราวเมื่อกรอกรหัสผ่านผิดซ้ำๆ หลายครั้ง<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+หน้าต่างลงทะเบียนผู้ใช้บริการไม่ได้คัดกรองหรือแจ้งเตือนความปลอดภัยของรหัสผ่าน แฮกเกอร์จึงนำบอทและไฟล์ลิสต์รหัสผ่านยอดฮิตมาสแกนเทียบหาบัญชีสมาชิกที่มีรหัสเดาง่ายๆ และสามารถเข้าควบคุมสิทธิ์ผู้เรียนได้ทันที
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Authentication Failure</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(30, 50)">
+<circle cx="15" cy="8" r="6" fill="#ef4444"/>
+<path d="M5,22 C5,14 25,14 25,22 Z" fill="#ef4444"/>
+<text x="15" y="34" fill="#fca5a5" font-size="7" font-family="sans-serif" text-anchor="middle">Attacker</text>
+</g>
+<line x1="70" y1="75" x2="160" y2="75" stroke="#ef4444" stroke-width="1.5"/>
+<text x="115" y="66" fill="#fca5a5" font-size="7" font-family="monospace" text-anchor="middle">Try "123456"</text>
+<g transform="translate(170, 35)">
+<rect x="0" y="0" width="90" height="80" rx="3" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="45" y="20" fill="#cbd5e1" font-size="8" font-family="sans-serif" text-anchor="middle">Logins</text>
+<text x="45" y="45" fill="#ef4444" font-size="6" font-family="sans-serif" text-anchor="middle">No Lock limit</text>
+<text x="45" y="65" fill="#f97316" font-size="6" font-family="sans-serif" text-anchor="middle">Weak pass ok</text>
+</g>
+<line x1="265" y1="75" x2="315" y2="75" stroke="#34d399" stroke-width="1.5"/>
+<g transform="translate(330, 55)">
+<circle cx="15" cy="15" r="12" fill="#34d399"/>
+<text x="15" y="19" fill="#ffffff" font-size="10" font-family="sans-serif" text-anchor="middle">🔓</text>
+<text x="15" y="38" fill="#34d399" font-size="7" font-family="sans-serif" text-anchor="middle">Hijacked</text>
+</g>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A08 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A08:2025 - Software and Data Integrity Failures (ความล้มเหลวด้านความสมบูรณ์ของซอฟต์แวร์)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 80%; height: 100%; background: linear-gradient(90deg, #f97316, #eab308); box-shadow: 0 0 6px #f97316;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #f97316; font-weight: 800; text-shadow: 0 0 4px rgba(249,115,22,0.4);">HIGH (8.0/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+การขาดการตรวจสอบความถูกต้อง (Verification) ของข้อมูลผู้ใช้งานหรือส่วนต่อขยายอัปเดตระบบก่อนที่จะทำการประมวลผลจริง<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+ถูกลักลอบโจรกรรมส่งมัลแวร์ไปติดตั้งแฝงผ่านระบบอัตโนมัติของตัวเว็บบิวด์<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- นำเข้าไลบรารีหรือโมดูลเสริมของบุคคลภายนอก (Third-party) ที่ไม่ได้ลงลายมือชื่อดิจิทัลรับรอง<br>
+- การปลดปล่อยระบบส่งต่อวัตถุข้อมูลโดยไม่ลงนามรับรองความปลอดภัย (Insecure Deserialization)<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+ช่องทางอัปเกรดอัตโนมัติ (Update server) ขององค์กรไม่ได้ลงลายมือชื่อยืนยัน แฮกเกอร์แอบปลอมไฟล์อัปเกรดและส่งต่อมัลแวร์ขึ้นเซิร์ฟเวอร์หลักของแอปพลิเคชัน ทำให้หน้าหลักทำงานผิดเพี้ยนและเผยแพร่ข้อมูลผู้ใช้ออกไป
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Integrity Failure</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(20, 50)">
+<rect x="0" y="0" width="85" height="40" rx="3" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="42" y="24" fill="#cbd5e1" font-size="8" font-family="sans-serif" text-anchor="middle">Firmware package</text>
+</g>
+<line x1="110" y1="70" x2="200" y2="70" stroke="#ef4444" stroke-width="1.5"/>
+<text x="155" y="62" fill="#ef4444" font-size="6" font-family="monospace" text-anchor="middle">No signature check</text>
+<g transform="translate(210, 50)">
+<rect x="0" y="0" width="85" height="40" rx="3" fill="#0f172a" stroke="#ef4444" stroke-width="1.5"/>
+<text x="42" y="24" fill="#fca5a5" font-size="8" font-family="sans-serif" text-anchor="middle">Run Firmware</text>
+</g>
+<line x1="300" y1="70" x2="330" y2="70" stroke="#ef4444" stroke-width="1.5"/>
+<circle cx="345" cy="70" r="10" fill="#ef4444"/>
+<text x="345" y="73" fill="#ffffff" font-size="8" font-family="sans-serif" text-anchor="middle">☠️</text>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A09 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A09:2025 - Security Logging and Monitoring Failures (ความล้มเหลวในการบันทึกและเฝ้าระวัง)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 75%; height: 100%; background: linear-gradient(90deg, #3b82f6, #f97316); box-shadow: 0 0 6px #3b82f6;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #3b82f6; font-weight: 800; text-shadow: 0 0 4px rgba(59,130,246,0.4);">MEDIUM / HIGH (7.5/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+เซิร์ฟเวอร์และแอปพลิเคชันไม่ได้จัดเก็บบันทึก (Logs) เหตุการณ์สำคัญ หรือไม่มีการแจ้งเตือนทันเวลาเมื่อระบบเกิดพฤติกรรมผิดสังเกต<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+นักโจมตีแฝงตัวอยู่ในเครือข่ายภายในได้นานหลายสัปดาห์หรือหลายเดือนโดยที่แอดมินไม่รู้ตัว<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- ไม่มีบันทึกเมื่อรหัสผ่านล็อกอินแอดมินผิดพลาด (Failed login attempts)<br>
+- ไม่มีการเก็บล็อกการเข้าใช้งานฟังก์ชันจัดการข้อมูลส่วนบุคคลของระบบหลังบ้าน<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+แฮกเกอร์ใช้เวลา 3 สัปดาห์ในการรันบอทสแกนและลองเดารหัสผ่านเพื่อเข้าใช้งาน API หลังบ้าน เนื่องจากไม่มีระบบบันทึกความล้มเหลวในการเชื่อมต่อ ทำให้ผู้โจมตีทำงานได้อย่างอิสระโดยไม่สะดุดการตรวจเช็คของเซิร์ฟเวอร์
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Logging Failure</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(30, 50)">
+<circle cx="15" cy="8" r="6" fill="#ef4444"/>
+<path d="M5,22 C5,14 25,14 25,22 Z" fill="#ef4444"/>
+<text x="15" y="34" fill="#fca5a5" font-size="7" font-family="sans-serif" text-anchor="middle">Attacker</text>
+</g>
+<line x1="70" y1="75" x2="160" y2="75" stroke="#ef4444" stroke-width="1.5"/>
+<text x="115" y="66" fill="#fca5a5" font-size="7" font-family="monospace" text-anchor="middle">Slow scans (3 weeks)</text>
+<g transform="translate(170, 45)">
+<rect x="0" y="0" width="110" height="60" rx="3" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="55" y="20" fill="#cbd5e1" font-size="8" font-family="sans-serif" text-anchor="middle">API Server</text>
+<rect x="15" y="30" width="80" height="20" rx="2" fill="#1e293b" stroke="#475569"/>
+<text x="55" y="42" fill="#475569" font-size="6" font-family="monospace" text-anchor="middle">Logs: disabled</text>
+</g>
+<line x1="285" y1="75" x2="330" y2="75" stroke="#34d399" stroke-width="1.5"/>
+<text x="350" y="80" fill="#34d399" font-size="14" font-family="sans-serif" text-anchor="middle">👻</text>
+<text x="350" y="98" fill="#94a3b8" font-size="7" font-family="sans-serif" text-anchor="middle">Undetected</text>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- A10 -->
+<div class="owasp-card">
+<div>
+<div style="font-size: 1.05rem; font-weight: bold; color: #00f0ff; margin-bottom: 2px;">A10:2025 - Mishandling of Exceptional Conditions (การจัดการข้อยกเว้นไม่ปลอดภัย)</div>
+<div style="margin: 4px 0 10px 0; display: flex; align-items: center; gap: 8px;">
+  <span style="font-size: 0.72rem; color: #94a3b8; font-weight: bold;">ระดับความรุนแรง:</span>
+  <div style="flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; max-width: 120px;">
+    <div style="width: 78%; height: 100%; background: linear-gradient(90deg, #3b82f6, #f97316); box-shadow: 0 0 6px #3b82f6;"></div>
+  </div>
+  <span style="font-size: 0.7rem; color: #3b82f6; font-weight: 800; text-shadow: 0 0 4px rgba(59,130,246,0.4);">MEDIUM / HIGH (7.8/10)</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #ffffff;">🔴 ปัญหาที่เกิดขึ้น (Occurs when):</strong>
+แอปพลิเคชันหลังบ้านตอบรับหรือดักพารามิเตอร์ผิดสังเกต (Exceptions) ในทิศทางที่ไม่ถูกต้อง ส่งผลให้กระบวนการเช็คความมั่นคงปลอดภัยหยุดชะงัก<br>
+<strong style="color: #ffffff;">💀 ผลกระทบระดับอันตราย (Can lead to):</strong>
+การถูกข้ามสิทธิ์การยืนยันตัวตน (Authentication Bypass), หรือทำให้ระบบเข้าสู่สถานะไม่เสถียรที่เอื้อต่อการโจรกรรม<br>
+<strong style="color: #ffffff;">📝 ตัวอย่างเคสที่พบ (Examples):</strong>
+- ระบบตรวจพบข้อผิดพลาดไฟล์ขาดหาย แต่กลับรันคำสั่งดำเนินการต่อโดยข้ามขั้นตอนยื่นคำร้องตรวจสอบสิทธิ์ (CWE-288)<br>
+- การล้มเหลวในการจัดกลุ่ม NullPointerException นำไปสู่การ Bypass เงื่อนไขหลัก<br>
+<strong style="color: #ffffff;">🔍 สถานการณ์จำลอง (Scenario):</strong>
+แฮกเกอร์ส่งอินพุตที่เป็นค่าว่างหรือ Null ในฟิลด์ข้อมูลสิทธิ์ความปลอดภัย ตรรกะของโปรแกรมตรวจสอบขัดข้องและสร้าง Exception แต่เนื่องจากโค้กดักบกพร่อง มันแทนที่จะหยุดกระบวนการ กลับสั่งการข้ามสิทธิ์และพาเหยื่อเข้าใช้งานแดชบอร์ดแอดมินทันที
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; text-align: center;">
+<div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; font-weight: bold; text-transform: uppercase;">📊 Graphic: Exception Bypass</div>
+<svg viewBox="0 0 400 150" style="width: 100%; height: auto; display: block; margin: 0 auto; background: #030408; border-radius: 8px;">
+<g transform="translate(30, 50)">
+<circle cx="15" cy="8" r="6" fill="#ef4444"/>
+<path d="M5,22 C5,14 25,14 25,22 Z" fill="#ef4444"/>
+<text x="15" y="34" fill="#fca5a5" font-size="7" font-family="sans-serif" text-anchor="middle">Attacker</text>
+</g>
+<line x1="70" y1="75" x2="150" y2="75" stroke="#ef4444" stroke-width="1.5"/>
+<text x="110" y="66" fill="#fca5a5" font-size="6" font-family="monospace" text-anchor="middle">Send Null input</text>
+<g transform="translate(160, 45)">
+<rect x="0" y="0" width="110" height="60" rx="3" fill="#0f172a" stroke="#00f0ff" stroke-width="1.5"/>
+<text x="55" y="20" fill="#cbd5e1" font-size="7" font-family="sans-serif" text-anchor="middle">Auth Process</text>
+<text x="55" y="45" fill="#ef4444" font-size="6" font-family="monospace" text-anchor="middle">[Internal Exception]</text>
+</g>
+<line x1="275" y1="75" x2="315" y2="75" stroke="#34d399" stroke-width="1.5"/>
+<g transform="translate(325, 55)">
+<circle cx="15" cy="15" r="12" fill="#34d399"/>
+<text x="15" y="19" fill="#ffffff" font-size="10" font-family="sans-serif" text-anchor="middle">✔️</text>
+<text x="15" y="38" fill="#34d399" font-size="7" font-family="sans-serif" text-anchor="middle">Bypassed</text>
+</g>
+</svg>
+</div>
+</div>
+</div>
+
+</div>
+
+---
+
+### 🌐 ความเข้าใจเกี่ยวกับข้อความสื่อสาร HTTP (HTTP Message Understanding)
+
+ข้อความ **HTTP Messages** คือบล็อกโครงสร้างพื้นฐานในการรับส่งข้อมูลระหว่างไคลเอนต์ (เช่น Web Browser) และเว็บเซิร์ฟเวอร์ (Web Server) โดยแบ่งออกเป็น 2 ประเภทหลักคือ:
+- **HTTP Request**: ข้อความที่ส่งจากฝั่งเบราเซอร์ (Client) ไปหาเซิร์ฟเวอร์เพื่อร้องขอข้อมูลหรือส่งค่าประมวลผล
+- **HTTP Response**: ข้อความที่เซิร์ฟเวอร์ตอบรับและส่งไฟล์ข้อมูล (เช่น HTML, JSON, รูปภาพ) กลับมาแสดงผล
+
+<div style="background:#070a13;border:1px solid rgba(0,240,255,0.15);border-radius:12px;padding:24px;text-align:center;margin:2rem auto;max-width:850px;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+<div style="font-size:0.85rem;color:#00f0ff;font-weight:bold;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 8px rgba(0,240,255,0.4);"><i class="fas fa-exchange-alt mr-2"></i> แผนภาพการรับส่งข้อความ HTTP Request / Response</div>
+<svg viewBox="0 0 700 200" style="width:100%;height:auto;display:block;margin:0 auto;background:#03050a;border-radius:8px;">
+<defs>
+<linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="#00f0ff" />
+<stop offset="100%" stop-color="#3b82f6" />
+</linearGradient>
+<linearGradient id="green-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="#3ddc84" />
+<stop offset="100%" stop-color="#10b981" />
+</linearGradient>
+<filter id="glow-b" x="-20%" y="-20%" width="140%" height="140%">
+<feGaussianBlur stdDeviation="3" result="blur" />
+<feComposite in="SourceGraphic" in2="blur" operator="over" />
+</filter>
+</defs>
+<g transform="translate(30, 45)">
+<rect x="0" y="0" width="130" height="110" rx="8" fill="#0f1322" stroke="#3b82f6" stroke-width="1.5" filter="url(#glow-b)"/>
+<text x="65" y="45" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">Browser Client</text>
+<rect x="15" y="65" width="100" height="28" rx="4" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+<text x="65" y="82" fill="#00f0ff" font-size="9" font-family="sans-serif" text-anchor="middle">User Interface</text>
+</g>
+<path d="M175,75 L455,75" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,2"/>
+<polygon points="455,75 447,71 447,79" fill="#ef4444"/>
+<text x="315" y="65" fill="#ef4444" font-size="9.5" font-family="monospace" text-anchor="middle" font-weight="bold">HTTP Request</text>
+<path d="M455,120 L175,120" fill="none" stroke="#3ddc84" stroke-width="2"/>
+<polygon points="175,120 183,116 183,124" fill="#3ddc84"/>
+<text x="315" y="140" fill="#3ddc84" font-size="9.5" font-family="monospace" text-anchor="middle" font-weight="bold">HTTP Response</text>
+<g transform="translate(470, 45)">
+<rect x="0" y="0" width="200" height="110" rx="8" fill="#0f1322" stroke="#00f0ff" stroke-width="1.5" filter="url(#glow-b)"/>
+<text x="100" y="30" fill="#00f0ff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">Server-side Systems</text>
+<rect x="15" y="50" width="80" height="45" rx="4" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+<text x="55" y="70" fill="#ffffff" font-size="8.5" font-family="sans-serif" text-anchor="middle">Web Server</text>
+<rect x="105" y="50" width="80" height="45" rx="4" fill="#1e293b" stroke="#eab308" stroke-width="1"/>
+<text x="145" y="70" fill="#ffffff" font-size="8.5" font-family="sans-serif" text-anchor="middle">Data-store</text>
+</g>
+</svg>
+</div>
+
+---
+
+### 🔎 โครงสร้างกายวิภาคของข้อความ HTTP Request & Response (HTTP Message Anatomy)
+
+ข้อความ HTTP มีการจัดเรียงรูปแบบโครงสร้างที่เป็นแบบแผนเดียวกัน ทั้งฝั่งที่ส่งออกไป (Request) และฝั่งที่รับกลับมา (Response) โดยมีการจำแนกสัดส่วนแยกส่วนด้วยสีหลัก 4 สีอย่างชัดเจน เพื่อความง่ายต่อการจดจำโครงสร้าง:
+
+<div style="display:flex;flex-direction:column;gap:16px;margin:2rem auto;max-width:950px;font-family:'JetBrains Mono',monospace;font-size:0.83rem;">
+<div style="display:flex;gap:12px;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:16px;align-items:stretch;">
+<div style="flex:1;background:#05070f;border:1px solid rgba(0,240,255,0.2);border-radius:6px;padding:12px;text-align:left;line-height:1.5;">
+<span style="color:#64748b;font-size:0.72rem;display:block;margin-bottom:6px;"># HTTP Request Structure</span>
+<div style="background:rgba(0,240,255,0.12);color:#00f0ff;padding:3px 6px;border-radius:4px;font-weight:bold;margin-bottom:4px;">POST /login HTTP/1.1</div>
+<div style="background:rgba(234,179,8,0.08);color:#eab308;padding:4px 6px;border-radius:4px;margin-bottom:4px;">
+Host: www.example.com<br>
+Content-Type: application/json<br>
+Content-Length: 32
+</div>
+<div style="border-top:1px dashed rgba(255,0,127,0.3);height:12px;margin:4px 0;position:relative;" title="Empty Line">
+<span style="position:absolute;top:-8px;left:6px;background:#05070f;padding:0 4px;color:#ff007f;font-size:0.6rem;font-weight:bold;">(Empty Line)</span>
+</div>
+<div style="background:rgba(61,220,132,0.08);color:#3ddc84;padding:6px;border-radius:4px;">
+{"username":"admin"}
+</div>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;font-size:0.75rem;font-weight:bold;padding:12px 0;">
+<div style="color:#00f0ff;">◀ Start Line ▶</div>
+<div style="color:#eab308;margin:12px 0;">◀ Headers ▶</div>
+<div style="color:#ff007f;margin:8px 0;">◀ Empty Line ▶</div>
+<div style="color:#3ddc84;">◀ Body (Data) ▶</div>
+</div>
+<div style="flex:1;background:#05070f;border:1px solid rgba(61,220,132,0.2);border-radius:6px;padding:12px;text-align:left;line-height:1.5;">
+<span style="color:#64748b;font-size:0.72rem;display:block;margin-bottom:6px;"># HTTP Response Structure</span>
+<div style="background:rgba(0,240,255,0.12);color:#00f0ff;padding:3px 6px;border-radius:4px;font-weight:bold;margin-bottom:4px;">HTTP/1.1 200 OK</div>
+<div style="background:rgba(234,179,8,0.08);color:#eab308;padding:4px 6px;border-radius:4px;margin-bottom:4px;">
+Server: Apache/2.4.41<br>
+Content-Type: text/html<br>
+Content-Length: 1024
+</div>
+<div style="border-top:1px dashed rgba(255,0,127,0.3);height:12px;margin:4px 0;position:relative;" title="Empty Line">
+<span style="position:absolute;top:-8px;left:6px;background:#05070f;padding:0 4px;color:#ff007f;font-size:0.6rem;font-weight:bold;">(Empty Line)</span>
+</div>
+<div style="background:rgba(61,220,132,0.08);color:#3ddc84;padding:6px;border-radius:4px;">
+&lt;html&gt;Hello World&lt;/html&gt;
+</div>
+</div>
+</div>
+</div>
+
+#### โครงสร้างองค์ประกอบสำคัญ (Component Breakdowns):
+
+1. **Start Line / Status Line**:
+   - **Request (Start Line)**: ระบุ **Method** การส่ง (เช่น `GET`, `POST`), **Path URL** (ตำแหน่งทรัพยากร) และ **Protocol** ชนิดรุ่นเวอร์ชัน (เช่น `HTTP/1.1` หรือ `HTTP/2`)
+   - **Response (Status Line)**: แสดงข้อมูลรุ่นของ HTTP และ **รหัสสถานะตอบรับ (Status Code)** เช่น `200 OK`
+2. **Headers**: แหล่งรวบรวมข้อมูลรายละเอียดเมตาดาต้า (Metadata) ต่างๆ ของคำขอ/การตอบรับ เช่น `Host`, `User-Agent` (ระบุชนิดเบราว์เซอร์), `Content-Type` (รูปแบบข้อมูล) หรือ `Cookie` (ข้อมูลเซสชัน)
+3. **Empty Line**: บรรทัดว่างเปล่าที่ไม่มีตัวอักษรใดๆ ซึ่งเว็บเซิร์ฟเวอร์จะใช้ตรวจเช็คเพื่อแบ่งแยกส่วนหัว (Headers) ออกจากตัวเนื้อหาหลัก (Body)
+4. **Body (เนื้อหาข้อมูล)**: ส่วนเก็บข้อมูลจริงสำหรับการส่งหรือรับ (Optional) เช่น รหัสผ่าน หรือโครงสร้างหน้าเว็บเพจ HTML/JSON
+
+---
+
+### 📦 ตารางสรุป HTTP Methods & HTTP Headers ยอดนิยม
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px;margin:2rem auto;max-width:1000px;">
+<div style="overflow-x:auto;border:1px solid rgba(6,182,212,0.25);border-radius:12px;background:#05070f;">
+<table style="width:100%;border-collapse:collapse;text-align:left;font-family:sans-serif;font-size:0.82rem;color:#cbd5e1;">
+<thead>
+<tr style="background:rgba(6,182,212,0.08);border-bottom:1px solid rgba(6,182,212,0.2);">
+<th style="padding:10px 14px;font-weight:bold;color:#00f0ff;width:25%;">HTTP Method</th>
+<th style="padding:10px 14px;font-weight:bold;color:#ffffff;width:75%;">วัตถุประสงค์หลัก (Purpose)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.005);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#00f0ff;">GET</code></td>
+<td style="padding:10px 14px;">เรียกคืน/ขอรับข้อมูลหลักจากเซิร์ฟเวอร์ (ห้ามใช้ส่งข้อมูลความลับ)</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#fbbf24;">POST</code></td>
+<td style="padding:10px 14px;">จัดส่งค่าข้อมูลหรืออัปโหลดไฟล์ไปที่หลังบ้านเพื่อรันประมวลผล</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.005);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#a855f7;">PUT</code></td>
+<td style="padding:10px 14px;">เขียนทับ/อัปเดตไฟล์ทรัพยากรบนเครื่องเซิร์ฟเวอร์ทั้งหมด</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#ef4444;">DELETE</code></td>
+<td style="padding:10px 14px;">ลบไฟล์หรือข้อมูลทรัพยากรออกจากที่จัดเก็บ</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;border:1px solid rgba(168,85,247,0.25);border-radius:12px;background:#05070f;">
+<table style="width:100%;border-collapse:collapse;text-align:left;font-family:sans-serif;font-size:0.82rem;color:#cbd5e1;">
+<thead>
+<tr style="background:rgba(168,85,247,0.08);border-bottom:1px solid rgba(168,85,247,0.2);">
+<th style="padding:10px 14px;font-weight:bold;color:#a855f7;width:30%;">HTTP Header</th>
+<th style="padding:10px 14px;font-weight:bold;color:#ffffff;width:70%;">ความหมายและการใช้งาน (Description)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.005);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#a855f7;">User-Agent</code></td>
+<td style="padding:10px 14px;">ข้อมูลระบุชื่อรุ่นเบราว์เซอร์หรือเครื่องไคลเอนต์ที่เรียกเข้ามา</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#a855f7;">Referer</code></td>
+<td style="padding:10px 14px;">ระบุ URL หน้าเว็บก่อนหน้าที่ผู้ใช้กดลิงก์เดินทางผ่านมา</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.005);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#a855f7;">Cookie</code></td>
+<td style="padding:10px 14px;">คีย์ข้อมูลบันทึกเซสชันหรือสถานะล็อกอินของผู้เรียนปลายทาง</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);">
+<td style="padding:10px 14px;color:#ffffff;font-weight:bold;"><code style="color:#a855f7;">X-Frame-Options</code></td>
+<td style="padding:10px 14px;">ส่วนหัวป้องกันภัยความปลอดภัยเพื่อสกัดกันการโดนฝัง Clickjacking</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+---
+
+### 🚦 รหัสสถานะตอบรับการสื่อสาร (HTTP Status Codes Overview)
+
+เว็บเซิร์ฟเวอร์จะตอบกลับไคลเอนต์ด้วย **รหัสสถานะความยาว 3 หลัก** เสมอ เพื่อรายงานให้ทราบว่าเกิดอะไรขึ้นกับคำขอดังกล่าว โดยสรุปหมวดหมู่หลักระดับกว้างได้ดังนี้:
+
+<div style="overflow-x:auto;margin:1.5rem auto;max-width:1000px;border:1px solid rgba(234,179,8,0.25);border-radius:12px;background:#05070f;box-shadow:0 10px 30px rgba(0,0,0,0.6);">
+<table style="width:100%;border-collapse:collapse;text-align:left;font-family:sans-serif;font-size:0.83rem;color:#cbd5e1;">
+<thead>
+<tr style="background:rgba(234,179,8,0.08);border-bottom:1px solid rgba(234,179,8,0.2);">
+<th style="padding:12px 16px;font-weight:bold;color:#eab308;width:15%;">รหัสสถานะ (Code)</th>
+<th style="padding:12px 16px;font-weight:bold;color:#ffffff;width:30%;">ความหมายหลัก (Meaning)</th>
+<th style="padding:12px 16px;font-weight:bold;color:#3ddc84;width:55%;">ตัวอย่างรหัสที่พบบ่อย (Examples)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.005);">
+<td style="padding:12px 16px;color:#94a3b8;font-weight:bold;">1xx</td>
+<td style="padding:12px 16px;color:#94a3b8;">Informational (แจ้งข้อมูลเบื้องต้น)</td>
+<td style="padding:12px 16px;"><code style="color:#94a3b8;">100 Continue</code> (ได้รับคำขอแล้ว ให้ส่งข้อมูลต่อ)</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);">
+<td style="padding:12px 16px;color:#3ddc84;font-weight:bold;">2xx</td>
+<td style="padding:12px 16px;color:#3ddc84;">Success (ทำงานสำเร็จสมบูรณ์)</td>
+<td style="padding:12px 16px;"><code style="color:#3ddc84;font-weight:bold;">200 OK</code> (ประมวลผลสำเร็จ), <code style="color:#3ddc84;">201 Created</code> (สร้างข้อมูลสำเร็จ)</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.005);">
+<td style="padding:12px 16px;color:#3b82f6;font-weight:bold;">3xx</td>
+<td style="padding:12px 16px;color:#3b82f6;">Redirection (ส่งตัวผู้ใช้ไปพาธอื่น)</td>
+<td style="padding:12px 16px;"><code style="color:#60a5fa;">301 Moved Permanently</code> (ย้ายที่อยู่ถาวร), <code style="color:#60a5fa;">302 Found</code> (ย้ายชั่วคราว)</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);">
+<td style="padding:12px 16px;color:#f59e0b;font-weight:bold;">4xx</td>
+<td style="padding:12px 16px;color:#f59e0b;">Client Error (ข้อผิดพลาดที่ฝั่งผู้เล่น/ไคลเอนต์)</td>
+<td style="padding:12px 16px;"><code style="color:#f59e0b;">400 Bad Request</code>, <code style="color:#f59e0b;font-weight:bold;">401 Unauthorized</code> (ไม่มีสิทธิ์), <code style="color:#f59e0b;font-weight:bold;">403 Forbidden</code> (ห้ามเข้า), <code style="color:#f59e0b;font-weight:bold;">404 Not Found</code> (ไม่พบพาธ)</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.005);">
+<td style="padding:12px 16px;color:#ef4444;font-weight:bold;">5xx</td>
+<td style="padding:12px 16px;color:#ef4444;">Server Error (ข้อผิดพลาดจากฝั่งเครื่องเซิร์ฟเวอร์)</td>
+<td style="padding:12px 16px;"><code style="color:#ef4444;font-weight:bold;">500 Internal Server Error</code> (เซิร์ฟเวอร์ขัดข้อง/ล่ม), <code style="color:#ef4444;">503 Service Unavailable</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+> [!NOTE]
+> **การวิเคราะห์รายละเอียดเชิงลึกของแต่ละ HTTP Status Codes**:
+> ตารางด้านบนคือกลุ่มสถานะ HTTP แบบสรุปย่อ แอดมินและผู้เรียนสามารถคลิกข้ามไปอ่านแบบจำลองวิเคราะห์อย่างละเอียด (เช่น การโจมตีและความหมายเชิงลึกในการเจาะระบบ) ได้ที่หัวข้อนี้ด้านล่างทันทีครับ: [🔗 คู่มือวิเคราะห์ HTTP Status Codes และการตรวจสอบสิทธิ์ความปลอดภัย](#http-status-codes-details)
+
+<div style="background:#070a13;border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:24px;margin:2.5rem auto 1.5rem;max-width:1000px;box-shadow:0 10px 30px rgba(168,85,247,0.15);position:relative;overflow:hidden;">
+  <!-- Neon decorative top bar -->
+  <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg, #a855f7, #ec4899);"></div>
+  
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h4 style="margin:0;font-size:1.15rem;font-weight:800;color:#ffffff;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:1.3rem;">🎯</span> เป้าหมายการทำแล็บ (OBJECTIVE) - Web Parameter Tampering
+    </h4>
+    <span style="font-size:0.68rem;font-family:monospace;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(168,85,247,0.1);color:#a855f7;border:1px solid rgba(168,85,247,0.25);">LAB MISSION</span>
+  </div>
+  
+  <p style="margin:0 0 16px;font-size:0.83rem;color:#cbd5e1;line-height:1.6;">
+    หลังจากได้เรียนรู้วิธีการทำงานของโปรโตคอล HTTP และโครงสร้างของพารามิเตอร์แล้ว ถึงเวลาทดสอบฝีมือจริงในระบบจำลองช่องโหว่ประเภท <strong>Broken Access Control</strong> ผ่านเทคนิค Parameter Tampering!
+  </p>
+  
+  <div style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:16px;margin:0;">
+    <h5 style="margin:0 0 8px;font-size:0.8rem;color:#fbbf24;font-weight:bold;text-transform:uppercase;letter-spacing:0.05em;">📌 ภารกิจการเจาะระบบ (Mission details)</h5>
+    <ul style="margin:0;padding-left:20px;font-size:0.78rem;color:#94a3b8;line-height:1.6;">
+      <li>สมัครสมาชิกใหม่ในหน้าเว็บไซต์เป้าหมาย แล้วศึกษารูปแบบ HTTP Request ที่ส่งออกไป</li>
+      <li>สืบหาและดักจับ (Intercept) พารามิเตอร์ที่ควบคุมระดับสิทธิ์ (เช่น สิทธิ์ผู้ใช้งานทั่วไป/แอดมิน)</li>
+      <li>ทำการดัดแปลงค่าพารามิเตอร์ดังกล่าว (Parameter Tampering) จากฝั่งไคลเอนต์ให้เป็นสิทธิ์ผู้ดูแลระบบ (Admin) เพื่อเข้าถึงความลับและช่วงชิง Flag</li>
+    </ul>
+  </div>
+</div>

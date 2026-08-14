@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+	:root {
+		--bg-dark: #070913;
+		--card-bg: rgba(13, 17, 33, 0.85);
+		--accent-cyan: #00f0ff;
+		--accent-green: #3ddc84;
+		--accent-purple: #9d4edd;
+		--text-muted: #8c9ba5;
+	}
+
+	body {
+		background-color: var(--bg-dark);
+		color: #e2e8f0;
+		font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	}
+
+	.vpn-hero-card {
+		background: linear-gradient(135deg, rgba(13, 17, 33, 0.95) 0%, rgba(18, 24, 48, 0.95) 100%);
+		border: 1px solid rgba(0, 240, 255, 0.3);
+		border-radius: 16px;
+		box-shadow: 0 0 35px rgba(0, 240, 255, 0.12);
+		backdrop-filter: blur(12px);
+	}
+
+	.vpn-btn-download {
+		background: linear-gradient(90deg, #00f0ff 0%, #00a8ff 100%);
+		color: #050814 !important;
+		font-weight: 800;
+		font-size: 1.15rem;
+		padding: 14px 32px;
+		border-radius: 10px;
+		box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+		transition: all 0.3s ease;
+		border: none;
+		display: inline-flex;
+		align-items: center;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.vpn-btn-download:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 0 35px rgba(0, 240, 255, 0.7);
+		color: #000000 !important;
+		text-decoration: none;
+	}
+
+	.step-card {
+		background: rgba(13, 17, 33, 0.75);
+		border: 1px solid rgba(0, 240, 255, 0.2);
+		border-radius: 14px;
+		padding: 28px;
+		height: 100%;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	}
+
+	.step-card:hover {
+		border-color: rgba(0, 240, 255, 0.5);
+		box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+	}
+
+	.step-badge {
+		width: 42px;
+		height: 42px;
+		border-radius: 50%;
+		background: rgba(0, 240, 255, 0.15);
+		border: 2px solid var(--accent-cyan);
+		color: var(--accent-cyan);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 800;
+		font-size: 1.2rem;
+		margin-bottom: 18px;
+	}
+
+	.code-box {
+		background: rgba(4, 6, 14, 0.95);
+		border: 1px solid rgba(0, 240, 255, 0.25);
+		border-radius: 8px;
+		padding: 14px 18px;
+		font-family: 'JetBrains Mono', monospace;
+		color: #00f0ff;
+		font-size: 0.95rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 10px;
+	}
+
+	.copy-cmd-btn {
+		background: rgba(0, 240, 255, 0.15);
+		border: 1px solid rgba(0, 240, 255, 0.3);
+		color: #00f0ff;
+		padding: 6px 14px;
+		border-radius: 6px;
+		font-size: 0.82rem;
+		cursor: pointer;
+		transition: all 0.25s ease;
+		font-weight: bold;
+	}
+
+	.copy-cmd-btn:hover {
+		background: rgba(0, 240, 255, 0.35);
+		color: #ffffff;
+	}
+
+	.gui-step-list li {
+		margin-bottom: 12px;
+		font-size: 0.93rem;
+		color: #cbd5e1;
+		line-height: 1.6;
+	}
+
+	.gui-step-list strong {
+		color: #00f0ff;
+	}
+</style>
+
+<div class="container py-5">
+	<!-- Hero Section -->
+	<div class="row justify-content-center mb-5">
+		<div class="col-lg-10">
+			<div class="vpn-hero-card p-4 p-md-5 text-center">
+				<h1 class="display-4 font-weight-bold text-white mb-4">คู่มือเชื่อมต่อระบบ OPENVPN</h1>
+				
+				<div class="my-3">
+					<a href="/vpn/download" class="vpn-btn-download">
+						<i class="fas fa-download mr-2.5"></i> 📥 ดาวน์โหลดไฟล์โปรไฟล์ OPENVPN ประจำตัว (CRRULEARNCTF_{{ safe_username|upper }}.OVPN)
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Instructions Section for Kali / Linux -->
+	<h3 class="text-white font-weight-bold mb-4 text-center">
+		<i class="fab fa-linux text-cyan mr-2"></i> ขั้นตอนการเชื่อมต่อใช้งานบน KALI / LINUX (2 รูปแบบ)
+	</h3>
+
+	<div class="row g-4 mb-4 justify-content-center">
+		<!-- Method 1: Terminal Command -->
+		<div class="col-lg-6 mb-4">
+			<div class="step-card">
+				<div class="d-flex align-items-center mb-3">
+					<div class="step-badge mr-3 mb-0">1</div>
+					<div>
+						<h5 class="text-white font-weight-bold mb-1">💻 รูปแบบที่ 1: เชื่อมต่อผ่าน Terminal Command (แนะนำ ⚡)</h5>
+						<span class="badge badge-info" style="font-size: 0.75rem;">วิธีที่รวดเร็วที่สุดสำหรับสาย CLI</span>
+					</div>
+				</div>
+
+				<hr style="border-color: rgba(255,255,255,0.1);">
+
+				<div class="mt-3">
+					<span class="text-muted d-block mb-1" style="font-size: 0.85rem;">1. ติดตั้งแพ็กเกจ OpenVPN (หากเครื่องยังไม่มี):</span>
+					<div class="code-box">
+						<span>sudo apt update && sudo apt install openvpn -y</span>
+						<button class="copy-cmd-btn" onclick="copyBtnText(this, 'sudo apt update && sudo apt install openvpn -y')"><i class="fas fa-copy mr-1"></i> Copy</button>
+					</div>
+				</div>
+
+				<div class="mt-4">
+					<span class="text-muted d-block mb-1" style="font-size: 0.85rem;">2. เปิด Terminal ในโฟลเดอร์ที่โหลดไฟล์ไว้ แล้วสั่งรัน OpenVPN:</span>
+					<div class="code-box">
+						<span>sudo openvpn crrulearnctf_{{ safe_username }}.ovpn</span>
+						<button class="copy-cmd-btn" onclick="copyBtnText(this, 'sudo openvpn crrulearnctf_{{ safe_username }}.ovpn')"><i class="fas fa-copy mr-1"></i> Copy</button>
+					</div>
+				</div>
+
+				<div class="mt-3 p-2.5 rounded" style="background: rgba(61, 220, 132, 0.1); border: 1px solid rgba(61, 220, 132, 0.3); font-size: 0.85rem; color: #3ddc84;">
+					<i class="fas fa-check-circle mr-1"></i> เมื่อพบข้อความ <code>Initialization Sequence Completed</code> แสดงว่าเชื่อมต่อสำเร็จแล้ว!
+				</div>
+			</div>
+		</div>
+
+		<!-- Method 2: GUI Network Manager -->
+		<div class="col-lg-6 mb-4">
+			<div class="step-card">
+				<div class="d-flex align-items-center mb-3">
+					<div class="step-badge mr-3 mb-0" style="border-color: #9d4edd; color: #9d4edd; background: rgba(157, 78, 221, 0.15);">2</div>
+					<div>
+						<h5 class="text-white font-weight-bold mb-1">🖥️ รูปแบบที่ 2: Import ผ่าน GUI Network Manager (ตามภาพ)</h5>
+						<span class="badge badge-purple" style="background: rgba(157, 78, 221, 0.2); color: #c77dff; border: 1px solid rgba(157, 78, 221, 0.4); font-size: 0.75rem;">ใช้งานง่ายผ่านหน้าจอ Kali Desktop</span>
+					</div>
+				</div>
+
+				<hr style="border-color: rgba(255,255,255,0.1);">
+
+				<ol class="gui-step-list pl-3 mb-0">
+					<li>
+						คลิกไอคอน <strong>Network Connections</strong> มุมขวาบนของแถบงาน Kali ➔ เลือก <strong>VPN Connections</strong> ➔ คลิก <strong>Configure VPN...</strong>
+					</li>
+					<li>
+						ในหน้าต่าง Network Connections กดปุ่ม <strong>`+` (Add Connection)</strong> ➔ เลื่อนลงล่างสุดเลือก <strong>Import a saved VPN configuration...</strong>
+					</li>
+					<li>
+						เลือกไฟล์ <code>crrulearnctf_{{ safe_username }}.ovpn</code> ที่ดาวน์โหลดมา ➔ กดปุ่ม <strong>Save</strong>
+					</li>
+					<li>
+						สวิตช์เปิดสวิตช์ <strong>ON</strong> ที่ชื่อ VPN ในเมนูด้านบน เพื่อเปิดใช้งานท่อ VPN ได้ทันที!
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+function copyBtnText(btn, text) {
+	navigator.clipboard.writeText(text);
+	const originalHTML = btn.innerHTML;
+	btn.innerHTML = '<i class="fas fa-check mr-1"></i> คัดลอกแล้ว';
+	btn.style.background = 'rgba(61, 220, 132, 0.25)';
+	btn.style.borderColor = '#3ddc84';
+	btn.style.color = '#3ddc84';
+	
+	setTimeout(function() {
+		btn.innerHTML = originalHTML;
+		btn.style.background = '';
+		btn.style.borderColor = '';
+		btn.style.color = '';
+	}, 2000);
+}
+</script>
+{% endblock %}

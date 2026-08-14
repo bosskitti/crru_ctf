@@ -1,0 +1,44 @@
+import java.util.Base64;
+
+public class polyglot_challenge {
+    public static void main(String[] args) {
+        String encodedAsm = "c2VjdGlvbiAudGV4dAogICAgZ2xvYmFsIF9zdGFydAoKX3N0YXJ0OgogICAg" + 
+        "bW92IHJheCwgMSAgICAgICAgICA7IHN5c2NhbGw6IHN5c193cml0ZQogICAg" + 
+        "bW92IHJkaSwgMSAgICAgICAgICA7IGZkOiBzdGRvdXQKICAgIG1vdiByc2ks" + 
+        "IG1lc3NhZ2UgICAgOyBidWZmZXIgcG9pbnRlcgogICAgbW92IHJkeCwgbGVu" + 
+        "Z3RoICAgICA7IGxlbmd0aCBvZiBtZXNzYWdlCiAgICBzeXNjYWxsCgogICAg" + 
+        "bW92IHJheCwgNjAgICAgICAgICA7IHN5c2NhbGw6IHN5c19leGl0CiAgICB4" + 
+        "b3IgcmRpLCByZGkgICAgICAgIDsgY29kZSAwCiAgICBzeXNjYWxsCgpzZWN0" + 
+        "aW9uIC5kYXRhCm1lc3NhZ2U6CiAgICBkYiAnI2luY2x1ZGUgPHN0ZGlvLmg+" + 
+        "JywgMTAKICAgIGRiICcnLCAxMAogICAgZGIgJ2ludCBtYWluKCkgeycsIDEw" + 
+        "CiAgICBkYiAnICAgIHB1dHMoImltcG9ydCBiYXNlNjQiKTsnLCAxMAogICAg" + 
+        "ZGIgJyAgICBwdXRzKCIiKTsnLCAxMAogICAgZGIgJyAgICBwdXRzKCJjcHBf" + 
+        "YjY0ID0gXCJJMmx1WTJ4MVpHVWdQR2x2YzNSeVpXRnRQZ29qYVc1amJIVmta" + 
+        "U0E4YzNSeWFXNW5QZ3AxYzJsdVp5QnVZVzFsYzNCaFkyVWdjM1JrT3dvS2FX" + 
+        "NTBJRzFoYVc0b0tTQjdDaUFnSUNCMWJuTnBaMjVsWkNCamFHRnlJR1Z1WTF0" + 
+        "ZElEMGdleUF3ZUROakxDQXdlRE0yTENBd2VETmlMQ0F3ZUROa0xDQXdlREl4" + 
+        "TENBd2VESmhMQ0F3ZURNMUxDQXdlRE0yTENBd2VESXpMQ0F3ZUROa0xDQXdl" + 
+        "RE0yTENBd2VETTFMQ0F3ZURKbExDQXdlREExTENBd2VESmhMQ0F3ZURNMUxD" + 
+        "QXdlRE0yTENBd2VESXpMQ0F3ZURBMUxDQXdlRE0yTENBd2VETmlMQ0F3ZURN" + 
+        "MExDQXdlRE5rTENBd2VESm1MQ0F3ZUROaUxDQXdlRE5rTENBd2VETm1MQ0F3" + 
+        "ZURBMUxDQXdlRE0zTENBd2VETmlMQ0F3ZURKbExDQXdlREk0TENBd2VESXpM" + 
+        "Q0F3ZURNMUxDQXdlREk1TENBd2VETXlMQ0F3ZURNeExDQXdlRE5pTENBd2VE" + 
+        "QTFMQ0F3ZURNM0xDQXdlRE5pTENBd2VESTVMQ0F3ZURKbExDQXdlRE5tTENB" + 
+        "d2VESTRMQ0F3ZURBMUxDQXdlRFl5TENBd2VEWXpMQ0F3ZUROakxDQXdlRFk0" + 
+        "TENBd2VESTNJSDA3Q2lBZ0lDQnpkSEpwYm1jZ1pteGhaeUE5SUNJaU93b2dJ" + 
+        "Q0FnWm05eUtITnBlbVZmZENCcElEMGdNRHNnYVNBOElITnBlbVZ2WmlobGJt" + 
+        "TXBPeUJwS3lzcElIc0tJQ0FnSUNBZ0lDQm1iR0ZuSUNzOUlDaGphR0Z5S1No" + 
+        "bGJtTmJhVjBnWGlBd2VEVkJLVHNLSUNBZ0lIMEtJQ0FnSUdOdmRYUWdQRHdn" + 
+        "SXZDZmpva2dRMDlPUjFKQlZGVk1RVlJKVDA1VElTQlpiM1VnYzI5c2RtVmtJ" + 
+        "SFJvWlNCRmJtTnZaR1ZrSUZCdmJIbG5iRzkwSUVOdlpHVWdUV0YwY25sdmMy" + 
+        "aHJZU0VpSUR3OElHVnVaR3c3Q2lBZ0lDQmpiM1YwSUR3OElDSkdURUZIT2lB" + 
+        "aUlEdzhJR1pzWVdjZ1BEd2daVzVrYkRzS0lDQWdJSEpsZEhWeWJpQXdPd3A5" + 
+        "XCIiKTsnLCAxMAogICAgZGIgJyAgICBwdXRzKCJwcmludChiYXNlNjQuYjY0" + 
+        "ZGVjb2RlKGNwcF9iNjQpLmRlY29kZSgnLCAzOSwgJ3V0Zi04JywgMzksICcp" + 
+        "KSIpOycsIDEwCiAgICBkYiAnICAgIHB1dHMoIiIpOycsIDEwCiAgICBkYiAn" + 
+        "ICAgIHJldHVybiAwOycsIDEwCiAgICBkYiAnfScsIDEwCmxlbmd0aDogZXF1" + 
+        "ICQgLSBtZXNzYWdlCg==";
+        byte[] decoded = Base64.getDecoder().decode(encodedAsm);
+        System.out.print(new String(decoded));
+    }
+}

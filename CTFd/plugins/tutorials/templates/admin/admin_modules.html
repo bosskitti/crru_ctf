@@ -3,11 +3,17 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1>Tutorial Modules
-			<a class="no-decoration" href="{{ url_for('tutorials.admin_create_module') }}">
-				<span class="create-page" role="button" data-toggle="tooltip" title="Create Module">
-					<i class="btn-fa fas fa-plus-circle text-primary"></i>
-				</span>
+		<h1 class="d-flex justify-content-between align-items-center">
+			<span>
+				Tutorial Modules
+				<a class="no-decoration" href="{{ url_for('tutorials.admin_create_module') }}">
+					<span class="create-page" role="button" data-toggle="tooltip" title="Create Module">
+						<i class="btn-fa fas fa-plus-circle text-primary"></i>
+					</span>
+				</a>
+			</span>
+			<a href="{{ url_for('tutorials.admin_view_statistics') }}" class="btn btn-outline-info btn-sm">
+				<i class="fas fa-chart-bar mr-1"></i> View Statistics & Pre/Post Test
 			</a>
 		</h1>
 	</div>

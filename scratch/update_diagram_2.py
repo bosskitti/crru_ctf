@@ -1,0 +1,131 @@
+import json
+import re
+from CTFd import create_app
+from CTFd.plugins.tutorials import TutorialLesson
+
+app = create_app()
+ctx = app.app_context()
+ctx.push()
+db = app.db
+
+# Query lesson 164
+lesson = db.session.query(TutorialLesson).filter_by(id=164).first()
+if not lesson:
+    print("Lesson not found!")
+    exit(1)
+
+blocks = json.loads(lesson.content)
+block = blocks[3]
+val = block['value']
+
+# The HTML replacement code without ANY leading spaces/tabs on any line:
+html_replacement = """<style>
+.os-layers-wrapper{margin:2.5rem 0;display:flex;flex-direction:column;align-items:center;width:100%;}
+.os-layers-container{width:100%;max-width:500px;background:rgba(15,17,26,0.4);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:24px;box-shadow:inset 0 0 20px rgba(0,0,0,0.4);display:flex;flex-direction:column;align-items:center;gap:8px;}
+.os-layer-card{width:100%;background:rgba(255,255,255,0.02);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 20px;color:#cbd5e1;display:flex;align-items:center;gap:16px;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.3);user-select:none;}
+.os-layer-card:hover{transform:translateY(-2px) scale(1.02);color:#ffffff;}
+.os-layer-icon{font-size:1.5rem;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,0.03);transition:all 0.3s ease;}
+.os-layer-details{display:flex;flex-direction:column;text-align:left;}
+.os-layer-title{font-weight:700;font-size:1.05rem;letter-spacing:0.02em;}
+.os-layer-subtitle{font-size:0.75rem;color:#8a94a6;text-transform:uppercase;margin-top:2px;}
+.os-layer-card.type-user{border-color:rgba(251,191,36,0.25);}
+.os-layer-card.type-user .os-layer-icon{color:#fbbf24;background:rgba(251,191,36,0.05);}
+.os-layer-card.type-user:hover{border-color:#fbbf24;box-shadow:0 0 15px rgba(251,191,36,0.25);}
+.os-layer-card.type-app{border-color:rgba(171,32,253,0.25);}
+.os-layer-card.type-app .os-layer-icon{color:#ab20fd;background:rgba(171, 32, 253, 0.05);}
+.os-layer-card.type-app:hover{border-color:#ab20fd;box-shadow:0 0 15px rgba(171,32,253,0.25);}
+.os-layer-card.type-os{border-color:rgba(255,0,127,0.3);}
+.os-layer-card.type-os .os-layer-icon{color:#ff007f;background:rgba(255,0,127,0.05);}
+.os-layer-card.type-os:hover{border-color:#ff007f;box-shadow:0 0 18px rgba(255,0,127,0.3);}
+.os-layer-card.type-hw{border-color:rgba(0,240,255,0.25);}
+.os-layer-card.type-hw .os-layer-icon{color:#00f0ff;background:rgba(0,240,255,0.05);}
+.os-layer-card.type-hw:hover{border-color:#00f0ff;box-shadow:0 0 15px rgba(0,240,255,0.25);}
+.os-layer-connector{display:flex;justify-content:center;align-items:center;height:28px;color:#00f0ff;animation:pulse-glow-arrow 2s infinite ease-in-out;}
+@keyframes pulse-glow-arrow{0%{opacity:0.3;transform:scale(0.9);}50%{opacity:1;transform:scale(1.1);filter:drop-shadow(0 0 5px #00f0ff);}100%{opacity:0.3;transform:scale(0.9);}}
+.os-layer-connector i{font-size:1.1rem;}
+.os-layers-desc-panel{margin-top:1.5rem;background:rgba(15,17,26,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 20px;width:100%;max-width:500px;min-height:80px;display:flex;align-items:center;gap:16px;box-shadow:0 6px 20px rgba(0,0,0,0.4);}
+.os-layers-desc-badge{font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.12em;color:#8a94a6;border-right:2px solid rgba(255,255,255,0.1);padding-right:16px;height:100%;display:flex;align-items:center;white-space:nowrap;transition:color 0.3s ease;}
+.os-layers-desc-text{font-size:0.95rem;color:#94a3b8;line-height:1.6;transition:color 0.3s ease;}
+</style>
+<div class="os-layers-wrapper">
+<div class="os-layers-container">
+<div class="os-layer-card type-user" onmouseover="updateOSLayerDesc('User (ผู้ใช้งาน)', 'ผู้ป้อนคำสั่งและโต้ตอบกับแอปพลิเคชันผ่าน UI หรือ Command Line เพื่อสั่งประมวลผลข้อมูล', '#fbbf24')" onmouseout="resetOSLayerDesc()">
+<div class="os-layer-icon"><i class="fas fa-user-shield"></i></div>
+<div class="os-layer-details">
+<div class="os-layer-title">User</div>
+<div class="os-layer-subtitle">ผู้ใช้ / ผู้ควบคุมระบบ</div>
+</div>
+</div>
+<div class="os-layer-connector"><i class="fas fa-chevron-down"></i></div>
+<div class="os-layer-card type-app" onmouseover="updateOSLayerDesc('Application (แอปพลิเคชัน)', 'โปรแกรมที่ผู้ใช้งานรันเพื่อเป้าหมายเฉพาะด้าน เช่น Web Browser, Terminal, Software Development Kit และโปรแกรมแฮกข้อมูล', '#ab20fd')" onmouseout="resetOSLayerDesc()">
+<div class="os-layer-icon"><i class="fas fa-laptop-code"></i></div>
+<div class="os-layer-details">
+<div class="os-layer-title">Application</div>
+<div class="os-layer-subtitle">โปรแกรมประยุกต์ / ซอฟต์แวร์ใช้งาน</div>
+</div>
+</div>
+<div class="os-layer-connector"><i class="fas fa-chevron-down"></i></div>
+<div class="os-layer-card type-os" onmouseover="updateOSLayerDesc('Operating System (OS)', 'ระบบปฏิบัติการที่ทำหน้าที่ประสานงานระหว่างแอปพลิเคชันกับฮาร์ดแวร์ จัดการการประมวลผล หน่วยความจำ และความปลอดภัย', '#ff007f')" onmouseout="resetOSLayerDesc()">
+<div class="os-layer-icon"><i class="fas fa-cogs"></i></div>
+<div class="os-layer-details">
+<div class="os-layer-title">Operating System</div>
+<div class="os-layer-subtitle">ระบบปฏิบัติการ (ตัวกลางประสานงาน)</div>
+</div>
+</div>
+<div class="os-layer-connector"><i class="fas fa-chevron-down"></i></div>
+<div class="os-layer-card type-hw" onmouseover="updateOSLayerDesc('Hardware (ฮาร์ดแวร์)', 'ชิ้นส่วนกายภาพและแผงวงจรอิเล็กทรอนิกส์ เช่น CPU, RAM, Disk, เครือข่ายการรับส่งข้อมูล ที่ประมวลผลตามคำสั่งของ OS', '#00f0ff')" onmouseout="resetOSLayerDesc()">
+<div class="os-layer-icon"><i class="fas fa-microchip"></i></div>
+<div class="os-layer-details">
+<div class="os-layer-title">Hardware</div>
+<div class="os-layer-subtitle">อุปกรณ์เครื่อง / ชิ้นส่วนกายภาพ</div>
+</div>
+</div>
+</div>
+<div class="os-layers-desc-panel">
+<div class="os-layers-desc-badge" id="os-badge-el">Layer Info</div>
+<div class="os-layers-desc-text" id="os-desc-el">เลื่อนเมาส์ไปชี้ที่แต่ละชั้นสถาปัตยกรรม เพื่ออ่านคำอธิบายหน้าที่</div>
+</div>
+</div>
+<script>
+function updateOSLayerDesc(title, text, color) {
+  const badge = document.getElementById('os-badge-el');
+  const desc = document.getElementById('os-desc-el');
+  if (badge && desc) {
+    badge.textContent = title;
+    badge.style.color = color;
+    desc.textContent = text;
+    desc.style.color = '#ffffff';
+  }
+}
+function resetOSLayerDesc() {
+  const badge = document.getElementById('os-badge-el');
+  const desc = document.getElementById('os-desc-el');
+  if (badge && desc) {
+    badge.textContent = 'Layer Info';
+    badge.style.color = '#8a94a6';
+    desc.textContent = 'เลื่อนเมาส์ไปชี้ที่แต่ละชั้นสถาปัตยกรรม เพื่ออ่านคำอธิบายหน้าที่';
+    desc.style.color = '#94a3b8';
+  }
+}
+</script>"""
+
+# Replace the ASCII block in the content block
+pattern = r"```text\n\s*┌──────────┐\n.*?\n\s*└──────────┘\n```"
+modified_val = re.sub(pattern, html_replacement, val, flags=re.DOTALL)
+
+if modified_val == val:
+    print("Warning: Precise regex pattern did not match. Trying fallback regex pattern...")
+    fallback_pattern = r"```text\n\s*┌──────────┐\n.*?Operating System.*?\n```"
+    modified_val = re.sub(fallback_pattern, html_replacement, val, flags=re.DOTALL)
+
+if modified_val == val:
+    print("Error: Could not locate the second ASCII diagram in the lesson content!")
+    exit(1)
+
+block['value'] = modified_val
+blocks[3] = block
+
+lesson.content = json.dumps(blocks, ensure_ascii=False)
+db.session.query(TutorialLesson).filter_by(id=164).update({"content": lesson.content})
+db.session.commit()
+print("Second diagram updated with interactive vertical stack successfully!")

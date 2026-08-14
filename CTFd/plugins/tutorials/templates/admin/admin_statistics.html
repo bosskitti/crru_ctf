@@ -1,0 +1,146 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container">
+		<h1 class="d-flex justify-content-between align-items-center">
+			<span>
+				<i class="fas fa-chart-bar text-info mr-2"></i> Tutorial Analytics
+			</span>
+			<a href="{{ url_for('tutorials.admin_export_statistics') }}" class="btn btn-success btn-sm">
+				<i class="fas fa-file-download mr-1"></i> Export to CSV / Excel
+			</a>
+		</h1>
+		<p class="lead mb-0 text-muted">วิเคราะห์ผลการเรียนรู้ เปรียบเทียบผลคะแนนก่อนเรียน (Pre-test) และหลังเรียน (Post-test) ของนักศึกษา</p>
+	</div>
+</div>
+
+<div class="container">
+	<!-- SECTION 1: MODULE TEST MAPPING CONFIGURATION -->
+	<div class="row mb-5">
+		<div class="col-md-12">
+			<div class="card border">
+				<div class="card-header bg-light">
+					<h5 class="mb-0 text-dark font-weight-bold"><i class="fas fa-cog mr-1"></i> 1. ตั้งค่าบททดสอบก่อนเรียน / หลังเรียน (Pre-test & Post-test Configuration)</h5>
+				</div>
+				<div class="card-body">
+					<p class="text-muted small">ระบุว่าบทเรียนย่อยใดทำหน้าที่เป็นแบบทดสอบก่อนเรียน (Pre-test) และแบบทดสอบหลังเรียน (Post-test) ของแต่ละบทเรียนหลัก (หากไม่ตั้งค่า ระบบจะหาข้อที่มีโจทย์ข้อสอบข้อแรกและข้อสุดท้ายให้เป็นค่าเริ่มต้นโดยอัตโนมัติ)</p>
+					<div class="table-responsive">
+						<table class="table table-bordered table-striped align-middle">
+							<thead class="thead-light">
+								<tr>
+									<th><b>บทเรียนหลัก (Module Title)</b></th>
+									<th><b>แบบทดสอบก่อนเรียน (Pre-test Lesson)</b></th>
+									<th><b>แบบทดสอบหลังเรียน (Post-test Lesson)</b></th>
+									<th class="text-center"><b>คะแนนเฉลี่ยก่อนเรียน</b></th>
+									<th class="text-center"><b>คะแนนเฉลี่ยหลังเรียน</b></th>
+									<th class="text-center"><b>การบันทึก</b></th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for config in module_configs %}
+								<tr>
+									<form action="{{ url_for('tutorials.admin_config_tests') }}" method="POST">
+										<input type="hidden" name="nonce" value="{{ Session.nonce }}">
+										<input type="hidden" name="module_id" value="{{ config.module.id }}">
+										
+										<td class="align-middle">
+											<strong>{{ config.module.title }}</strong>
+										</td>
+										<td>
+											<select name="pre_test_lesson_id" class="form-control form-control-sm">
+												<option value="">-- อัตโนมัติ (Default Fallback) --</option>
+												{% for lesson in config.lessons %}
+												<option value="{{ lesson.id }}" {% if lesson.id == config.pre_id %}selected{% endif %}>
+													Pos {{ lesson.position }}: {{ lesson.title }}
+												</option>
+												{% endfor %}
+											</select>
+										</td>
+										<td>
+											<select name="post_test_lesson_id" class="form-control form-control-sm">
+												<option value="">-- อัตโนมัติ (Default Fallback) --</option>
+												{% for lesson in config.lessons %}
+												<option value="{{ lesson.id }}" {% if lesson.id == config.post_id %}selected{% endif %}>
+													Pos {{ lesson.position }}: {{ lesson.title }}
+												</option>
+												{% endfor %}
+											</select>
+										</td>
+										<td class="text-center align-middle font-weight-bold text-info">
+											{{ config.avg_pre }}{% if config.avg_pre != "-" %}%{% endif %}
+										</td>
+										<td class="text-center align-middle font-weight-bold text-success">
+											{{ config.avg_post }}{% if config.avg_post != "-" %}%{% endif %}
+										</td>
+										<td class="text-center">
+											<button type="submit" class="btn btn-sm btn-primary">
+												<i class="fas fa-save"></i> Save
+											</button>
+										</td>
+									</form>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- SECTION 2: STUDENT SCORE MATRIX GRID -->
+	<div class="row mb-5">
+		<div class="col-md-12">
+			<div class="card border">
+				<div class="card-header bg-light d-flex justify-content-between align-items-center">
+					<h5 class="mb-0 text-dark font-weight-bold"><i class="fas fa-users mr-1"></i> 2. ตารางคะแนนนักศึกษา (Student Score & Learning Gain Matrix)</h5>
+				</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover text-center" id="score-matrix-table">
+							<thead class="thead-dark">
+								<tr>
+									<th rowspan="2" class="align-middle text-left"><b>ชื่อผู้ใช้ (Student)</b></th>
+									<th rowspan="2" class="align-middle text-left"><b>อีเมล (Email)</b></th>
+									{% for config in module_configs %}
+									<th colspan="3"><b>{{ config.module.title }}</b></th>
+									{% endfor %}
+								</tr>
+								<tr>
+									{% for config in module_configs %}
+									<th class="small text-info">Pre</th>
+									<th class="small text-success">Post</th>
+									<th class="small text-warning">Gain</th>
+									{% endfor %}
+								</tr>
+							</thead>
+							<tbody>
+								{% for row in student_scores %}
+								<tr>
+									<td class="text-left font-weight-bold align-middle">{{ row.student.name }}</td>
+									<td class="text-left align-middle">{{ row.student.email }}</td>
+									{% for m_score in row.modules %}
+									<td class="align-middle text-info">{{ m_score.pre }}</td>
+									<td class="align-middle text-success">{{ m_score.post }}</td>
+									<td class="align-middle font-weight-bold {% if '+' in m_score.gain and '0%' not in m_score.gain %}text-success{% else %}text-muted{% endif %}">
+										{{ m_score.gain }}
+									</td>
+									{% endfor %}
+								</tr>
+								{% else %}
+								<tr>
+									<td colspan="{{ 2 + 3 * module_configs|length }}" class="text-center py-4 text-muted">
+										ยังไม่มีบัญชีนักศึกษาลงทะเบียนในระบบ
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -3,6 +3,15 @@
 {% block stylesheets %}
 {{ super() }}
 <style>
+	main.container, main {
+		max-width: 100% !important;
+		width: 100% !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
 	.lesson-container {
 		display: flex !important;
 		flex-wrap: nowrap !important;
@@ -29,10 +38,16 @@
 	
 	.lesson-body {
 		flex-grow: 1 !important;
-		padding: 3rem 2.5rem !important;
+		padding: 2.5rem 2rem !important;
 		min-width: 0 !important; /* Prevents flex-item from overflowing */
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 		background: #060814 !important;
+	}
+
+	.lesson-body-inner {
+		width: 100% !important;
+		max-width: 1280px !important;
+		margin: 0 auto !important;
 	}
 
 	/* Collapsed states */
@@ -111,6 +126,9 @@
 		}
 		.sidebar-collapsed #sidebar-toggle {
 			left: 20px !important;
+		}
+		.lesson-body {
+			padding: 2rem 1.25rem !important;
 		}
 	}
 
@@ -335,11 +353,12 @@
 
 		<!-- Lesson Body -->
 		<div class="lesson-body">
+			<div class="lesson-body-inner">
 			{% if lesson %}
 				<nav aria-label="breadcrumb">
 					<ol class="breadcrumb bg-transparent p-0 mb-4">
 						<li class="breadcrumb-item"><a href="{{ url_for('tutorials.list_modules') }}">Tutorials</a></li>
-						<li class="breadcrumb-item"><a href="{{ url_for('tutorials.view_lesson', module_id=module.id, lesson_position=1) }}" class="text-truncate" style="max-width: 150px; display: inline-block; vertical-align: bottom;">{{ module.title }}</a></li>
+						<li class="breadcrumb-item"><a href="{{ url_for('tutorials.view_module_redirect', module_id=module.id) }}" class="text-truncate" style="max-width: 150px; display: inline-block; vertical-align: bottom;">{{ module.title }}</a></li>
 						<li class="breadcrumb-item active text-white" aria-current="page">Lesson {{ lesson_position }}</li>
 					</ol>
 				</nav>
@@ -359,6 +378,7 @@
 				</div>
 
 				<!-- Lesson Content (Jupyter/Colab Notebook Style cells) -->
+				{% set tracker = namespace(docker_count=0) %}
 				<div class="lesson-content my-4">
 					{% for block in lesson_blocks %}
 						{% if block.type == 'markdown' %}
@@ -409,32 +429,32 @@
 							{% if block.challenge %}
 								{% set c = block.challenge %}
 								<!-- Dynamic Lab Instance Console Cell -->
-								<div class="challenge-cta-card p-4 p-md-5 my-5" data-challenge-id="{{ c.id }}">
-									<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4 mb-4" style="gap: 15px;">
-										<div class="d-flex align-items-start">
-											<div class="d-flex justify-content-center align-items-center mr-3 text-info" style="font-size: 1.5rem; background: rgba(0, 240, 255, 0.1); width: 50px; height: 50px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.25);">
-												<i class="fas fa-terminal"></i>
-											</div>
-											<div>
-												<span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 800; color: #00f0ff;">Practice Lab Console</span>
-												<h4 class="text-white font-weight-bold mt-1 mb-0">{{ c.name }}</h4>
-												<p class="text-muted mb-0" style="font-size: 0.8rem;">Category: {{ c.category }} &bull; Value: {{ c.value }} Points</p>
-											</div>
+								<div class="challenge-cta-card p-4 p-md-5 my-5" data-challenge-id="{{ c.id }}" data-challenge-type="{{ c.type }}">
+									<div class="d-flex align-items-center mb-4" style="gap: 16px;">
+										<div class="d-flex justify-content-center align-items-center text-info" style="font-size: 1.4rem; background: rgba(0, 240, 255, 0.1); width: 48px; height: 48px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.3); flex-shrink: 0; margin-right: 14px;">
+											<i class="fas fa-flag"></i>
+										</div>
+										<div>
+											<span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 800; color: #00f0ff; display: block; margin-bottom: 2px;">{% if c.type == 'dynamic_docker' %}Practice Lab Console{% else %}Challenge Submission{% endif %}</span>
+											<h4 class="text-white font-weight-bold m-0" style="font-size: 1.25rem; line-height: 1.3;">{{ c.name }}</h4>
+											<p class="text-muted m-0" style="font-size: 0.82rem; margin-top: 2px;">Category: {{ c.category }} &bull; Value: {{ c.value }} Points</p>
 										</div>
 									</div>
 
+									{% if c.type == 'dynamic_docker' %}
+									{% set tracker.docker_count = tracker.docker_count + 1 %}
 									<!-- Dynamic Container Control Interface -->
 									<div class="whale-cell-panel" style="width: 100%;">
 										<!-- LOADING STATE -->
-										<div class="whale-cell-loading text-center py-3" style="color: var(--text-muted);">
+										<div class="whale-cell-loading text-center py-3" style="color: var(--text-muted); display: none;">
 											<i class="fas fa-spinner fa-spin mr-2"></i> Connecting to hypervisor daemon...
 										</div>
 
 										<!-- INSTANCE STOPPED -->
-										<div class="whale-cell-stopped" style="display: none;">
+										<div class="whale-cell-stopped" style="display: block;">
 											<div class="p-4" style="background: rgba(6, 8, 20, 0.4); border: 1px dashed rgba(0, 240, 255, 0.2); border-radius: 8px; text-align: center;">
 												<p class="text-muted mb-3" style="font-size: 0.95rem;">เครื่องจำลองของแล็บนี้ยังไม่ได้เปิดใช้งาน คุณสามารถเปิดเพื่อทดลองเจาะระบบได้ทันที</p>
-												<button class="btn btn-primary btn-lg px-4 py-2.5 font-weight-bold whale-cell-boot-btn" type="button">
+												<button class="btn btn-primary btn-lg px-4 py-2.5 font-weight-bold whale-cell-boot-btn" type="button" onclick="bootWhaleInstanceCell(this.closest('.challenge-cta-card'))">
 													<i class="fas fa-play mr-2" style="font-size: 0.85rem;"></i> Launch Lab Instance
 												</button>
 											</div>
@@ -442,39 +462,32 @@
 
 										<!-- INSTANCE STARTED -->
 										<div class="whale-cell-started" style="display: none;">
-											<div class="p-4 mb-4" style="background: rgba(6, 8, 20, 0.6); border: 1px solid var(--accent-cyan); border-radius: 8px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);">
-												<div class="row align-items-center">
-													<div class="col-md-7 mb-3 mb-md-0">
-														<div class="d-flex align-items-center mb-2">
-															<span class="badge badge-success mr-2" style="background: rgba(0, 255, 102, 0.1) !important; border: 1px solid rgba(0, 255, 102, 0.3) !important; color: #00ff66 !important; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; display: inline-flex; align-items: center;">
-																<span class="spinner-grow spinner-grow-sm mr-1.5" style="width: 8px; height: 8px; color: #00ff66; margin-right: 5px;" role="status"></span> Active
-															</span>
-															<span class="text-muted" style="font-size: 0.85rem;">Lab Instance is running online</span>
-														</div>
-														<div class="mt-3">
-															<span class="text-muted d-block mb-1.5" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Access Link:</span>
-															<div class="d-flex align-items-center">
-																<a href="#" target="_blank" class="btn btn-sm btn-info px-3 py-2 font-weight-bold whale-cell-access-link" style="font-size: 0.9rem; text-transform: none; letter-spacing: 0; border-radius: 4px !important;">
-																	<i class="fas fa-external-link-alt mr-1"></i> Open Web Lab Interface
-																</a>
-															</div>
-														</div>
+											<div class="p-4 mb-4" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);">
+												<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+													<div class="d-flex align-items-center">
+														<span class="badge badge-success mr-2" style="background: rgba(0, 255, 102, 0.12) !important; border: 1px solid rgba(0, 255, 102, 0.35) !important; color: #00ff66 !important; font-weight: bold; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; text-transform: uppercase; display: inline-flex; align-items: center;">
+															<span class="spinner-grow spinner-grow-sm mr-1.5" style="width: 8px; height: 8px; color: #00ff66; margin-right: 6px;" role="status"></span> Active
+														</span>
+														<span style="color: #94a3b8; font-size: 0.88rem; font-weight: 500;">Lab Instance is running online</span>
 													</div>
-													<div class="col-md-5 text-md-right mt-3 mt-md-0">
-														<div class="mb-3 d-inline-block text-left">
-															<span class="text-muted d-block mb-1" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">Remaining Time:</span>
-															<span class="whale-cell-count-down" style="font-family: 'JetBrains Mono', monospace !important; font-weight: 700; color: #00f0ff !important; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); font-size: 1.4rem; background: rgba(12, 15, 29, 0.8); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.3); display: inline-block;">00:00:00</span>
+													
+													<div class="d-flex align-items-center flex-wrap gap-3 mt-2 mt-md-0">
+														<div class="d-flex align-items-center mr-3">
+															<span style="color: #64748b; font-size: 0.8rem; text-transform: uppercase; margin-right: 8px; font-weight: 600; letter-spacing: 0.05em;">Time Remaining:</span>
+															<span class="whale-cell-count-down" style="font-family: 'JetBrains Mono', monospace !important; font-weight: 700; color: #00f0ff !important; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-size: 1.2rem; background: rgba(12, 15, 29, 0.9); padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(0, 240, 255, 0.3);">00:00:00</span>
 														</div>
-														<div class="d-flex justify-content-md-end mt-2" style="gap: 8px;">
-															<button type="button" class="btn btn-sm btn-outline-info whale-cell-renew-btn">
-																<i class="fas fa-clock mr-1"></i> Extend Time
-															</button>
-															<button type="button" class="btn btn-sm btn-outline-danger whale-cell-destroy-btn">
-																<i class="fas fa-stop mr-1"></i> Shutdown
-															</button>
-														</div>
+														<button type="button" class="btn btn-sm btn-outline-info whale-cell-renew-btn" style="border-radius: 6px; font-weight: 600; padding: 5px 14px;" onclick="renewWhaleInstanceCell(this.closest('.challenge-cta-card'))">
+															<i class="fas fa-clock mr-1"></i> Extend Time
+														</button>
+														<button type="button" class="btn btn-sm btn-outline-danger whale-cell-destroy-btn" style="border-radius: 6px; font-weight: 600; padding: 5px 14px;" onclick="destroyWhaleInstanceCell(this.closest('.challenge-cta-card'))">
+															<i class="fas fa-stop mr-1"></i> Shutdown
+														</button>
 													</div>
 												</div>
+												
+												<!-- Dedicated Container for Target Info Box (No Overlapping!) -->
+												<div class="whale-cell-target-container mt-3"></div>
+												<a href="#" target="_blank" class="whale-cell-access-link" style="display: none;"></a>
 											</div>
 
 											<!-- Flag Submission Sub-panel -->
@@ -497,6 +510,26 @@
 											</div>
 										</div>
 									</div>
+									{% else %}
+									<!-- Standard/Static Challenge Flag Submission Panel -->
+									<div class="flag-submit-panel p-4" style="background: rgba(251, 191, 36, 0.03); border: 1px solid rgba(251, 191, 36, 0.15); border-radius: 8px;">
+										<div class="d-flex align-items-center mb-3">
+											<div class="d-flex justify-content-center align-items-center mr-2 text-warning" style="font-size: 1rem; background: rgba(251, 191, 36, 0.1); width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.25);">
+												<i class="fas fa-flag"></i>
+											</div>
+											<span class="text-warning font-weight-bold" style="font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase;">Submit Flag</span>
+										</div>
+										<div class="input-group">
+											<input type="text" class="form-control flag-input" placeholder="Enter flag (e.g. flag{...}) here..." style="background: rgba(15, 17, 26, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; font-family: 'JetBrains Mono', monospace !important; font-size: 0.95rem !important; border-radius: 8px 0 0 8px !important;">
+											<div class="input-group-append">
+												<button class="btn btn-warning px-4 text-dark font-weight-bold flag-submit-btn" type="button">
+													<i class="fas fa-paper-plane mr-1"></i> Submit
+												</button>
+											</div>
+										</div>
+										<div class="flag-feedback-msg mt-3" style="display: none; border-radius: 8px !important; font-size: 0.9rem !important; font-weight: 600 !important;"></div>
+									</div>
+									{% endif %}
 								</div>
 							{% endif %}
 						{% endif %}
@@ -512,9 +545,9 @@
 					{% endif %}
 				{% endfor %}
 
-				{% if challenge and not ns.has_challenge_cell %}
+				{% if challenge and not ns.has_challenge_cell and challenge.type == 'dynamic_docker' and challenge.state == 'visible' %}
 					<!-- Dynamic Lab Instance Console Card (Fallback) -->
-					<div class="challenge-cta-card p-4 p-md-5 my-5" data-challenge-id="{{ challenge.id }}">
+					<div class="challenge-cta-card p-4 p-md-5 my-5" data-challenge-id="{{ challenge.id }}" data-challenge-type="dynamic_docker">
 						<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4 mb-4" style="gap: 15px;">
 							<div class="d-flex align-items-start">
 								<div class="d-flex justify-content-center align-items-center mr-3 text-info" style="font-size: 1.5rem; background: rgba(0, 240, 255, 0.1); width: 50px; height: 50px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.25);">
@@ -531,15 +564,15 @@
 						<!-- Dynamic Container Control Interface -->
 						<div class="whale-cell-panel" style="width: 100%;">
 							<!-- LOADING STATE -->
-							<div class="whale-cell-loading text-center py-3" style="color: var(--text-muted);">
+							<div class="whale-cell-loading text-center py-3" style="color: var(--text-muted); display: none;">
 								<i class="fas fa-spinner fa-spin mr-2"></i> Connecting to hypervisor daemon...
 							</div>
 
 							<!-- INSTANCE STOPPED -->
-							<div class="whale-cell-stopped" style="display: none;">
+							<div class="whale-cell-stopped" style="display: block;">
 								<div class="p-4" style="background: rgba(6, 8, 20, 0.4); border: 1px dashed rgba(0, 240, 255, 0.2); border-radius: 8px; text-align: center;">
 									<p class="text-muted mb-3" style="font-size: 0.95rem;">เครื่องจำลองของแล็บนี้ยังไม่ได้เปิดใช้งาน คุณสามารถเปิดเพื่อทดลองเจาะระบบได้ทันที</p>
-									<button class="btn btn-primary btn-lg px-4 py-2.5 font-weight-bold whale-cell-boot-btn" type="button">
+									<button class="btn btn-primary btn-lg px-4 py-2.5 font-weight-bold whale-cell-boot-btn" type="button" onclick="bootWhaleInstanceCell(this.closest('.challenge-cta-card'))">
 										<i class="fas fa-play mr-2" style="font-size: 0.85rem;"></i> Launch Lab Instance
 									</button>
 								</div>
@@ -571,10 +604,10 @@
 												<span class="whale-cell-count-down" style="font-family: 'JetBrains Mono', monospace !important; font-weight: 700; color: #00f0ff !important; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); font-size: 1.4rem; background: rgba(12, 15, 29, 0.8); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.3); display: inline-block;">00:00:00</span>
 											</div>
 											<div class="d-flex justify-content-md-end mt-2" style="gap: 8px;">
-												<button type="button" class="btn btn-sm btn-outline-info whale-cell-renew-btn">
+												<button type="button" class="btn btn-sm btn-outline-info whale-cell-renew-btn" onclick="renewWhaleInstanceCell(this.closest('.challenge-cta-card'))">
 													<i class="fas fa-clock mr-1"></i> Extend Time
 												</button>
-												<button type="button" class="btn btn-sm btn-outline-danger whale-cell-destroy-btn">
+												<button type="button" class="btn btn-sm btn-outline-danger whale-cell-destroy-btn" onclick="destroyWhaleInstanceCell(this.closest('.challenge-cta-card'))">
 													<i class="fas fa-stop mr-1"></i> Shutdown
 												</button>
 											</div>
@@ -640,6 +673,7 @@
 					<a href="{{ url_for('tutorials.list_modules') }}" class="btn btn-primary px-4">Back to Modules</a>
 				</div>
 			{% endif %}
+			</div>
 		</div>
 	</div>
 </div>
@@ -648,6 +682,85 @@
 {% block scripts %}
   {{ super() }}
   <script>
+    const safeFetch = (window.CTFd && window.CTFd.fetch) ? window.CTFd.fetch.bind(window.CTFd) : function(u, o) {
+        o = o || {};
+        o.headers = o.headers || {};
+        if (window.init && window.init.csrfNonce) o.headers['CSRF-Token'] = window.init.csrfNonce;
+        return fetch(u, o);
+    };
+
+    window.handleMiniQuizOpt = function(optEl) {
+      const parent = optEl.closest(".mq-q");
+      const box = optEl.closest(".mini-quiz-box");
+      if (!parent || !box) return;
+
+      const boxId = box.id;
+      const groups = box.querySelectorAll(".mq-q");
+      const q_index = Array.from(groups).indexOf(parent);
+      const selected_val = optEl.getAttribute("data-val");
+
+      const answerKeys = {
+        "mq-box-3": { 0: "B", 1: "C", 2: "B", 3: "C" },
+        "mq-box-4": { 0: "B", 1: "B", 2: "C", 3: "B" },
+        "mq-box-5": { 0: "C", 1: "A", 2: "B", 3: "B" }
+      };
+      const lessonIds = {
+        "mq-box-3": 166,
+        "mq-box-4": 167,
+        "mq-box-5": 168
+      };
+
+      const correctAnswers = answerKeys[boxId] || {};
+      const lessonId = lessonIds[boxId] || (typeof currentLessonId !== 'undefined' ? currentLessonId : 166);
+      const isCorrect = (selected_val === correctAnswers[q_index]);
+      const hint = parent.querySelector(".mq-hint");
+
+      parent.querySelectorAll(".mini-opt").forEach(o => {
+        o.classList.remove("selected", "correct", "incorrect");
+      });
+
+      if (isCorrect) {
+        optEl.classList.add("correct");
+        parent.querySelectorAll(".mini-opt").forEach(o => { o.style.pointerEvents = "none"; });
+        if (hint) hint.style.display = "none";
+      } else {
+        optEl.classList.add("incorrect");
+        if (hint) hint.style.display = "block";
+      }
+
+      var correctCount = 0;
+      groups.forEach(g => {
+        if (g.querySelector(".mini-opt.correct")) correctCount++;
+      });
+      var pct = Math.round((correctCount / groups.length) * 100);
+      var fill = box.querySelector(".neon-gauge-fill");
+      var text = box.querySelector(".neon-gauge-text");
+      var status = box.querySelector("[id^='lesson-status-txt']");
+      if (fill) fill.setAttribute("stroke-dasharray", pct + ", 100");
+      if (text) text.textContent = pct + "%";
+      if (status) {
+        if (pct === 100) {
+          status.innerHTML = "<span style=\"color:#3ddc84; font-weight:bold;\"><i class=\"fas fa-check-circle mr-1\"></i> ส่งคำตอบสำเร็จ (ผ่านแล้ว)</span>";
+        } else {
+          status.textContent = "ตอบถูกแล้ว " + correctCount + "/" + groups.length + " ข้อ";
+        }
+      }
+
+      var csrfToken = (window.init && window.init.csrfNonce) ? window.init.csrfNonce : "";
+      fetch("/api/v1/tutorials/quiz/submit_single", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          lesson_id: lessonId,
+          q_index: q_index,
+          answer: selected_val
+        })
+      }).catch(e => console.error("Quiz sync background error:", e));
+    };
+
     const moduleQuestions = {{ module_questions | tojson | safe }};
     const currentLessonId = {{ lesson.id if lesson else 'null' }};
 
@@ -659,10 +772,27 @@
       }
     }
 
-    function saveSolvedQuestion(hash, answer) {
+    function saveSolvedQuestion(hash, answer, isCorrect) {
       const solved = getSolvedQuestions();
-      solved[hash] = answer;
+      // Store both the answer and whether it was correct
+      solved[hash] = { answer: answer, correct: isCorrect };
       localStorage.setItem('solved_questions', JSON.stringify(solved));
+
+      if (typeof currentLessonId !== 'undefined' && currentLessonId && isCorrect) {
+        fetch('/api/v1/tutorials/progress', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': window.init.csrfNonce
+          },
+          body: JSON.stringify({
+            lesson_id: currentLessonId,
+            type: 'question',
+            item_key: hash,
+            solved: true
+          })
+        }).catch(e => console.error("Error syncing progress to DB:", e));
+      }
     }
 
     function getProgressForLesson(lessonId) {
@@ -671,37 +801,68 @@
         return { S: 0, N: 0, percent: 100 };
       }
       const solved = getSolvedQuestions();
+      const solvedChalls = JSON.parse(localStorage.getItem('solved_challenges') || '[]');
       let S = 0;
       hashes.forEach(h => {
-        if (solved[h] !== undefined) {
-          S++;
+        if (h === "quick_quiz") {
+          if (localStorage.getItem('solved_lesson_' + lessonId) === 'solved') {
+            S++;
+          }
+        } else if (h.indexOf('challenge_') === 0) {
+          var cid = parseInt(h.replace('challenge_', ''));
+          if (!isNaN(cid) && solvedChalls.includes(cid)) {
+            S++;
+          }
+        } else if (solved[h] !== undefined) {
+          // Only count as solved if explicitly marked correct
+          const entry = solved[h];
+          if ((typeof entry === 'object' && entry.correct === true) || entry === 'SOLVED') {
+            S++;
+          }
         }
       });
       return { S, N: hashes.length, percent: Math.round((S / hashes.length) * 100) };
     }
 
     function updateProgressUI() {
-      // Update sidebar badges
+      // Update sidebar badges and item highlights
       document.querySelectorAll('.lesson-progress-badge').forEach(badge => {
         const lessonId = badge.getAttribute('data-lesson-id');
         const progress = getProgressForLesson(lessonId);
-        if (progress.N === 0) {
-          badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-          badge.style.color = '#10b981';
-          badge.innerHTML = '<i class="fas fa-check" style="font-size: 0.6rem;"></i>';
+        const linkEl = badge.closest('.lesson-link');
+
+        if (progress.N === 0 || progress.percent === 100) {
+          badge.style.borderColor = 'rgba(61, 220, 132, 0.6)';
+          badge.style.background = 'rgba(61, 220, 132, 0.18)';
+          badge.style.color = '#3ddc84';
+          badge.style.fontWeight = 'bold';
+          badge.style.minWidth = '65px';
+          badge.innerHTML = '<i class="fas fa-check-circle" style="font-size: 0.7rem; margin-right: 3px;"></i> SOLVED';
+          if (linkEl && !linkEl.classList.contains('active-lesson-link')) {
+            linkEl.style.borderLeft = '4px solid #3ddc84';
+            linkEl.style.background = 'rgba(61, 220, 132, 0.07)';
+          }
+        } else if (progress.percent > 0) {
+          badge.style.borderColor = 'rgba(0, 240, 255, 0.5)';
+          badge.style.background = 'rgba(0, 240, 255, 0.12)';
+          badge.style.color = '#00f0ff';
+          badge.style.fontWeight = 'bold';
+          badge.style.minWidth = '45px';
+          badge.innerHTML = progress.percent + '%';
+          if (linkEl && !linkEl.classList.contains('active-lesson-link')) {
+            linkEl.style.borderLeft = '4px solid #00f0ff';
+            linkEl.style.background = 'rgba(0, 240, 255, 0.04)';
+          }
         } else {
-          if (progress.percent === 100) {
-            badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-            badge.style.color = '#10b981';
-            badge.innerHTML = '<i class="fas fa-check" style="font-size: 0.6rem;"></i>';
-          } else if (progress.percent > 0) {
-            badge.style.borderColor = 'rgba(0, 240, 255, 0.4)';
-            badge.style.color = '#00f0ff';
-            badge.innerHTML = progress.percent + '%';
-          } else {
-            badge.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-            badge.style.color = '#8a94a6';
-            badge.innerHTML = '0%';
+          badge.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+          badge.style.background = 'rgba(0, 0, 0, 0.2)';
+          badge.style.color = '#8a94a6';
+          badge.style.fontWeight = 'normal';
+          badge.style.minWidth = '45px';
+          badge.innerHTML = '0%';
+          if (linkEl && !linkEl.classList.contains('active-lesson-link')) {
+            linkEl.style.borderLeft = 'none';
+            linkEl.style.background = 'transparent';
           }
         }
       });
@@ -732,21 +893,45 @@
       document.querySelectorAll('.question-input').forEach(input => {
         const hash = input.getAttribute('data-hash');
         if (solved[hash] !== undefined) {
-          input.value = solved[hash];
-          input.disabled = true;
-          input.classList.add('is-valid');
-          input.style.borderColor = '#10b981';
-          
-          const cell = input.closest('.question-cell');
-          if (cell) {
-            const submitBtn = cell.querySelector('.btn-warning');
-            if (submitBtn) submitBtn.disabled = true;
-            
-            const feedback = cell.querySelector('.feedback-msg');
-            if (feedback) {
-              feedback.className = "feedback-msg mt-3 alert alert-success py-2 text-dark";
-              feedback.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Correct answer! Well done.';
-              feedback.style.display = 'block';
+          const entry = solved[hash];
+          const isCorrect = (typeof entry === 'object') ? entry.correct === true : entry === 'SOLVED';
+          const answerValue = (typeof entry === 'object') ? entry.answer : entry;
+
+          if (isCorrect) {
+            // Restore correct answer — show as correct
+            input.value = answerValue || '';
+            input.disabled = true;
+            input.classList.add('is-valid');
+            input.classList.remove('is-invalid');
+            input.style.borderColor = '#10b981';
+
+            const cell = input.closest('.question-cell');
+            if (cell) {
+              const submitBtn = cell.querySelector('.btn-warning');
+              if (submitBtn) submitBtn.disabled = true;
+
+              const feedback = cell.querySelector('.feedback-msg');
+              if (feedback) {
+                feedback.className = "feedback-msg mt-3 alert alert-success py-2 text-dark";
+                feedback.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Correct answer! Well done.';
+                feedback.style.display = 'block';
+              }
+            }
+          } else {
+            // Restore incorrect attempt — show last answer but NOT as correct
+            input.value = answerValue || '';
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+            input.style.borderColor = '#dc3545';
+
+            const cell = input.closest('.question-cell');
+            if (cell) {
+              const feedback = cell.querySelector('.feedback-msg');
+              if (feedback) {
+                feedback.className = "feedback-msg mt-3 alert alert-danger py-2 text-white bg-danger border-0";
+                feedback.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Incorrect answer. Try again!';
+                feedback.style.display = 'block';
+              }
             }
           }
         }
@@ -804,8 +989,8 @@
           input.disabled = true;
           button.disabled = true;
 
-          // Save solved status
-          saveSolvedQuestion(targetHash, value);
+          // Save solved status (correct)
+          saveSolvedQuestion(targetHash, value, true);
           updateProgressUI();
         } else {
           feedback.className = "feedback-msg mt-3 alert alert-danger py-2 text-white bg-danger border-0";
@@ -814,6 +999,8 @@
           input.classList.remove('is-valid');
           input.classList.add('is-invalid');
           input.style.borderColor = '#dc3545';
+          // Save incorrect attempt so we can restore it on reload
+          saveSolvedQuestion(targetHash, value, false);
         }
       } catch (e) {
         console.error(e);
@@ -837,7 +1024,99 @@
         return hDisplay + ":" + mDisplay + ":" + sDisplay;
     }
 
+    function getOrCreateBootModal() {
+        let modal = document.getElementById('whale-boot-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'whale-boot-modal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(3,7,18,0.85);backdrop-filter:blur(10px);z-index:99999;display:none;align-items:center;justify-content:center;transition:all 0.3s ease;';
+            modal.innerHTML = `
+                <div style="background:#0c0f1d;border:1px solid rgba(0,240,255,0.3);border-radius:16px;padding:32px 36px;text-align:center;max-width:420px;width:90%;box-shadow:0 0 50px rgba(0,240,255,0.25);box-sizing:border-box;position:relative;">
+                    <button type="button" onclick="document.getElementById('whale-boot-modal').style.display='none';" style="position:absolute;top:14px;right:16px;background:none;border:none;color:#64748b;font-size:1.2rem;cursor:pointer;transition:color 0.2s ease;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#64748b'" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div id="whale-boot-modal-icon" style="font-size:2.8rem;color:#00f0ff;margin-bottom:16px;">
+                        <i class="fas fa-cog fa-spin"></i>
+                    </div>
+                    <h4 id="whale-boot-modal-title" style="color:#ffffff;font-weight:800;margin:0 0 8px;font-size:1.25rem;">Creating & Loading Instance...</h4>
+                    <p id="whale-boot-modal-desc" style="color:#94a3b8;font-size:0.85rem;margin:0 0 20px;line-height:1.5;">กำลังเปิดและเชื่อมต่อเซิร์ฟเวอร์จำลอง Linux โปรดรอสักครู่...</p>
+                    <div id="whale-boot-modal-status" style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#00f0ff;background:rgba(0,240,255,0.08);padding:8px 18px;border-radius:20px;display:inline-block;border:1px solid rgba(0,240,255,0.25);">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Starting Server...
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        return modal;
+    }
+
+    let bootStartTime = 0;
+
+    function showBootModal() {
+        bootStartTime = Date.now();
+        const modal = getOrCreateBootModal();
+        modal.dataset.completed = "false";
+        const icon = modal.querySelector('#whale-boot-modal-icon');
+        const title = modal.querySelector('#whale-boot-modal-title');
+        const desc = modal.querySelector('#whale-boot-modal-desc');
+        const status = modal.querySelector('#whale-boot-modal-status');
+        
+        if (icon) icon.innerHTML = '<i class="fas fa-cog fa-spin" style="color:#00f0ff;"></i>';
+        if (title) title.innerText = 'Creating & Loading Instance...';
+        if (desc) desc.innerText = 'กำลังเปิดและตั้งค่าระบบจำลอง โปรดรอสักครู่ (ระบบกำลังสร้าง Container & FRP Routing)...';
+        if (status) {
+            status.style.color = '#00f0ff';
+            status.style.borderColor = 'rgba(0,240,255,0.25)';
+            status.style.background = 'rgba(0,240,255,0.08)';
+            status.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Deploying Container (1/3)...';
+        }
+        modal.style.display = 'flex';
+
+        setTimeout(() => {
+            if (modal.style.display !== 'none' && modal.dataset.completed !== "true") {
+                if (status) status.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Registering FRP Proxy (2/3)...';
+            }
+        }, 1800);
+
+        setTimeout(() => {
+            if (modal.style.display !== 'none' && modal.dataset.completed !== "true") {
+                if (status) status.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Starting Web Terminal (3/3)...';
+            }
+        }, 3600);
+    }
+
+    function hideBootModalSuccess() {
+        const modal = document.getElementById('whale-boot-modal');
+        if (!modal) return;
+        modal.dataset.completed = "true";
+
+        const elapsed = Date.now() - (bootStartTime || 0);
+        const minWait = 4800; // Minimum 4.8 seconds to ensure FRP proxy & ttyd web terminal are 100% ready
+        const remaining = Math.max(0, minWait - elapsed);
+
+        setTimeout(() => {
+            const icon = modal.querySelector('#whale-boot-modal-icon');
+            const title = modal.querySelector('#whale-boot-modal-title');
+            const desc = modal.querySelector('#whale-boot-modal-desc');
+            const status = modal.querySelector('#whale-boot-modal-status');
+
+            if (icon) icon.innerHTML = '<i class="fas fa-check-circle" style="color:#3ddc84;"></i>';
+            if (title) title.innerText = 'Instance Ready!';
+            if (desc) desc.innerText = 'เซิร์ฟเวอร์ปฏิบัติการพร้อมใช้งานแล้ว ระบบเชื่อมต่อ Web Lab 100%';
+            if (status) {
+                status.style.color = '#3ddc84';
+                status.style.borderColor = 'rgba(61,220,132,0.3)';
+                status.style.background = 'rgba(61,220,132,0.1)';
+                status.innerHTML = '<i class="fas fa-check mr-1"></i> Connected Successfully!';
+            }
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 800);
+        }, remaining);
+    }
+
     function checkWhaleInstance(card) {
+        if (!card) return;
         const challengeId = card.getAttribute('data-challenge-id');
         if (!challengeId) return;
 
@@ -856,7 +1135,7 @@
             delete activeIntervals[challengeId];
         }
 
-        CTFd.fetch(url, {
+        safeFetch(url, {
             method: 'GET',
             credentials: 'same-origin',
             headers: {
@@ -870,10 +1149,10 @@
             
             if (response.success && response.data && response.data.remaining_time !== undefined) {
                 const data = response.data;
-                
-                // access link
                 const accessLink = card.querySelector('.whale-cell-access-link');
-                let urlVal = data.user_access;
+                let urlVal = data.user_access || '';
+                let rawCmd = urlVal.replace(/<[^>]*>/g, '').trim();
+
                 if (urlVal.includes('href="')) {
                     const match = urlVal.match(/href="([^"]+)"/);
                     if (match) urlVal = match[1];
@@ -881,10 +1160,142 @@
                     const match = urlVal.match(/href='([^']+)'/);
                     if (match) urlVal = match[1];
                 }
-                if (accessLink) {
-                    accessLink.href = urlVal;
-                    accessLink.innerHTML = `<i class="fas fa-external-link-alt mr-1"></i> Open Web Lab Interface`;
+
+                let webUrl = urlVal;
+                if (rawCmd.startsWith('nc ')) {
+                    const ncParts = rawCmd.split(' ');
+                    if (ncParts.length >= 3) {
+                        webUrl = 'http://' + ncParts[1] + ':' + ncParts[2];
+                    }
                 }
+
+                let targetContainer = card.querySelector('.whale-cell-target-container');
+                if (!targetContainer) {
+                    targetContainer = document.createElement('div');
+                    targetContainer.className = 'whale-cell-target-container mt-3';
+                    const startedPanel = card.querySelector('.whale-cell-started');
+                    if (startedPanel) startedPanel.appendChild(targetContainer);
+                }
+                let infoBox = card.querySelector('.whale-cell-access-info-box');
+                if (!infoBox) {
+                    infoBox = document.createElement('div');
+                    infoBox.className = 'whale-cell-access-info-box rounded';
+                    targetContainer.appendChild(infoBox);
+                } else if (infoBox.parentNode !== targetContainer) {
+                    targetContainer.appendChild(infoBox);
+                }
+                infoBox.style.display = 'block';
+
+                // ─── AUTO DETECT CHALLENGE TYPE FROM API DATA ───────────────────
+                const redirectPort = parseInt(data.redirect_port) || 80;
+                const dockerImage  = (data.docker_image || '').toLowerCase();
+                const hasWebUrl    = urlVal.startsWith('http://') || urlVal.startsWith('https://') || (urlVal.startsWith('/') && urlVal.length > 1);
+                const isNcCmd      = rawCmd.startsWith('nc ');
+                const displayIp    = (data && data.target_ip) ? data.target_ip : ("10.10.0." + (3 + ((window.init && window.init.user_id) ? (window.init.user_id % 245) : 0)));
+
+                // Classify by port and access type
+                const isDns        = (redirectPort === 53);
+                const isTcpServer  = (!isDns && redirectPort !== 80);
+                const isWebTerminal = (!isDns && !isTcpServer && (isNcCmd || dockerImage.includes('linux-cli') || dockerImage.includes('win-security')));
+                const isWebApp     = (!isDns && !isTcpServer && !isWebTerminal && hasWebUrl);
+
+                if (isWebApp) {
+                    // ── WEB APP: clickable URL button ─────────────────────────────────
+                    if (accessLink) accessLink.style.display = 'none';
+                    infoBox.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #0a1f12 0%, #0a1628 100%); border: 1px solid rgba(16, 185, 129, 0.55); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-top: 15px;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap:12px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+                                <div style="min-width:0; flex:1;">
+                                    <span style="color:#8c9ba5; font-size:0.8rem; text-transform:uppercase; display:block; margin-bottom:4px;">🌐 DEDICATED WEB APP INSTANCE:</span>
+                                    <code style="color:#34d399; background:rgba(0,0,0,0.55); padding:4px 14px; border-radius:6px; font-size:0.88rem; font-weight:bold; border:1px solid rgba(16,185,129,0.4); word-break:break-all; display:inline-block;">${webUrl}</code>
+                                </div>
+                                <div class="d-flex gap-2 flex-wrap" style="flex-shrink:0;">
+                                    <a href="${webUrl}" target="_blank" class="btn btn-success btn-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-weight: bold; border-radius: 8px; padding: 9px 22px; font-size:0.93rem; box-shadow: 0 4px 14px rgba(16,185,129,0.4); white-space:nowrap;">
+                                        <i class="fas fa-external-link-alt mr-1"></i> 🌐 Open Web App
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-secondary" style="border-radius:8px; padding:7px 14px; white-space:nowrap;" onclick="copyBtnText(this, '${webUrl}')">
+                                        <i class="fas fa-copy mr-1"></i> Copy URL
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="font-size:0.88rem; color:#cbd5e1; line-height:1.7;">
+                                <i class="fas fa-info-circle text-success mr-1"></i> <strong>คำแนะนำ:</strong> คลิก <strong>"Open Web App"</strong> เพื่อเปิดเว็บแอปพลิเคชันในแท็บใหม่ แล้วทำตามภารกิจในโจทย์เพื่อหา Flag
+                            </div>
+                        </div>
+                    `;
+                } else if (isWebTerminal) {
+                    // ── WEB TERMINAL: ttyd / linux-cli console ────────────────────────
+                    if (accessLink) accessLink.style.display = 'inline-block';
+                    infoBox.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid rgba(16, 185, 129, 0.5); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-top: 15px;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap:12px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+                                <div>
+                                    <span style="color:#8c9ba5; font-size:0.8rem; text-transform:uppercase; display:block; margin-bottom:2px;">💻 DEDICATED WEB TERMINAL INSTANCE:</span>
+                                    <code style="color:#ffffff; background:rgba(0,0,0,0.6); padding:4px 14px; border-radius:6px; font-size:1.05rem; font-weight:bold; letter-spacing:0.05em; border:1px solid rgba(16, 185, 129,0.4);">Interactive Terminal Active</code>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="${webUrl}" target="_blank" class="btn btn-success btn-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-weight: bold; border-radius: 8px; padding: 9px 22px; font-size:0.93rem; box-shadow: 0 4px 14px rgba(16,185,129,0.4);">
+                                        <i class="fas fa-terminal mr-1"></i> 🚀 Open Web Console
+                                    </a>
+                                </div>
+                            </div>
+                            <div style="font-size:0.88rem; color:#cbd5e1; line-height:1.7;">
+                                <i class="fas fa-info-circle text-success mr-1"></i> <strong>คำแนะนำทำโจทย์:</strong> คลิกปุ่ม <strong>"Open Web Console"</strong> ด้านบนเพื่อเปิดหน้าจอ Interactive Terminal แล้วรันคำสั่ง Linux/Windows ตามภารกิจในโจทย์เพื่อหา Flag
+                            </div>
+                        </div>
+                    `;
+                } else if (isDns) {
+                    // ── DNS SERVER ────────────────────────────────────────────────────
+                    if (accessLink) accessLink.style.display = 'none';
+                    infoBox.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid rgba(168, 85, 247, 0.5); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-top: 15px;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap:12px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+                                <div>
+                                    <span style="color:#8c9ba5; font-size:0.8rem; text-transform:uppercase; display:block; margin-bottom:2px;">🎯 DNS OpenVPN Target Server IP:</span>
+                                    <code style="color:#ffffff; background:rgba(0,0,0,0.6); padding:4px 14px; border-radius:6px; font-size:1.25rem; font-weight:bold; letter-spacing:0.05em; border:1px solid rgba(168, 85, 247,0.4);">${displayIp}</code>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm" style="font-weight:bold; border-radius:8px; padding:7px 16px; color:#c084fc; border:1px solid #c084fc; background:transparent;" onclick="copyBtnText(this, '${displayIp}')">
+                                        <i class="fas fa-copy mr-1"></i> Copy Target IP
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="font-size:0.88rem; color:#cbd5e1; line-height:1.7;">
+                                <i class="fas fa-globe mr-1" style="color:#c084fc;"></i> <strong>คำแนะนำทำโจทย์:</strong> เชื่อมต่อ OpenVPN แล้วสั่งรันคำสั่งค้นหา DNS Record:<br>
+                                <code style="color:#c084fc; background:rgba(0,0,0,0.5); padding:4px 12px; border-radius:5px; margin-top:6px; display:inline-block; font-size:0.93rem; border:1px solid rgba(192,132,252,0.3);">dig @${displayIp} TXT secret.company.local</code>
+                                &nbsp;
+                                <code style="color:#a78bfa; background:rgba(0,0,0,0.5); padding:4px 10px; border-radius:5px; margin-top:6px; display:inline-block; font-size:0.93rem; border:1px solid rgba(167,139,250,0.3);">nmap -sU -p 53 ${displayIp}</code>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // ── TCP SERVER (any non-80/non-53 port) ───────────────────────────
+                    if (accessLink) accessLink.style.display = 'none';
+                    infoBox.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-top: 15px;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap:12px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+                                <div>
+                                    <span style="color:#8c9ba5; font-size:0.8rem; text-transform:uppercase; display:block; margin-bottom:2px;">🎯 OpenVPN Target Machine IP:</span>
+                                    <code style="color:#ffffff; background:rgba(0,0,0,0.6); padding:4px 14px; border-radius:6px; font-size:1.25rem; font-weight:bold; letter-spacing:0.05em; border:1px solid rgba(0,240,255,0.4);">${displayIp}</code>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-info" style="font-weight:bold; border-radius:8px; padding:7px 16px;" onclick="copyBtnText(this, '${displayIp}')">
+                                        <i class="fas fa-copy mr-1"></i> Copy Target IP
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="font-size:0.88rem; color:#cbd5e1; line-height:1.7;">
+                                <i class="fas fa-network-wired text-info mr-1"></i> <strong>คำแนะนำทำโจทย์:</strong> เชื่อมต่อ OpenVPN แล้วใช้คำสั่งสแกนพอร์ตและเชื่อมต่อเซิร์ฟเวอร์:<br>
+                                <code style="color:#38bdf8; background:rgba(0,0,0,0.5); padding:4px 12px; border-radius:5px; margin-top:6px; display:inline-block; font-size:0.93rem; border:1px solid rgba(56,189,248,0.3);">nmap -p 1-65535 ${displayIp}</code>
+                                &nbsp;
+                                <code style="color:#3ddc84; background:rgba(0,0,0,0.5); padding:4px 10px; border-radius:5px; margin-top:6px; display:inline-block; font-size:0.93rem; border:1px solid rgba(61,220,132,0.3);">nc ${displayIp} ${redirectPort}</code>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.setAttribute('data-ready', 'true');
+                hideBootModalSuccess();
 
                 if (startedEl) startedEl.style.display = 'block';
 
@@ -900,7 +1311,7 @@
                         let second = parseInt(s_str) - 1;
                         if (second <= 0) {
                             clearInterval(activeIntervals[challengeId]);
-                            checkWhaleInstance(card);
+                            refreshAllWhaleCards();
                             return;
                         }
                         countdownSpan.innerText = formatTime(second);
@@ -908,7 +1319,6 @@
                     }, 1000);
                 }
                 
-                // Check if solved
                 checkChallengeSolvedState(card, challengeId);
 
             } else {
@@ -922,7 +1332,19 @@
     }
 
     function checkChallengeSolvedState(card, challengeId) {
-        CTFd.fetch(`/api/v1/challenges/${challengeId}`, {
+        if (!card || !challengeId) return;
+        var solvedChalls = JSON.parse(localStorage.getItem('solved_challenges') || '[]');
+        if (solvedChalls.includes(parseInt(challengeId))) {
+            markFlagSolved(card);
+            return;
+        }
+        const safeFetch = (window.CTFd && window.CTFd.fetch) ? window.CTFd.fetch.bind(window.CTFd) : function(u, o) {
+            o = o || {};
+            o.headers = o.headers || {};
+            if (window.init && window.init.csrfNonce) o.headers['CSRF-Token'] = window.init.csrfNonce;
+            return fetch(u, o);
+        };
+        safeFetch(`/api/v1/challenges/${challengeId}`, {
             method: 'GET',
             credentials: 'same-origin',
             headers: {
@@ -931,33 +1353,80 @@
             }
         }).then(res => res.json()).then(res => {
             if (res.success && res.data && res.data.solved) {
+                var localChalls = JSON.parse(localStorage.getItem('solved_challenges') || '[]');
+                if (!localChalls.includes(parseInt(challengeId))) {
+                    localChalls.push(parseInt(challengeId));
+                    localStorage.setItem('solved_challenges', JSON.stringify(localChalls));
+                }
                 markFlagSolved(card);
             }
         }).catch(e => console.error("Error checking solve status:", e));
     }
 
     function markFlagSolved(card) {
-        const input = card.querySelector('.flag-input');
-        const submitBtn = card.querySelector('.flag-submit-btn');
-        const feedback = card.querySelector('.flag-feedback-msg');
+        if (!card) return;
+
+        // Highlight outer card container with glowing neon green border & shadow
+        card.style.borderColor = '#3ddc84';
+        card.style.borderLeft = '6px solid #3ddc84';
+        card.style.boxShadow = '0 0 35px rgba(61, 220, 132, 0.4)';
+        card.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(15, 23, 42, 0.95))';
+
+        // Update badge inside card if present
+        const badges = card.querySelectorAll('.badge, span[style*="border"]');
+        badges.forEach(b => {
+            if (b.innerText.includes('PRACTICE LAB') || b.innerText.includes('SUBMISSION') || b.innerText.includes('SCOREBOARD')) {
+                b.style.background = 'rgba(61, 220, 132, 0.2)';
+                b.style.color = '#3ddc84';
+                b.style.border = '1px solid #3ddc84';
+                b.style.boxShadow = '0 0 12px rgba(61, 220, 132, 0.4)';
+                b.innerHTML = '🏆 LAB CLEARED (ทำสำเร็จแล้ว)';
+            }
+        });
+
+        const input = card.querySelector('.flag-input') || card.querySelector('input[type="text"]');
+        const submitBtn = card.querySelector('.flag-submit-btn') || card.querySelector('button[onclick*="submit"]');
+        const feedback = card.querySelector('.flag-feedback-msg') || card.querySelector('[id*="flag-result"]');
         
         if (input) {
-            input.value = "FLAG SUBMITTED & SOLVED";
+            if (!input.value || input.value.trim() === '') {
+                input.value = "FLAG SUBMITTED & SOLVED (ผ่านแล้ว)";
+            }
             input.disabled = true;
             input.classList.add('is-valid');
-            input.style.borderColor = '#10b981';
-            input.style.background = 'rgba(16, 185, 129, 0.05) !important';
+            input.style.borderColor = '#3ddc84';
+            input.style.boxShadow = '0 0 10px rgba(61, 220, 132, 0.3)';
+            input.style.background = 'rgba(61, 220, 132, 0.08)';
+            input.style.color = '#3ddc84';
+            input.style.fontWeight = 'bold';
         }
-        if (submitBtn) submitBtn.disabled = true;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.background = '#3ddc84';
+            submitBtn.style.color = '#000000';
+            submitBtn.style.fontWeight = '800';
+            submitBtn.innerHTML = '✓ SOLVED';
+        }
         if (feedback) {
-            feedback.className = "flag-feedback-msg mt-3 alert alert-success py-2 text-dark";
-            feedback.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Correct flag! You have solved this challenge.';
+            feedback.className = "flag-feedback-msg mt-3 py-2.5 px-3 rounded";
+            feedback.style.background = 'rgba(61, 220, 132, 0.15)';
+            feedback.style.color = '#3ddc84';
+            feedback.style.border = '1px solid #3ddc84';
+            feedback.style.fontWeight = 'bold';
+            feedback.style.fontSize = '0.9rem';
+            feedback.innerHTML = '🎉 <strong>LAB CLEARED!</strong> คุณส่งคำตอบแล็บนี้ถูกต้องเรียบร้อยแล้ว!';
             feedback.style.display = 'block';
         }
     }
 
-    function bootWhaleInstanceCell(card) {
-        const challengeId = card.getAttribute('data-challenge-id');
+        function refreshAllWhaleCards() {
+        document.querySelectorAll('.challenge-cta-card[data-challenge-id]').forEach(function(c) {
+            checkWhaleInstance(c);
+        });
+    }
+
+    function executePostBoot(card, challengeId) {
         const bootBtn = card.querySelector('.whale-cell-boot-btn');
         const originalText = bootBtn ? bootBtn.innerHTML : '';
 
@@ -967,7 +1436,7 @@
         }
 
         const url = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
-        CTFd.fetch(url, {
+        safeFetch(url, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -980,18 +1449,11 @@
             return response.json();
         }).then(function (response) {
             if (response.success) {
-                CTFd._functions.events.eventAlert({
-                    title: "Success",
-                    html: "Your instance has been deployed successfully!",
-                    button: "OK"
-                });
-                checkWhaleInstance(card);
+                card.removeAttribute('data-ready');
+                showBootModal();
+                refreshAllWhaleCards();
             } else {
-                CTFd._functions.events.eventAlert({
-                    title: "Fail",
-                    html: response.message,
-                    button: "OK"
-                });
+                alert("⚠️ " + (response.message || "Failed to boot container"));
             }
         }).catch(function (error) {
             console.error("Error booting Whale container:", error);
@@ -1003,7 +1465,108 @@
         });
     }
 
-    function renewWhaleInstanceCell(card) {
+    function showContainerConflictModal(otherName, otherId, challengeId, card) {
+        const existing = document.getElementById('whale-lesson-confirm-modal');
+        if (existing) existing.remove();
+
+        const modalHtml = `
+        <div id="whale-lesson-confirm-modal" style="position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(5, 7, 15, 0.85); z-index: 999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+          <div style="background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid rgba(251, 191, 36, 0.5); border-radius: 18px; max-width: 520px; width: 92%; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); color: #fff; text-align: left; font-family: 'Outfit', sans-serif;">
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 14px;">
+              <span style="font-size: 2.2rem;">⚠️</span>
+              <div>
+                <h4 style="margin:0; color: #fde047; font-weight: 800; font-size: 1.25rem;">แจ้งเตือน: มีแล็บเซิร์ฟเวอร์เดิมทำงานอยู่</h4>
+                <span style="color: #94a3b8; font-size: 0.8rem;">ระบบอนุญาตให้รันแล็บได้ครั้งละ 1 เซิร์ฟเวอร์เท่านั้น</span>
+              </div>
+            </div>
+            <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.7; margin-bottom: 24px;">
+              คุณยังมีแล็บเซิร์ฟเวอร์เดิมเปิดค้างอยู่อย่างในขณะนี้<br>
+              📌 <strong>โจทย์ที่เปิดค้าง:</strong> <span style="color: #38bdf8; font-weight: bold;">${otherName}</span><br><br>
+              คุณต้องการปิดแล็บเซิร์ฟเวอร์เดิม เพื่อเริ่มต้นสลับมารันแล็บสำหรับโจทย์นี้หรือไม่?
+            </p>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+              <button id="whale-lesson-cancel-btn" type="button" class="btn btn-secondary" style="background: #334155; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; color: #cbd5e1;">ยกเลิก (Cancel)</button>
+              <button id="whale-lesson-confirm-btn" type="button" class="btn btn-danger" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); border: none; padding: 10px 22px; border-radius: 8px; font-weight: 700; cursor: pointer; color: #fff; box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);">🔄 ยืนยันสลับเปิดแล็บนี้</button>
+            </div>
+          </div>
+        </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        document.getElementById('whale-lesson-cancel-btn').addEventListener('click', function() {
+            document.getElementById('whale-lesson-confirm-modal').remove();
+        });
+
+        document.getElementById('whale-lesson-confirm-btn').addEventListener('click', function() {
+            document.getElementById('whale-lesson-confirm-modal').remove();
+            
+            // Delete old container first
+            const deleteUrl = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + otherId;
+            safeFetch(deleteUrl, {
+                method: 'DELETE',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': window.init.csrfNonce
+                },
+                body: JSON.stringify({})
+            }).then(function() {
+                executePostBoot(card, challengeId);
+            }).catch(function() {
+                executePostBoot(card, challengeId);
+            });
+        });
+    }
+
+    function bootWhaleInstanceCell(card) {
+        if (!card) return;
+        const challengeId = card.getAttribute('data-challenge-id');
+        if (!challengeId) {
+            alert('ไม่พบ Challenge ID สำหรับแล็บนี้ โปรดลองใหม่อีกครั้ง');
+            return;
+        }
+
+        const bootBtn = card.querySelector('.whale-cell-boot-btn');
+        const originalText = bootBtn ? bootBtn.innerHTML : '';
+        if (bootBtn) {
+            bootBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Checking server status...';
+            bootBtn.disabled = true;
+        }
+
+        const getUrl = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
+        safeFetch(getUrl, {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(function(r) { return r.json(); })
+        .then(function(res) {
+            if (bootBtn) {
+                bootBtn.innerHTML = originalText;
+                bootBtn.disabled = false;
+            }
+
+            if (res.success && res.data && res.data.running_other) {
+                const otherName = res.data.other_name || 'Practice Lab';
+                const otherId = res.data.other_id;
+                showContainerConflictModal(otherName, otherId, challengeId, card);
+            } else {
+                executePostBoot(card, challengeId);
+            }
+        }).catch(function(err) {
+            if (bootBtn) {
+                bootBtn.innerHTML = originalText;
+                bootBtn.disabled = false;
+            }
+            executePostBoot(card, challengeId);
+        });
+    }
+
+        function renewWhaleInstanceCell(card) {
         const challengeId = card.getAttribute('data-challenge-id');
         const renewBtn = card.querySelector('.whale-cell-renew-btn');
         const originalText = renewBtn ? renewBtn.innerHTML : '';
@@ -1014,7 +1577,7 @@
         }
 
         const url = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
-        CTFd.fetch(url, {
+        safeFetch(url, {
             method: 'PATCH',
             credentials: 'same-origin',
             headers: {
@@ -1027,18 +1590,10 @@
             return response.json();
         }).then(function (response) {
             if (response.success) {
-                CTFd._functions.events.eventAlert({
-                    title: "Success",
-                    html: "Your instance has been extended successfully!",
-                    button: "OK"
-                });
-                checkWhaleInstance(card);
+                alert("✅ Your instance has been extended successfully!");
+                refreshAllWhaleCards();
             } else {
-                CTFd._functions.events.eventAlert({
-                    title: "Fail",
-                    html: response.message,
-                    button: "OK"
-                });
+                alert("⚠️ " + (response.message || "Failed"));
             }
         }).catch(function (error) {
             console.error("Error renewing Whale container:", error);
@@ -1061,7 +1616,7 @@
         }
 
         const url = "/api/v1/plugins/ctfd-whale/container?challenge_id=" + challengeId;
-        CTFd.fetch(url, {
+        safeFetch(url, {
             method: 'DELETE',
             credentials: 'same-origin',
             headers: {
@@ -1074,18 +1629,12 @@
             return response.json();
         }).then(function (response) {
             if (response.success) {
-                CTFd._functions.events.eventAlert({
-                    title: "Success",
-                    html: "Your instance has been shut down!",
-                    button: "OK"
-                });
-                checkWhaleInstance(card);
+                card.removeAttribute('data-ready');
+                const infoBox = card.querySelector('.whale-cell-access-info-box');
+                if (infoBox) infoBox.remove();
+                refreshAllWhaleCards();
             } else {
-                CTFd._functions.events.eventAlert({
-                    title: "Fail",
-                    html: response.message,
-                    button: "OK"
-                });
+                alert("⚠️ " + (response.message || "Failed to shutdown lab container"));
             }
         }).catch(function (error) {
             console.error("Error destroying Whale container:", error);
@@ -1094,6 +1643,35 @@
                 destroyBtn.innerHTML = originalText;
                 destroyBtn.disabled = false;
             }
+        });
+    }
+
+        function showSolveSuccessModal(challengeName, points) {
+        const existing = document.getElementById('solve-success-modal');
+        if (existing) existing.remove();
+
+        const name = challengeName || 'Practice Challenge';
+        const modalHtml = `
+        <div id="solve-success-modal" style="position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(5, 7, 15, 0.85); z-index: 999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); animation: fadeInModal 0.25s ease;">
+          <div style="background: linear-gradient(145deg, #0b1329 0%, #064e3b 100%); border: 1px solid rgba(61, 220, 132, 0.5); border-radius: 20px; max-width: 500px; width: 92%; padding: 32px; box-shadow: 0 20px 60px rgba(0,255,102,0.25); color: #fff; text-align: center; font-family: 'Outfit', 'Inter', sans-serif; position: relative;">
+            <div style="width: 70px; height: 70px; background: rgba(61, 220, 132, 0.15); border: 2px solid #3ddc84; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2.2rem; box-shadow: 0 0 20px rgba(61,220,132,0.4);">
+                🏆
+            </div>
+            <h3 style="margin: 0 0 10px; color: #3ddc84; font-weight: 800; font-size: 1.5rem; text-shadow: 0 0 12px rgba(61,220,132,0.5);">🎉 คำตอบถูกต้อง! (SOLVED)</h3>
+            <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.7; margin-bottom: 24px;">
+              ยินดีด้วย! คุณทำโจทย์ข้อ <strong style="color:#ffffff;">"${name}"</strong> สำเร็จสมบูรณ์เรียบร้อยแล้ว<br>
+              <span style="color:#fbbf24; font-weight:bold;">🏆 ระบบได้ทำการบันทึกคะแนนเรียบร้อยแล้ว</span>
+            </p>
+            <button id="solve-success-close-btn" type="button" class="btn btn-success btn-block" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; font-size: 1.05rem; cursor: pointer; color: #fff; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4); text-transform: uppercase; letter-spacing: 0.05em;">
+                🚀 ลุยโจทย์ข้อถัดไป
+            </button>
+          </div>
+        </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('solve-success-close-btn').addEventListener('click', function() {
+            document.getElementById('solve-success-modal').remove();
         });
     }
 
@@ -1118,7 +1696,7 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Checking...';
         }
 
-        CTFd.fetch('/api/v1/challenges/attempt', {
+        safeFetch('/api/v1/challenges/attempt', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -1133,11 +1711,8 @@
         }).then(res => res.json()).then(res => {
             if (res.success && res.data && res.data.status === 'correct') {
                 markFlagSolved(card);
-                CTFd._functions.events.eventAlert({
-                    title: "Correct Flag!",
-                    html: "Congratulations! You have solved this lab and earned your points!",
-                    button: "Awesome"
-                });
+                const chName = card.querySelector('h4') ? card.querySelector('h4').innerText : 'Challenge';
+                showSolveSuccessModal(chName);
             } else {
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -1161,6 +1736,112 @@
     document.addEventListener('DOMContentLoaded', () => {
       initSolvedQuestions();
       updateProgressUI();
+
+      // Fetch user progress from DB and sync with localStorage
+      fetch('/api/v1/tutorials/progress')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            var localSolved = getSolvedQuestions();
+            var changed = false;
+            for (var hash in res.solved_questions) {
+              if (localSolved[hash] === undefined) {
+                localSolved[hash] = res.solved_questions[hash];
+                changed = true;
+              }
+            }
+            if (changed) {
+              localStorage.setItem('solved_questions', JSON.stringify(localSolved));
+              initSolvedQuestions();
+            }
+            
+            // Sync solved challenges list & auto-highlight solved lab cards
+            var solvedChalls = res.solved_challenges || [];
+            localStorage.setItem('solved_challenges', JSON.stringify(solvedChalls));
+
+            document.querySelectorAll('.challenge-cta-card, [data-challenge-id]').forEach(function(card) {
+              var cid = parseInt(card.getAttribute('data-challenge-id'));
+              if (!isNaN(cid) && solvedChalls.includes(cid)) {
+                markFlagSolved(card);
+              }
+            });
+
+            document.querySelectorAll('[id*="flag-btn"], [onclick*="submit"]').forEach(function(btn) {
+              var card = btn.closest('div[style*="border"]') || btn.closest('.challenge-cta-card');
+              if (card) {
+                var scriptText = card.innerHTML || '';
+                var match = scriptText.match(/challenge_id:\s*(\d+)/);
+                if (match && solvedChalls.includes(parseInt(match[1]))) {
+                  markFlagSolved(card);
+                }
+              }
+            });
+            
+            // Sync quiz attempts from DB
+            localStorage.setItem('quiz_attempts', JSON.stringify(res.quiz_attempts || {}));
+            
+            // Sync quiz scores from DB
+            localStorage.setItem('quiz_scores', JSON.stringify(res.quiz_scores || {}));
+            
+            // Clear any local solved keys to prevent session pollution
+            var localKeys = Object.keys(localStorage);
+            localKeys.forEach(function(key) {
+              if (key.indexOf('solved_lesson_') === 0) {
+                localStorage.removeItem(key);
+              }
+            });
+
+            var dbSolved = res.solved_lessons || [];
+            dbSolved.forEach(function(lid) {
+              localStorage.setItem('solved_lesson_' + lid, 'solved');
+            });
+            
+            // Restore visual correct options for current lesson if solved
+            if (dbSolved.includes(currentLessonId)) {
+              var answers = res.solved_answers ? res.solved_answers[currentLessonId] : null;
+              var box = document.getElementById('mq-box-' + currentLessonId) || document.querySelector('.mini-quiz-box');
+              if (box && answers) {
+                var groups = box.querySelectorAll('.mq-q');
+                groups.forEach(function(g, idx) {
+                  var correctVal = answers[idx];
+                  if (correctVal) {
+                    g.querySelectorAll('.mini-opt').forEach(function(o) {
+                      var val = o.getAttribute('data-val');
+                      if (val === correctVal) {
+                        o.classList.add('selected', 'correct');
+                      }
+                      o.style.pointerEvents = 'none';
+                    });
+                  }
+                });
+                var checkBtn = box.querySelector('.mq-btn-check') || box.querySelector('button[onclick*="checkMiniQuiz"]');
+                if (checkBtn) {
+                  checkBtn.disabled = true;
+                  checkBtn.style.display = 'none';
+                }
+
+                var fill = document.getElementById('lesson-gauge-fill-' + currentLessonId) || document.querySelector('[id^="lesson-gauge-fill-"]');
+                var text = document.getElementById('lesson-gauge-text-' + currentLessonId) || document.querySelector('[id^="lesson-gauge-text-"]');
+                var status_txt = document.getElementById('lesson-status-txt-' + currentLessonId) || document.querySelector('[id^="lesson-status-txt-"]');
+                var status = document.getElementById('mq-status-' + currentLessonId) || document.querySelector('[id^="mq-status-"]');
+
+                if (fill) { fill.setAttribute('stroke-dasharray', '100, 100'); fill.style.stroke = '#3ddc84'; }
+                if (text) text.textContent = '100%';
+                if (status_txt) status_txt.innerHTML = '<span style="color:#3ddc84; font-weight:bold;"><i class="fas fa-check-circle mr-1"></i> ส่งคำตอบสำเร็จ</span>';
+
+                if (status) {
+                  status.style.display = 'block';
+                  status.style.background = 'rgba(61,220,132,0.08)';
+                  status.style.border = '1px solid rgba(61,220,132,0.25)';
+                  status.style.color = '#3ddc84';
+                  status.innerHTML = '🏆 <strong>LESSON CLEARED!</strong> คุณผ่านการประเมินความรู้ท้ายบทเรียนย่อยนี้เรียบร้อยแล้ว!';
+                }
+              }
+            }
+
+            updateProgressUI();
+          }
+        }).catch(e => console.error("Error syncing progress:", e));
 
       // Sidebar collapse toggle logic
       const container = document.querySelector('.lesson-container');
@@ -1208,7 +1889,11 @@
               });
           }
 
-          checkWhaleInstance(card);
+          if (card.querySelector('.whale-cell-panel')) {
+              checkWhaleInstance(card);
+          } else {
+              checkChallengeSolvedState(card, card.getAttribute('data-challenge-id'));
+          }
       });
     });
   </script>

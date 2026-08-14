@@ -1,0 +1,266 @@
+import json
+from CTFd import create_app
+from CTFd.plugins.tutorials import TutorialLesson
+
+app = create_app()
+ctx = app.app_context()
+ctx.push()
+db = app.db
+
+def save_lesson(lid, val0, val1, val2):
+    l = db.session.query(TutorialLesson).filter_by(id=lid).first()
+    blocks = [
+        {"type": "markdown", "value": val0},
+        {"type": "markdown", "value": val1},
+        {"type": "markdown", "value": val2}
+    ]
+    l.content = json.dumps(blocks, ensure_ascii=False)
+    db.session.query(TutorialLesson).filter_by(id=lid).update({"content": l.content})
+    db.session.commit()
+    print(f"Lesson {lid} complete upgrade finished!")
+
+# ─── Lesson 179: SQL Injection, Command Injection & Broken Auth ───
+val179_0 = """## 🎭 SQL Injection, Command Injection & Broken Auth (การควบคุมสิทธิ์บกพร่องและ XSS)
+---
+
+ยินดีต้อนรับสู่บทเรียนเจาะลึกประเภทการโจมตี SQL Injection, Command Injection และความบกพร่องของระบบตรวจสอบสิทธิ์การใช้งาน
+
+### 📄 SLIDE 101-108: ประเภทเทคนิคการโจมตี SQL Injection (SQLi)
+- **Error-Based SQL Injection (Bypass Auth)**:
+  - การแอบแทรกคำสั่งเพื่อให้เงื่อนไขหลังบ้านเป็นจริงตลอด (เช่นกรอก `' OR '1'='1`) ทำให้ผ่านหน้าล็อกอินโดยไม่ต้องใช้รหัสผ่าน
+- **Error-Based SQL Injection (Stealing Data)**:
+  - การใช้คำสั่งดึงข้อมูลข้ามตาราง เช่น `' OR '1'='1` บนหน้าต่างค้นหาเพื่อดึงรายชื่อลูกค้าหรือข้อมูลที่เป็นความลับทั้งหมด
+- **UNION-Based SQL Injection**:
+  - การนำคิวรีคำสั่ง `UNION` มาผสานคิวรีหลักเพื่อให้ดึงข้อมูลจากตารางอื่นๆ เช่น ตารางรหัสผ่านผู้ดูแลระบบ ออกมาทางหน้าจอของเว็บ
+- **Blind SQL Injection (Boolean)**:
+  - ระบบไม่แสดงผลข้อมูลตรงๆ แต่ใช้วิธีทดสอบเงื่อนไข True/False โดยสังเกตการเปิดโหลดหน้าเพจหรือการตอบกลับของเอเรอร์
+- **WAF Bypass Techniques**:
+  - การพาสผ่านโปรแกรมคัดกรองความปลอดภัย (WAF) เช่น ใช้การเขียนสลับตัวพิมพ์เล็กใหญ่ (`AdMiN' Or '1'='1`) หรือการใช้คอมเมนต์ (`admin'/**/OR/**/1=1/**/--`) เพื่อหลีกเลี่ยงการถูกตรวจจับ
+
+---
+
+### 📄 SLIDE 109-120: การใช้เครื่องมือเจาะระบบอัตโนมัติ (SQLMap Guide)
+- **SQLMap**: เครื่องมือโอเพนซอร์สชั้นนำที่ช่วยให้นักทดสอบเจาะระบบทำการสแกนและดึงฐานข้อมูลผ่านช่องโหว่ SQLi โดยอัตโนมัติ
+- **ชุดคำสั่งยอดฮิต**:
+  - `sqlmap -u "http://target.com/index.php?id=1" --dbs` (ดึงชื่อฐานข้อมูลทั้งหมด)
+  - `sqlmap -u "http://target.com/index.php?id=1" -D db_name --tables` (ดึงรายชื่อตาราง)
+  - `sqlmap -u "http://target.com/index.php?id=1" -D db_name -T users --dump` (ดึงตารางข้อมูลผู้ใช้ออกมาทั้งหมด)
+  - `sqlmap -u "http://target.com/index.php?id=1" --passwords` (ดึงรหัสแฮชและแกะรหัส)
+  - `sqlmap -u "http://target.com/index.php?id=1" --os-shell` (ขอสิทธิ์ CLI สั่งงานระบบเซิร์ฟเวอร์โดยตรง)
+
+---
+
+### 📄 SLIDE 121-140: OS Command Injections (การแทรกคำสั่งควบคุมเซิร์ฟเวอร์)
+- **คำจำกัดความ**: ช่องโหว่ความเสี่ยงสูงที่ผู้ออกแบบเขียนส่งค่าตัวแปรป้อนเข้าของผู้ใช้ ไปเรียกใช้ผ่านฟังก์ชันระดับระบบปฏิบัติการ (OS commands) โดยไม่มีการกรอง
+- **ตัวอย่างผลกระทบ**: แฮกเกอร์สามารถสั่งลบไฟล์หรือดึงข้อมูลผ่านหน้าต่างควบคุม CLI ของเครื่องโฮสต์เซิร์ฟเวอร์ได้ทันที
+- **เทคนิคการเขียน Bypass ตัวกรอง (Filter Evasion)**:
+  - **Space Bypass (หลบหลีกการตัดช่องว่าง)**: ใช้ตัวแปรระบบ `${IFS}` (เช่น `cat${IFS}/etc/passwd`) แทนการเคาะแป้น spacebar
+  - **Slash Bypass (หลบหลีกเครื่องหมาย /)**: ใช้ตัวแปรระบบอ้างอิงตำแหน่ง หรือสร้างตัวแปรเก็บสตริงเครื่องหมายสแลชแล้วส่งไปเรียกใช้
+
+---
+
+### 📄 SLIDE 141-150: Broken Authentication (ความเสื่อมสภาพของระบบล็อกอิน)
+- **Authentication Failures**: การล้มเหลวของการตรวจรับผู้ใช้งาน เช่น ยอมให้ใช้รหัสผ่านอ่อนแอ ปล่อยให้แฮกเกอร์รันสคริปต์ Brute Force เดารหัสผ่านได้เป็นล้านครั้งโดยไม่มีการล็อกสิทธิ์ หรือการรั่วไหลของ Session ID ผ่าน URL ลิงก์"""
+
+val179_1 = """### 💻 SQLi & Command Injection Lab Simulator (จำลองการแทรกคำสั่งประมวลผล)
+
+คลิกหัวข้อด้านซ้ายมือเพื่อศึกษาช่องโหว่ และ **กดปุ่มรันจำลองการทำงานจริง (Run Simulation)** เพื่อดูผลการแทรกคำสั่ง:
+
+<div class="w-sandbox-main" style="display: flex; gap: 20px; margin: 1.5rem auto; max-width: 1000px;">
+  <div class="w-sandbox-nav" style="width: 220px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+    <button id="nav-item-sqlitest" class="w-nav-item active" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px 14px; color: #cbd5e1; text-align: left; cursor: pointer; font-size: 0.78rem; transition: all 0.2s;" onclick="showSandboxItem('sqlitest', this)">1. UNION SQLi Test</button>
+    <button id="nav-item-cmdtest" class="w-nav-item" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px 14px; color: #cbd5e1; text-align: left; cursor: pointer; font-size: 0.78rem; transition: all 0.2s;" onclick="showSandboxItem('cmdtest', this)">2. OS Command Injection</button>
+  </div>
+  <div class="w-sandbox-panels" style="flex-grow: 1; display: flex; flex-direction: column; gap: 14px;">
+    <!-- SQLI TEST -->
+    <div id="panel-sqlitest" class="w-sand-panel active" style="background: #05070f; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.45);">
+      <div style="font-size: 0.95rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <span>1. UNION-Based SQL Injection Simulation</span>
+        <span style="font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); color: #3b82f6; font-family: monospace;">UNION SQLi</span>
+      </div>
+      <pre style="font-family: monospace; font-size: 0.8rem; color: #3b82f6; white-space: pre-wrap; margin: 0 0 12px; background: rgba(0,0,0,0.2); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">' UNION SELECT null, username, password FROM users --</pre>
+      <div style="background: #02040a; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; margin-bottom: 16px; overflow: hidden;">
+        <div style="background: rgba(255,255,255,0.03); padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.65rem; color: #64748b; font-weight: 800; letter-spacing: 0.06em; font-family: monospace;">🐚 Terminal Console</span>
+          <button style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 4px; color: #3b82f6; font-size: 0.68rem; padding: 3px 8px; cursor: pointer; font-family: monospace; font-weight: 700; transition: all 0.15s;" onclick="startWebSim('sqlitest')">▶ Run Simulation</button>
+        </div>
+        <div id="term-sqlitest" style="font-family: monospace; font-size: 0.76rem; color: #a7f3d0; padding: 12px 16px; white-space: pre-wrap; min-height: 90px;">
+          <span style="color: #3ddc84;">db-cli$</span> [กดปุ่ม Run Simulation เพื่อส่ง UNION payload]
+        </div>
+      </div>
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px; font-size: 0.83rem; color: #cbd5e1; line-height: 1.65;">
+        <h5 style="margin: 0 0 8px; font-size: 0.85rem; color: #fbbf24; font-weight: bold;">⚙️ Command Description</h5>
+        <p style="margin: 0;">คิวรีผสาน UNION SELECT ช่วยให้เราแอบไปดึงข้อมูลผู้ใช้งานและรหัสผ่านจากตารางอื่นออกมาทางเว็บบอร์ดแสดงผล</p>
+      </div>
+    </div>
+    
+    <!-- CMD TEST -->
+    <div id="panel-cmdtest" class="w-sand-panel" style="background: #05070f; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.45); display: none;">
+      <div style="font-size: 0.95rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <span>2. OS Command Injection Bypass Space</span>
+        <span style="font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); color: #3b82f6; font-family: monospace;">OS Command</span>
+      </div>
+      <pre style="font-family: monospace; font-size: 0.8rem; color: #3b82f6; white-space: pre-wrap; margin: 0 0 12px; background: rgba(0,0,0,0.2); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">cat${IFS}/etc/passwd</pre>
+      <div style="background: #02040a; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; margin-bottom: 16px; overflow: hidden;">
+        <div style="background: rgba(255,255,255,0.03); padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.65rem; color: #64748b; font-weight: 800; letter-spacing: 0.06em; font-family: monospace;">🐚 Terminal Console</span>
+          <button style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 4px; color: #3b82f6; font-size: 0.68rem; padding: 3px 8px; cursor: pointer; font-family: monospace; font-weight: 700; transition: all 0.15s;" onclick="startWebSim('cmdtest')">▶ Run Simulation</button>
+        </div>
+        <div id="term-cmdtest" style="font-family: monospace; font-size: 0.76rem; color: #a7f3d0; padding: 12px 16px; white-space: pre-wrap; min-height: 90px;">
+          <span style="color: #3ddc84;">kali$</span> [กดปุ่ม Run Simulation เพื่อส่งคำสั่ง]
+        </div>
+      </div>
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px; font-size: 0.83rem; color: #cbd5e1; line-height: 1.65;">
+        <h5 style="margin: 0 0 8px; font-size: 0.85rem; color: #fbbf24; font-weight: bold;">⚙️ Command Description</h5>
+        <p style="margin: 0;">การเขียนตัวแปร IFS ช่วยเลี่ยงการกรองช่องว่าง ทำให้คำสั่งสามารถรันเพื่อเรียกดูไฟล์ระบบปฏิบัติการได้เหมือนเดิม</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.showSandboxItem = function(itemKey, element) {
+  // Clear active buttons
+  const navButtons = document.querySelectorAll('.w-sandbox-nav button');
+  navButtons.forEach(btn => {
+    btn.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+    btn.style.color = '#cbd5e1';
+    btn.style.background = 'rgba(255, 255, 255, 0.02)';
+  });
+  // Set current active button
+  element.style.borderColor = '#3b82f6';
+  element.style.color = '#ffffff';
+  element.style.background = 'rgba(59, 130, 246, 0.05)';
+  
+  // Hide all panels
+  const panels = document.querySelectorAll('.w-sand-panel');
+  panels.forEach(p => {
+    p.style.display = 'none';
+  });
+  
+  // Show target panel
+  const target = document.getElementById('panel-' + itemKey);
+  if (target) {
+    target.style.display = 'block';
+  }
+}
+
+window.startWebSim = function(itemKey) {
+  const term = document.getElementById('term-' + itemKey);
+  if (!term) return;
+  term.innerHTML = '<span style="color:#64748b;">kali$</span> <span style="color:#ffffff; font-weight:bold;">Executing commands...</span>\\n[.] Verifying backend sanitization checks...';
+  setTimeout(() => {
+    if (itemKey === 'sqlitest') {
+      term.innerHTML = '<span style="color:#64748b;">db-cli$</span> <span style="color:#3ddc84; font-weight:bold;">UNION select output:</span>\\nID: null | User: admin | Pass: <span style="color:#ef4444;">$2y$10$xyzPasswordHash...</span>\\nID: null | User: user1 | Pass: <span style="color:#ef4444;">$2y$10$abcHashUser1...</span>\\n\\n[+] Data exfiltration successful!';
+    } else if (itemKey === 'cmdtest') {
+      term.innerHTML = '<span style="color:#64748b;">kali$</span> <span style="color:#3ddc84; font-weight:bold;">cat /etc/passwd:</span>\\nroot:x:0:0:root:/root:/bin/bash\\nbin:x:1:1:bin:/bin:/sbin/nologin\\n\\n[+] Command completed without spaces.';
+    }
+  }, 1000);
+}
+</script>"""
+
+val179_2 = """### ✏️ Lesson Quick Quiz (แบบทดสอบทบทวนความรู้ท้ายบทเรียน)
+
+ตอบคำถามประเมินความรู้ 2 ข้อด้านล่างนี้ให้ถูกต้องครบถ้วนเพื่อทำการบันทึกความสำเร็จและปลดล็อกปุ่มบทเรียนถัดไป:
+
+<div class="row align-items-center" style="margin:1.5rem auto; max-width:980px;"><div class="col-md-8"><div class="question-cell p-4 mb-3" style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); border-radius:8px;"><p class="text-white mb-3" style="font-size:0.88rem; font-weight:600;">1. ช่องโหว่ Cross-Site Scripting (XSS) เกิดจากการลอบฝังแทรกสคริปต์โค้ดประเภทใดเข้ามาทำงานฝั่ง Client Browser?</p><div class="options-container" data-q="q1"><label class="w-quiz-option"><input type="radio" name="xss_lang" value="SQL" data-hash="false">SQL Query code</label><label class="w-quiz-option"><input type="radio" name="xss_lang" value="JavaScript" data-hash="78ec09be8733f52e505820464fdbb19d45388047970d47d457cb146ef279ec3d">JavaScript</label><label class="w-quiz-option"><input type="radio" name="xss_lang" value="Bash" data-hash="false">Bash Shell command</label><label class="w-quiz-option"><input type="radio" name="xss_lang" value="PHP" data-hash="false">PHP Server Script</label></div><button class="btn btn-warning px-4 mt-2 text-dark font-weight-bold" type="button" onclick="verifyMultipleChoice(this)"><i class="fas fa-paper-plane mr-1"></i> Submit</button><div class="feedback-msg mt-2" style="display:none; font-size:0.8rem; border-radius:4px; padding:6px 12px;"></div></div><div class="question-cell p-4 mb-3" style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); border-radius:8px;"><p class="text-white mb-3" style="font-size:0.88rem; font-weight:600;">2. คีย์เวิร์ดมาตรฐาน HTML tag ใดที่นักโจมตีใช้ส่ง XSS Payload เพื่อเปิดจำลองกล่องป๊อปอัพ?</p><div class="options-container" data-q="q2"><label class="w-quiz-option"><input type="radio" name="xss_tag" value="script" data-hash="3a95aa975765796245d8b8ff716d0046522bb33f749eb721867c4e515d18d451"><span>&lt;script&gt;</span></label><label class="w-quiz-option"><input type="radio" name="xss_tag" value="iframe" data-hash="false"><span>&lt;iframe&gt;</span></label><label class="w-quiz-option"><input type="radio" name="xss_tag" value="div" data-hash="false"><span>&lt;div&gt;</span></label><label class="w-quiz-option"><input type="radio" name="xss_tag" value="img" data-hash="false"><span>&lt;img&gt;</span></label></div><button class="btn btn-warning px-4 mt-2 text-dark font-weight-bold" type="button" onclick="verifyMultipleChoice(this)"><i class="fas fa-paper-plane mr-1"></i> Submit</button><div class="feedback-msg mt-2" style="display:none; font-size:0.8rem; border-radius:4px; padding:6px 12px;"></div></div></div><div class="col-md-4 text-center"><div class="p-4" style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; min-height:220px; display:flex; flex-direction:column; justify-content:center; align-items:center;"><span class="text-muted d-block mb-3" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em;">Lesson Progress</span><div class="neon-gauge-container"><svg class="neon-gauge" viewBox="0 0 36 36"><path class="neon-gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /><path class="neon-gauge-fill" id="lesson-gauge-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /><text x="18" y="20.35" class="neon-gauge-text" id="lesson-gauge-text">0%</text></svg></div><span id="lesson-status-txt" class="mt-3 d-block text-muted" style="font-size:0.78rem;">โปรดตอบคำถามให้ครบ 2 ข้อ</span></div></div></div>
+<style>
+.neon-gauge-container {position:relative; width:120px; height:120px;}
+.neon-gauge {width:100%; height:100%;}
+.neon-gauge-bg {fill:none; stroke:rgba(255,255,255,0.05); stroke-width:2.8;}
+.neon-gauge-fill {fill:none; stroke:#3b82f6; stroke-width:2.8; stroke-linecap:round; transition:stroke-dasharray 0.5s ease, stroke 0.5s ease; filter:drop-shadow(0 0 5px rgba(59,130,246,0.5));}
+.neon-gauge-text {fill:#ffffff; font-family:\'JetBrains Mono\',monospace; font-size:9px; font-weight:800; text-anchor:middle; filter:drop-shadow(0 0 2px rgba(255,255,255,0.3));}
+</style>
+<script>
+const lessonKey = 'solved_lesson_179';
+function getSavedSolves() { try { return JSON.parse(localStorage.getItem(lessonKey) || '[]'); } catch(e) { return []; } }
+function updateLocalProgress() {
+  const solved = getSavedSolves();
+  const total = 2;
+  const percent = Math.round((solved.length / total) * 100);
+  const fill = document.getElementById('lesson-gauge-fill');
+  const text = document.getElementById('lesson-gauge-text');
+  const status = document.getElementById('lesson-status-txt');
+  if (fill) fill.setAttribute('stroke-dasharray', `${percent}, 100`);
+  if (text) text.textContent = `${percent}%`;
+  if (solved.length === total) {
+    if (fill) fill.style.stroke = '#3ddc84';
+    if (status) status.innerHTML = '<span style="color:#3ddc84; font-weight:bold;"><i class="fas fa-check-circle mr-1"></i> ปลดล็อกบทเรียนถัดไปแล้ว</span>';
+  } else {
+    if (fill) fill.style.stroke = '#3b82f6';
+    if (status) status.textContent = `ทำเสร็จแล้ว ${solved.length}/${total} ข้อ`;
+  }
+}
+document.addEventListener('click', function(e) {
+  const label = e.target.closest('.w-quiz-option');
+  if (label) {
+    const container = label.closest('.options-container');
+    if (container) {
+      container.querySelectorAll('.w-quiz-option').forEach(opt => opt.classList.remove('selected'));
+      label.classList.add('selected');
+      const radio = label.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    }
+  }
+});
+window.verifyMultipleChoice = function(button) {
+  const cell = button.closest('.question-cell');
+  const selectedRadio = cell.querySelector('input[type="radio"]:checked');
+  const feedback = cell.querySelector('.feedback-msg');
+  if (!selectedRadio) {
+    feedback.className = "feedback-msg mt-2 alert-warning py-1.5 px-3 text-dark";
+    feedback.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> กรุณาเลือกคำตอบ';
+    feedback.style.setProperty('display', 'block', 'important');
+    return;
+  }
+  const hashVal = selectedRadio.getAttribute('data-hash');
+  if (hashVal !== 'false') {
+    feedback.className = "feedback-msg mt-2 alert-success py-1.5 px-3 text-dark";
+    feedback.innerHTML = '<i class="fas fa-check-circle mr-1"></i> คำตอบถูกต้อง!';
+    feedback.style.setProperty('display', 'block', 'important');
+    cell.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    cell.querySelectorAll('.w-quiz-option').forEach(opt => opt.style.pointerEvents = 'none');
+    button.disabled = true;
+    const solved = getSavedSolves();
+    if (!solved.includes(hashVal)) {
+      solved.push(hashVal);
+      localStorage.setItem(lessonKey, JSON.stringify(solved));
+    }
+    updateLocalProgress();
+  } else {
+    feedback.className = "feedback-msg mt-2 alert-danger py-1.5 px-3 text-white bg-danger border-0";
+    feedback.innerHTML = '<i class="fas fa-times-circle mr-1"></i> คำตอบไม่ถูกต้อง ลองใหม่!';
+    feedback.style.setProperty('display', 'block', 'important');
+  }
+}
+setTimeout(() => {
+  const solved = getSavedSolves();
+  document.querySelectorAll('.options-container').forEach(container => {
+    container.querySelectorAll('input[type="radio"]').forEach(radio => {
+      const hash = radio.getAttribute('data-hash');
+      if (solved.includes(hash)) {
+        radio.checked = true;
+        const label = radio.closest('.w-quiz-option');
+        if (label) label.classList.add('selected');
+        container.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+        container.querySelectorAll('.w-quiz-option').forEach(opt => opt.style.pointerEvents = 'none');
+        const cell = container.closest('.question-cell');
+        if (cell) {
+          const btn = cell.querySelector('button');
+          if (btn) btn.disabled = true;
+          const fb = cell.querySelector('.feedback-msg');
+          if (fb) {
+            fb.className = "feedback-msg mt-2 alert-success py-1.5 px-3 text-dark";
+            fb.innerHTML = '<i class="fas fa-check-circle mr-1"></i> เรียบร้อยแล้ว';
+            fb.style.setProperty('display', 'block', 'important');
+          }
+        }
+      }
+    });
+  });
+  updateLocalProgress();
+}, 200);
+</script>"""
+
+save_lesson(179, val179_0, val179_1, val179_2)
+ctx.pop()

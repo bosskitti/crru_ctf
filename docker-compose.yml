@@ -9,7 +9,7 @@ services:
       - UPLOAD_FOLDER=/var/uploads
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
       - REDIS_URL=redis://cache:6379
-      - WORKERS=1
+      - WORKERS=4
       - LOG_FOLDER=/var/log/CTFd
       - ACCESS_LOG=-
       - ERROR_LOG=-
@@ -81,7 +81,10 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     restart: always
-    command: tunnel --no-autoupdate run --token eyJhIjoiMmIwY2QzZmM5N2JmZjM4ZmVmMTkzOWMxZThmZDIzOWUiLCJ0IjoiZTgwNTQ5YzktZmI4MS00OTFmLWIxMDgtYTE4MDZhYTM3ZDU2IiwicyI6Ill6SmhNV1poWmpZdFpqWm1aaTAwTm1KbExXRmlNamt0TlRFMk1HRm1aakJrTkdReiJ9
+    network_mode: host
+    extra_hosts:
+      - "nginx:127.0.0.1"
+    command: tunnel --no-autoupdate run --protocol http2 --token eyJhIjoiMmIwY2QzZmM5N2JmZjM4ZmVmMTkzOWMxZThmZDIzOWUiLCJ0IjoiZTgwNTQ5YzktZmI4MS00OTFmLWIxMDgtYTE4MDZhYTM3ZDU2IiwicyI6Ill6SmhNV1poWmpZdFpqWm1aaTAwTm1KbExXRmlNamt0TlRFMk1HRm1aakJrTkdReiJ9
     depends_on:
       - nginx
 

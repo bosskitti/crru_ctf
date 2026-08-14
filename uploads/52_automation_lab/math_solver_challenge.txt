@@ -1,0 +1,51 @@
+# =================================================================
+# WorldSkills Arithmetic Game
+# =================================================================
+import sys, random
+
+TARGET_ANSWERS = [102, 108, 97, 103, 123, 97, 117, 116, 111, 95, 109, 97, 116, 104, 95, 115, 111, 108, 118, 101, 114, 95, 109, 97, 115, 116, 101, 114, 95, 55, 55, 55, 125]
+
+def generate_equation(target):
+    op = random.choice(['+', '-'])
+    if op == '+':
+        a = random.randint(5, max(6, target - 5))
+        b = target - a
+        return f"{a} + {b}"
+    else:
+        b = random.randint(20, 500)
+        a = target + b
+        return f"{a} - {b}"
+
+def main():
+    print("=" * 65)
+    print("WorldSkills Arithmetic Game")
+    print("=" * 65)
+    print("Solve all arithmetic questions.\n")
+
+    for idx, expected_ans in enumerate(TARGET_ANSWERS, start=1):
+        eq_str = generate_equation(expected_ans)
+        label = f"Question {idx:02d}"
+        
+        while True:
+            try:
+                user_input = input(f"[{label}] {eq_str} = ").strip()
+                if "Answer:" in user_input:
+                    user_input = user_input.split("Answer:")[-1].strip()
+                ans = int(user_input)
+                if ans == expected_ans:
+                    print("Correct.")
+                    break
+                else:
+                    print("❌ Wrong answer! Try again.")
+            except ValueError:
+                print("⚠️ Please enter a valid integer number.")
+            except (KeyboardInterrupt, EOFError):
+                print("\nGame interrupted.")
+                return
+
+    print("\n" + "=" * 65)
+    print("Congratulations! Do you see the flag?")
+    print("=" * 65 + "\n")
+
+if __name__ == "__main__":
+    main()
