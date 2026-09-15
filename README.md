@@ -1,90 +1,167 @@
-# ![](https://github.com/CTFd/CTFd/blob/master/CTFd/themes/core/static/img/logo.png?raw=true)
+# 🏴 CRRU CTF Platform
 
-![CTFd MySQL CI](https://github.com/CTFd/CTFd/workflows/CTFd%20MySQL%20CI/badge.svg?branch=master)
-![Linting](https://github.com/CTFd/CTFd/workflows/Linting/badge.svg?branch=master)
-[![MajorLeagueCyber Discourse](https://img.shields.io/discourse/status?server=https%3A%2F%2Fcommunity.majorleaguecyber.org%2F)](https://community.majorleaguecyber.org/)
-[![Documentation Status](https://api.netlify.com/api/v1/badges/6d10883a-77bb-45c1-a003-22ce1284190e/deploy-status)](https://docs.ctfd.io)
+> Customized **Capture The Flag** learning platform for **Chiang Rai Rajabhat University (CRRU)**  
+> Built on top of [CTFd](https://ctfd.io/) with custom plugins, lessons, and Docker-based lab environments.
 
-## What is CTFd?
+---
 
-CTFd is a Capture The Flag framework focusing on ease of use and customizability. It comes with everything you need to run a CTF and it's easy to customize with plugins and themes.
+## 🎯 Overview
 
-![CTFd is a CTF in a can.](https://github.com/CTFd/CTFd/blob/master/CTFd/themes/core/static/img/scoreboard.png?raw=true)
+CRRU CTF is a hands-on cybersecurity learning system for students. It provides:
 
-## Features
+- 📚 **Interactive Lessons** — Step-by-step cybersecurity tutorials (Networking, Web, Crypto, RE, Exploitation)
+- 🐳 **Dynamic Labs** — Per-student Docker container labs via [ctfd-whale](https://github.com/glzjin/CTFd-Whale)
+- 🏆 **CTF Challenges** — Weekly challenges with auto-scoring and leaderboard
+- 🔒 **VPN Access** — OpenVPN integration for isolated lab access
+- 🤖 **AI Assistant** — DeepSeek-powered chat for learning support
 
-- Create your own challenges, categories, hints, and flags from the Admin Interface
-  - Dynamic Scoring Challenges
-  - Unlockable challenge support
-  - Challenge plugin architecture to create your own custom challenges
-  - Static & Regex based flags
-    - Custom flag plugins
-  - Unlockable hints
-  - File uploads to the server or an Amazon S3-compatible backend
-  - Limit challenge attempts & hide challenges
-  - Automatic bruteforce protection
-- Individual and Team based competitions
-  - Have users play on their own or form teams to play together
-- Scoreboard with automatic tie resolution
-  - Hide Scores from the public
-  - Freeze Scores at a specific time
-- Scoregraphs comparing the top 10 teams and team progress graphs
-- Markdown content management system
-- SMTP + Mailgun email support
-  - Email confirmation support
-  - Forgot password support
-- Automatic competition starting and ending
-- Team management, hiding, and banning
-- Customize everything using the [plugin](https://docs.ctfd.io/docs/plugins/overview) and [theme](https://docs.ctfd.io/docs/themes/overview) interfaces
-- Importing and Exporting of CTF data for archival
-- And a lot more...
+---
 
-## Install
+## 🏗️ Architecture
 
-1. Install dependencies: `pip install -r requirements.txt`
-   1. You can also use the `prepare.sh` script to install system dependencies using apt.
-2. Modify [CTFd/config.ini](https://github.com/CTFd/CTFd/blob/master/CTFd/config.ini) to your liking.
-3. Use `python serve.py` or `flask run` in a terminal to drop into debug mode.
-
-You can use the auto-generated Docker images with the following command:
-
-`docker run -p 8000:8000 -it ctfd/ctfd`
-
-Or you can use Docker Compose with the following command from the source repository:
-
-`docker compose up`
-
-Check out the [CTFd docs](https://docs.ctfd.io/) for [deployment options](https://docs.ctfd.io/docs/deployment/installation) and the [Getting Started](https://docs.ctfd.io/tutorials/getting-started/) guide
-
-## Live Demo
-
-https://demo.ctfd.io/
-
-## Support
-
-To get basic support, you can join the [MajorLeagueCyber Community](https://community.majorleaguecyber.org/): [![MajorLeagueCyber Discourse](https://img.shields.io/discourse/status?server=https%3A%2F%2Fcommunity.majorleaguecyber.org%2F)](https://community.majorleaguecyber.org/)
-
-If you prefer commercial support or have a special project, feel free to [contact us](https://ctfd.io/contact/).
-
-## Managed Hosting
-
-Looking to use CTFd but don't want to deal with managing infrastructure? Check out [the CTFd website](https://ctfd.io/) for managed CTFd deployments.
-
-## MajorLeagueCyber
-
-CTFd is heavily integrated with [MajorLeagueCyber](https://majorleaguecyber.org/). MajorLeagueCyber (MLC) is a CTF stats tracker that provides event scheduling, team tracking, and single sign on for events.
-
-By registering your CTF event with MajorLeagueCyber users can automatically login, track their individual and team scores, submit writeups, and get notifications of important events.
-
-To integrate with MajorLeagueCyber, simply register an account, create an event, and install the client ID and client secret in the relevant portion in `CTFd/config.py` or in the admin panel:
-
-```python
-OAUTH_CLIENT_ID = None
-OAUTH_CLIENT_SECRET = None
+```
+┌─────────────────────────────────────────────────┐
+│                  Node A (Local)                  │
+│  ┌──────────┐  ┌───────┐  ┌──────────────────┐  │
+│  │  CTFd    │  │ Redis │  │    MariaDB         │  │
+│  │ (Flask)  │  └───────┘  └──────────────────┘  │
+│  └────┬─────┘                                    │
+│       │ Docker Network                           │
+│  ┌────▼──────┐  ┌───────────┐                   │
+│  │  nginx    │  │ ctfd-whale │  (lab containers) │
+│  └────┬──────┘  └───────────┘                   │
+│       │ Cloudflare Tunnel                        │
+└───────┼─────────────────────────────────────────┘
+        │
+        ▼  Internet
+┌───────────────────┐
+│  Node B (Lab)     │
+│  OpenVPN Server   │
+│  FRP Server       │
+└───────────────────┘
 ```
 
-## Credits
+---
 
-- Logo by [Laura Barbera](http://www.laurabb.com/)
-- Theme by [Christopher Thompson](https://github.com/breadchris)
-- Notification Sound by [Terrence Martin](https://soundcloud.com/tj-martin-composer)
+## ⚙️ Quick Start
+
+### Prerequisites
+
+- Docker & Docker Compose v2
+- Git
+
+### 1. Clone & Configure
+
+```bash
+git clone https://github.com/bosskitti/crru_ctf.git
+cd crru_ctf
+cp .env.example .env
+# Edit .env with your values — see Environment Variables below
+```
+
+### 2. Start the Stack
+
+```bash
+docker compose up -d
+```
+
+### 3. Initial Setup
+
+Visit `http://localhost:8000` and complete the CTFd setup wizard.
+
+---
+
+## 🔧 Environment Variables
+
+Copy `.env.example` to `.env` and fill in:
+
+| Variable | Description | Required |
+|---|---|---|
+| `SECRET_KEY` | Flask secret key | ✅ |
+| `DATABASE_URL` | MariaDB connection string | ✅ |
+| `REDIS_URL` | Redis connection string | ✅ |
+| `CLOUDFLARE_TUNNEL_TOKEN` | Cloudflare Tunnel token | ✅ |
+| `OPENVPN_REMOTE_HOST` | Node B public IP/hostname | ✅ |
+| `OPENVPN_REMOTE_PORT` | Node B OpenVPN port (default: `1194`) | ✅ |
+| `DEEPSEEK_API_KEY` | DeepSeek API key for AI chat | optional |
+| `ANTHROPIC_API_KEY` | Anthropic API key | optional |
+| `FRP_TOKEN` | FRP authentication token | optional |
+
+> ⚠️ **Never commit `.env` to version control.** Use `.env.example` as a template only.
+
+---
+
+## 📁 Repository Structure
+
+```
+crru_ctf/
+├── CTFd/                    # CTFd core application (Flask)
+│   ├── CTFd/
+│   │   ├── plugins/
+│   │   │   ├── tutorials/   # CRRU lesson system
+│   │   │   └── ctfd-whale/  # Dynamic Docker labs
+│   │   └── themes/
+│   │       └── crru_ctf/    # Custom CRRU theme
+│   ├── conf/
+│   │   ├── nginx/           # Nginx config
+│   │   └── frp/             # FRP client/server config (templates)
+│   └── docker-compose.yml   # Full stack definition
+├── challenges/              # CTF challenge definitions
+├── openvpn/                 # OpenVPN config templates
+└── scripts/                 # Admin & maintenance scripts
+```
+
+---
+
+## 🔌 Key Plugins
+
+### `tutorials` — CRRU Lesson System
+
+Custom plugin providing the interactive lesson interface:
+- Lesson content stored in CTFd's challenge database
+- SVG-based diagrams and interactive sandboxes
+- Integrated quiz system with scoring
+- VPN config download for lab access
+
+### `ctfd-whale` — Dynamic Labs
+
+Spawns per-student Docker containers:
+- Isolated lab environments per challenge
+- Auto-cleanup after timeout
+- Flag injection into containers
+
+---
+
+## 🛡️ Security Notes
+
+- All secrets are managed via environment variables (`.env`)
+- The `OPENVPN_REMOTE_HOST` is injected at runtime — never hardcoded
+- Cloudflare Tunnel handles HTTPS — no ports need to be exposed publicly on Node A
+- FRP token controls reverse-proxy authentication between Node A and Node B
+
+---
+
+## 🚀 Deployment
+
+### Cloudflare Tunnel
+
+Set `CLOUDFLARE_TUNNEL_TOKEN` in `.env` from your Cloudflare Zero Trust dashboard.
+
+### OpenVPN Integration
+
+1. Configure Node B with OpenVPN server
+2. Set `OPENVPN_REMOTE_HOST` and `OPENVPN_REMOTE_PORT` in `.env`
+3. The tutorials plugin auto-generates `crrulearnctf_student.ovpn` at runtime
+
+### FRP (Port Forwarding)
+
+Used to expose Node B services through Node A:
+1. Copy `conf/frp/frpc.ini.example` → `conf/frp/frpc.ini`
+2. Set `FRP_TOKEN` matching the Node B frps configuration
+
+---
+
+## 📄 License
+
+Based on [CTFd](https://github.com/CTFd/CTFd) — Apache 2.0 License.  
+CRRU customizations © 2025-2026 CRRU Cybersecurity Lab.
