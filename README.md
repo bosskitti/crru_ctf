@@ -13,7 +13,18 @@ CRRU CTF is a hands-on cybersecurity learning system for students. It provides:
 - 🐳 **Dynamic Labs** — Per-student Docker container labs via [ctfd-whale](https://github.com/glzjin/CTFd-Whale)
 - 🏆 **CTF Challenges** — Weekly challenges with auto-scoring and leaderboard
 - 🔒 **VPN Access** — OpenVPN integration for isolated lab access
-- 🤖 **AI Assistant** — DeepSeek-powered chat for learning support
+
+---
+
+## 📸 Screenshots
+
+| Home | Tutorials |
+|:---:|:---:|
+| ![Home](docs/screenshots/home.png) | ![Tutorials](docs/screenshots/tutorials.png) |
+
+| Challenges | Scoreboard |
+|:---:|:---:|
+| ![Challenges](docs/screenshots/challenges.png) | ![Scoreboard](docs/screenshots/scoreboard.png) |
 
 ---
 
@@ -83,7 +94,6 @@ Copy `.env.example` to `.env` and fill in:
 | `CLOUDFLARE_TUNNEL_TOKEN` | Cloudflare Tunnel token | ✅ |
 | `OPENVPN_REMOTE_HOST` | Node B public IP/hostname | ✅ |
 | `OPENVPN_REMOTE_PORT` | Node B OpenVPN port (default: `1194`) | ✅ |
-| `DEEPSEEK_API_KEY` | DeepSeek API key for AI chat | optional |
 | `FRP_TOKEN` | FRP authentication token | optional |
 
 > ⚠️ **Never commit `.env` to version control.** Use `.env.example` as a template only.
