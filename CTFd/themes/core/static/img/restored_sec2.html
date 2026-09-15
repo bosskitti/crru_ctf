@@ -1,0 +1,193 @@
+<!-- CVE Ecosystem Flow: CVE -> NVD -> CVSS -> Patching -->
+<div class="vuln-lifecycle-container" style="background: linear-gradient(135deg, rgba(9, 13, 22, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 16px; padding: 22px 24px; margin-top: 24px; margin-bottom: 24px; position: relative; box-shadow: 0 10px 32px rgba(0,0,0,0.6);">
+<div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #38bdf8 0%, #f59e0b 33%, #a855f7 66%, #10b981 100%); border-radius: 16px 16px 0 0;"></div>
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;">
+<div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="font-size: 1.35rem;">🔄</span>
+<h4 style="margin: 0; color: #ffffff; font-size: 1.1rem; font-weight: 900; letter-spacing: 0.5px;">
+วงจรการทำงานของระบบนิเวศช่องโหว่ (Vulnerability Management Ecosystem)
+</h4>
+</div>
+<span style="font-size: 0.82rem; color: #94a3b8; margin-top: 4px; display: block;">
+กระบวนการวงจรชีวิต 4 ขั้นตอนมาตรฐานสากล: ตั้งแต่การค้นพบบั๊ก ➔ การออกรหัสกลาง ➔ การประเมินคะแนน NVD ➔ จนถึงการอุดช่องโหว่
+</span>
+</div>
+<span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 4px 12px; border-radius: 6px; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.5px;">
+⚡ 4-STAGE PIPELINE FLOW
+</span>
+</div>
+<!-- Stepper Flow Indicator Bar -->
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px 18px; font-size: 0.78rem; font-weight: 800; overflow-x: auto;">
+<span style="color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+<span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span>
+1. Discovery (ค้นพบบั๊ก)
+</span>
+<span style="color: #64748b; font-size: 0.95rem;">➔</span>
+<span style="color: #fbbf24; display: flex; align-items: center; gap: 6px;">
+<span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
+2. CVE Assigned (ตั้งชื่อรหัสสากล)
+</span>
+<span style="color: #64748b; font-size: 0.95rem;">➔</span>
+<span style="color: #c084fc; display: flex; align-items: center; gap: 6px;">
+<span style="width: 8px; height: 8px; border-radius: 50%; background: #a855f7; box-shadow: 0 0 8px #a855f7;"></span>
+3. NVD &amp; CVSS (วัดระดับความเสี่ยง)
+</span>
+<span style="color: #64748b; font-size: 0.95rem;">➔</span>
+<span style="color: #34d399; display: flex; align-items: center; gap: 6px;">
+<span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+4. Patch &amp; Protect (อุดรูรั่วป้องกัน)
+</span>
+</div>
+<!-- 4 Step Pipeline Grid -->
+<div class="vuln-pipeline-grid" style="display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 14px !important; width: 100% !important; margin-bottom: 18px !important;">
+<!-- STEP 1: Discovery -->
+<div class="vuln-step-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px; padding: 16px; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
+<div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #38bdf8; border-radius: 14px 14px 0 0;"></div>
+<div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+<span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 900; letter-spacing: 0.5px;">STEP 01</span>
+<span style="font-size: 0.72rem; color: #94a3b8; font-weight: 700;">➔ ไปขั้นตอนที่ 2</span>
+</div>
+<div style="text-align: center; margin-bottom: 12px;">
+<div style="width: 54px; height: 54px; margin: 0 auto 10px; border-radius: 14px; background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(15, 23, 42, 0.6) 100%); border: 1.5px solid #38bdf8; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);">
+<span style="font-size: 1.6rem;">🔍</span>
+</div>
+<div style="font-size: 0.98rem; font-weight: 900; color: #ffffff; line-height: 1.3;">
+1. Discovery
+</div>
+<div style="font-size: 0.78rem; color: #38bdf8; font-weight: 800; margin-top: 3px;">
+ค้นพบช่องโหว่ความปลอดภัย
+</div>
+</div>
+<div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 4px 8px; margin-bottom: 10px; text-align: center;">
+<span style="font-size: 0.72rem; color: #cbd5e1;">👤 <strong>ผู้ปฏิบัติการ:</strong> นักวิจัย / White Hat</span>
+</div>
+<div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.55;">
+• ค้นพบบั๊กหรือช่องโหว่ (0-Day) ในโค้ดหรือระบบปฏิบัติการ<br>
+• ตรวจสอบพฤติกรรมและสร้างโค้ดทดสอบ (Proof of Concept - PoC)<br>
+• รายงานผู้ผลิตอย่างปลอดภัย (Responsible Disclosure)
+</div>
+</div>
+<div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 6px;">
+<span style="font-size: 0.78rem;">📄</span>
+<span style="font-size: 0.72rem; color: #38bdf8; font-weight: 800;">ผลลัพธ์: Vulnerability Report &amp; PoC</span>
+</div>
+</div>
+<!-- STEP 2: CVE Assigned -->
+<div class="vuln-step-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 14px; padding: 16px; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
+<div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #f59e0b; border-radius: 14px 14px 0 0;"></div>
+<div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+<span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 900; letter-spacing: 0.5px;">STEP 02</span>
+<span style="font-size: 0.72rem; color: #94a3b8; font-weight: 700;">➔ ไปขั้นตอนที่ 3</span>
+</div>
+<div style="text-align: center; margin-bottom: 12px;">
+<div style="width: 54px; height: 54px; margin: 0 auto 10px; border-radius: 14px; background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.6) 100%); border: 1.5px solid #f59e0b; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);">
+<span style="font-size: 1.6rem;">🏷️</span>
+</div>
+<div style="font-size: 0.98rem; font-weight: 900; color: #ffffff; line-height: 1.3;">
+2. CVE Assigned
+</div>
+<div style="font-size: 0.78rem; color: #fbbf24; font-weight: 800; margin-top: 3px;">
+ออกรหัสประจำตัวสากล
+</div>
+</div>
+<div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 4px 8px; margin-bottom: 10px; text-align: center;">
+<span style="font-size: 0.72rem; color: #cbd5e1;">🏛️ <strong>ผู้ปฏิบัติการ:</strong> MITRE Corp / เครือข่าย CNA</span>
+</div>
+<div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.55;">
+• องค์กร CNA (เช่น Microsoft, Google) หรือ MITRE รับเรื่อง<br>
+• ตรวจสอบและออกรหัสมาตรฐาน เช่น <code>CVE-2021-44228</code><br>
+• ประกาศสถานะ <code>PUBLISHED</code> ลงในสารบบ <em>cve.org</em> ทั่วโลก
+</div>
+</div>
+<div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 6px;">
+<span style="font-size: 0.78rem;">🏷️</span>
+<span style="font-size: 0.72rem; color: #fbbf24; font-weight: 800;">ผลลัพธ์: Standardized CVE Record</span>
+</div>
+</div>
+<!-- STEP 3: NVD & CVSS -->
+<div class="vuln-step-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; padding: 16px; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
+<div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #a855f7; border-radius: 14px 14px 0 0;"></div>
+<div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+<span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 900; letter-spacing: 0.5px;">STEP 03</span>
+<span style="font-size: 0.72rem; color: #94a3b8; font-weight: 700;">➔ ไปขั้นตอนที่ 4</span>
+</div>
+<div style="text-align: center; margin-bottom: 12px;">
+<div style="width: 54px; height: 54px; margin: 0 auto 10px; border-radius: 14px; background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(15, 23, 42, 0.6) 100%); border: 1.5px solid #a855f7; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);">
+<span style="font-size: 1.6rem;">📊</span>
+</div>
+<div style="font-size: 0.98rem; font-weight: 900; color: #ffffff; line-height: 1.3;">
+3. NVD &amp; CVSS
+</div>
+<div style="font-size: 0.78rem; color: #c084fc; font-weight: 800; margin-top: 3px;">
+วิเคราะห์และวัดระดับความเสี่ยง
+</div>
+</div>
+<div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 4px 8px; margin-bottom: 10px; text-align: center;">
+<span style="font-size: 0.72rem; color: #cbd5e1;">🇺🇸 <strong>ผู้ปฏิบัติการ:</strong> สถาบัน NIST (National Vuln DB)</span>
+</div>
+<div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.55;">
+• สถาบัน NIST นำข้อมูล CVE ไปวิเคราะห์และผ่าผลกระทบ<br>
+• คำนวณคะแนนความรุนแรง <strong>CVSS Score (0.0 - 10.0)</strong><br>
+• กำหนดรหัสจุดอ่อน <strong>CWE</strong> และรายชื่อซอฟต์แวร์ที่กระทบ (CPE)
+</div>
+</div>
+<div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 6px;">
+<span style="font-size: 0.78rem;">⚡</span>
+<span style="font-size: 0.72rem; color: #c084fc; font-weight: 800;">ผลลัพธ์: CVSS Base Score (Severity)</span>
+</div>
+</div>
+<!-- STEP 4: Patch & Protect -->
+<div class="vuln-step-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 14px; padding: 16px; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(0,0,0,0.45);">
+<div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #10b981; border-radius: 14px 14px 0 0;"></div>
+<div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+<span style="background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35); padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 900; letter-spacing: 0.5px;">STEP 04</span>
+<span style="font-size: 0.72rem; color: #34d399; font-weight: 800;">🏁 ปลอดภัย 100%</span>
+</div>
+<div style="text-align: center; margin-bottom: 12px;">
+<div style="width: 54px; height: 54px; margin: 0 auto 10px; border-radius: 14px; background: radial-gradient(circle, rgba(52, 211, 153, 0.25) 0%, rgba(15, 23, 42, 0.6) 100%); border: 1.5px solid #10b981; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(52, 211, 153, 0.35);">
+<span style="font-size: 1.6rem;">🛡️</span>
+</div>
+<div style="font-size: 0.98rem; font-weight: 900; color: #ffffff; line-height: 1.3;">
+4. Patch &amp; Protect
+</div>
+<div style="font-size: 0.78rem; color: #34d399; font-weight: 800; margin-top: 3px;">
+ปล่อยแพตช์และเฝ้าระวังป้องกัน
+</div>
+</div>
+<div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 4px 8px; margin-bottom: 10px; text-align: center;">
+<span style="font-size: 0.72rem; color: #cbd5e1;">💻 <strong>ผู้ปฏิบัติการ:</strong> เจ้าของระบบ, SysAdmin &amp; SOC</span>
+</div>
+<div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.55;">
+• ผู้พัฒนาเขียนโค้ดแก้ไขและปล่อยตัวอัปเดต (Security Patch)<br>
+• ผู้ดูแลระบบ (SysAdmin) อัปเดตเครื่องอุดรูรั่วในระบบทันที<br>
+• ทีม SOC ตั้งค่าไฟร์วอลล์ (IDS/IPS, WAF, SIEM) สกัดกั้นการโจมตี
+</div>
+</div>
+<div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 6px;">
+<span style="font-size: 0.78rem;">🔒</span>
+<span style="font-size: 0.72rem; color: #34d399; font-weight: 800;">ผลลัพธ์: System Patched &amp; Protected</span>
+</div>
+</div>
+</div>
+<!-- Bottom Formula Box -->
+<div style="background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+<div style="display: flex; align-items: center; gap: 10px; font-size: 0.82rem;">
+<span style="font-size: 1.2rem;">💡</span>
+<span style="color: #cbd5e1; line-height: 1.6;">
+<strong style="color: #fde047;">สูตรความเข้าใจระบบนิเวศ:</strong>
+<span style="color: #38bdf8;">1. ค้นพบบั๊ก (Discovery)</span> ➔
+<span style="color: #fbbf24;">2. ออกสูติบัตรสากล (CVE)</span> ➔
+<span style="color: #c084fc;">3. ชั่งน้ำหนักความอันตราย (NVD / CVSS)</span> ➔
+<span style="color: #34d399;">4. ป้อนยาแก้โรคและติดเกราะคุ้มกัน (Patch &amp; Protect)</span>
+</span>
+</div>
+<span style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800;">
+END-TO-END DEFENSE
+</span>
+</div>
+</div>

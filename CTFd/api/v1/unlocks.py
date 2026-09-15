@@ -110,19 +110,7 @@ class UnlockList(Resource):
         target = Model.query.filter_by(id=req["target"]).first_or_404()
 
         if target_type == "hints":
-            # We should use the team's score if in teams mode
-            # user.account gives the appropriate account based on team mode
-            # Use get_score with admin to get the account's full score value
-            if target.cost > user.account.get_score(admin=True):
-                return (
-                    {
-                        "success": False,
-                        "errors": {
-                            "score": "You do not have enough points to unlock this hint"
-                        },
-                    },
-                    400,
-                )
+            # Allow hint unlocking so penalty points are deducted from the user's score
 
             schema = UnlockSchema()
             response = schema.load(req, session=db.session)

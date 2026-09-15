@@ -1,0 +1,103 @@
+<!-- Initial TTL Rule of Thumb Cards & Real Screenshots -->
+<h3 style="color: #facc15; font-size: 1.15rem; font-weight: 800; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px;">
+<span>🖥️</span> ค่าเริ่มต้น Initial TTL ตามประเภทของระบบปฏิบัติการ (OS Baseline)
+</h3>
+<!-- Live Lab Demonstration from Kali Linux (Featuring User Terminal Screenshot) -->
+<div style="background: linear-gradient(145deg, rgba(9, 13, 22, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%); border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 16px; padding: 22px 24px; margin-bottom: 24px; box-shadow: 0 10px 32px rgba(0,0,0,0.6); position: relative;">
+<div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #00f0ff 0%, #38bdf8 50%, #c084fc 100%); border-radius: 16px 16px 0 0;"></div>
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+<div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="font-size: 1.3rem;">🧪</span>
+<h4 style="margin: 0; color: #ffffff; font-size: 1.1rem; font-weight: 900; letter-spacing: 0.5px;">
+ปฏิบัติการจริงบน Kali Linux: พิสูจน์ค่า TTL จากการ Ping เครื่องเป้าหมายจริง
+</h4>
+</div>
+<span style="font-size: 0.82rem; color: #94a3b8; margin-top: 4px; display: block;">
+เปรียบเทียบผลลัพธ์จากการใช้คำสั่ง <code>ping</code> ทดสอบเครื่องเป้าหมาย 2 เครื่องในเครือข่ายทดลองเดียวกัน
+</span>
+</div>
+<span style="background: rgba(0, 240, 255, 0.15); color: #00f0ff; border: 1px solid rgba(0, 240, 255, 0.4); padding: 4px 12px; border-radius: 6px; font-size: 0.74rem; font-weight: 800; font-family: monospace;">
+⚡ LIVE LAB DEMONSTRATION
+</span>
+</div>
+<!-- Terminal Screenshot Frame -->
+<div style="text-align: center; background: rgba(3, 7, 18, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
+<img src="/tutorials/static/uploads/ping_ttl_kali_dual.png" alt="Kali Linux Ping TTL Comparison" style="width: 100%; max-width: 680px; height: auto; border-radius: 8px; border: 1.5px solid rgba(0, 240, 255, 0.3); box-shadow: 0 8px 28px rgba(0,0,0,0.6); display: block; margin: 0 auto;">
+<div style="margin-top: 10px; font-size: 0.76rem; color: #94a3b8; font-family: monospace;">
+📸 ภาพถ่ายหน้าจอเทอร์มินัล Kali Linux: คำสั่ง Ping ตรวจสอบ IP <code>192.168.255.128</code> เทียบกับ <code>192.168.255.129</code>
+</div>
+</div>
+<!-- Comparison Cards Grid: Target 1 vs Target 2 -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 14px;">
+<!-- Target 1: Linux -->
+<div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-left: 4px solid #38bdf8; border-radius: 10px; padding: 16px;">
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+<div style="font-weight: 800; color: #38bdf8; font-size: 0.92rem; display: flex; align-items: center; gap: 6px;">
+<span>🐧</span> โฮสต์เป้าหมายที่ 1 (IP: 192.168.255.128)
+</div>
+<span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-family: monospace; font-weight: 900; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">ttl=64</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+• <strong>คำสั่ง:</strong> <code>ping 192.168.255.128</code><br>
+• <strong>ค่าที่ได้รับ:</strong> <code>ttl=64</code> (เวลาตอบสนอง avg = 0.112 ms)<br>
+• <strong>การวิเคราะห์ OS:</strong> ได้รับค่า <code>ttl=64</code> เต็มจำนวนโดยตรง แสดงว่าเป็นระบบปฏิบัติการตระกูล <strong>Linux / Unix</strong> อย่างแน่นอน และอยู่ในวงเครือข่ายแลนเดียวกัน (0 Hop)
+</div>
+</div>
+<!-- Target 2: Windows -->
+<div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(192, 132, 252, 0.35); border-left: 4px solid #c084fc; border-radius: 10px; padding: 16px;">
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+<div style="font-weight: 800; color: #c084fc; font-size: 0.92rem; display: flex; align-items: center; gap: 6px;">
+<span>🪟</span> โฮสต์เป้าหมายที่ 2 (IP: 192.168.255.129)
+</div>
+<span style="background: rgba(192, 132, 252, 0.2); color: #c084fc; font-family: monospace; font-weight: 900; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">ttl=128</span>
+</div>
+<div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+• <strong>คำสั่ง:</strong> <code>ping 192.168.255.129</code><br>
+• <strong>ค่าที่ได้รับ:</strong> <code>ttl=128</code> (เวลาตอบสนอง avg = 0.774 ms)<br>
+• <strong>การวิเคราะห์ OS:</strong> ได้รับค่า <code>ttl=128</code> เต็มจำนวนโดยตรง แสดงว่าเป็นระบบปฏิบัติการ <strong>Microsoft Windows</strong> อย่างแน่นอน และอยู่ในวงเครือข่ายแลนเดียวกัน (0 Hop)
+</div>
+</div>
+</div>
+<!-- Hacker Takeaway Note -->
+<div style="background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 16px; font-size: 0.8rem; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
+<span style="color: #fde047; font-size: 1.1rem;">💡</span>
+<span><strong>ข้อสังเกตเชิง Reconnaissance:</strong> เพียงแค่ใช้คำสั่ง <code>ping</code> สั้นๆ เพียงบรรทัดเดียว นักทดสอบเจาะระบบก็สามารถรู้ได้ทันทีว่าโฮสต์ใดเป็น Linux และโฮสต์ใดเป็น Windows เพื่อเลือกเตรียม Payload และ Exploit ให้ตรงเป้าหมายได้อย่างแม่นยำ</span>
+</div>
+</div>
+<!-- 3 Baseline Individual Cards Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 16px; margin-bottom: 2rem;">
+<!-- Linux/Unix TTL=64 -->
+<div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 18px;">
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+<strong style="color: #38bdf8; font-size: 0.95rem;">Linux / Unix / macOS</strong>
+<span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-family: monospace; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">INITIAL TTL = 64</span>
+</div>
+<p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 10px;">Ping ไปยังเครื่อง Linux (<code>192.168.255.128</code>) ได้รับการตอบกลับที่ <code>ttl=64</code> (Local Subnet 0 hop):</p>
+<div style="text-align: center; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 6px;">
+<img src="/tutorials/static/uploads/ping_linux_kali_ttl64.png" alt="Ping Linux TTL 64" style="max-width: 100%; height: auto; border-radius: 6px;">
+</div>
+</div>
+<!-- Windows TTL=128 -->
+<div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(192, 132, 252, 0.3); border-radius: 12px; padding: 18px;">
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+<strong style="color: #c084fc; font-size: 0.95rem;">Windows Systems</strong>
+<span style="background: rgba(192, 132, 252, 0.2); color: #c084fc; font-family: monospace; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">INITIAL TTL = 128</span>
+</div>
+<p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 10px;">Ping ไปยังเครื่อง Windows (<code>192.168.255.129</code>) ได้รับการตอบกลับที่ <code>ttl=128</code> (Local Subnet 0 hop):</p>
+<div style="text-align: center; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 6px;">
+<img src="/tutorials/static/uploads/ping_windows_kali_ttl128.png" alt="Ping Windows TTL 128" style="max-width: 100%; height: auto; border-radius: 6px;">
+</div>
+</div>
+<!-- Router TTL=255 -->
+<div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 12px; padding: 18px;">
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+<strong style="color: #f43f5e; font-size: 0.95rem;">Network Devices (Routers / Cisco)</strong>
+<span style="background: rgba(244, 63, 94, 0.2); color: #f43f5e; font-family: monospace; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">INITIAL TTL = 255 / 254</span>
+</div>
+<p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 10px;">Ping ไปยังเราเตอร์ (<code>202.29.103.2</code>) ได้รับการตอบกลับที่ <code>ttl=254</code> (ผ่าน 1 hop):</p>
+<div style="text-align: center; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 6px;">
+<img src="/tutorials/static/uploads/ping_router_ttl255.png" alt="Ping Router TTL 255" style="max-width: 100%; height: auto; border-radius: 6px;">
+</div>
+</div>
+</div>

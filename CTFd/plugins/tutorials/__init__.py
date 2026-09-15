@@ -43,6 +43,21 @@ class TutorialLesson(db.Model):
     challenge_id = db.Column(db.Integer, db.ForeignKey("challenges.id", ondelete="SET NULL"), nullable=True)
     position = db.Column(db.Integer, default=0)
 
+    progress_records = db.relationship(
+        "TutorialProgress",
+        backref=db.backref("lesson", lazy="joined"),
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+    quiz_answers = db.relationship(
+        "TutorialQuizAnswer",
+        backref=db.backref("lesson", lazy="joined"),
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
 class TutorialProgress(db.Model):
     __tablename__ = "tutorial_progress"
     id = db.Column(db.Integer, primary_key=True)
@@ -56,7 +71,6 @@ class TutorialProgress(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.now())
     
     user = db.relationship("Users", backref=db.backref("tutorial_progress", lazy="dynamic"))
-    lesson = db.relationship("TutorialLesson", backref=db.backref("progress_records", lazy="dynamic"))
 
 class TutorialQuizAnswer(db.Model):
     """Stores correct answers for mini-quizzes server-side (never sent to browser)."""
@@ -349,13 +363,18 @@ def process_lesson_content(content):
 
 
 @tutorials_bp.route("/vpn", methods=["GET"])
+@authed_only
 def openvpn_guide_page():
     user = get_current_user()
-    username = user.name if user else "student"
+    if not user:
+        return redirect(url_for("auth.login", next=request.path))
+    username = user.name
     safe_username = re.sub(r'[^a-zA-Z0-9_]', '_', username)
     return render_template("plugins/tutorials/templates/vpn_guide.html", username=username, safe_username=safe_username)
 
 @tutorials_bp.route("/vpn/download", methods=["GET"])
+@tutorials_bp.route("/vpn/get_ovpn", methods=["GET"])
+@tutorials_bp.route("/api/v1/vpn/profile.ovpn", methods=["GET"])
 def download_vpn_config():
     try:
         user = get_current_user()
@@ -370,13 +389,20 @@ def download_vpn_config():
             with open(ovpn_path, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
             
-            # Ensure OpenVPN connects directly to unproxied server IP instead of Cloudflare proxy (104.21.6.103)
-            content = re.sub(r'remote\s+\S+\s+1194', 'remote 192.168.238.128 1194', content)
+            # Override remote host if configured in environment
+            vpn_remote_host = os.getenv("OPENVPN_REMOTE_HOST")
+            if vpn_remote_host:
+                content = re.sub(r'remote\s+\S+\s+\d+', f'remote {vpn_remote_host} 1194', content)
+            # Ensure route is /24
+            content = re.sub(r'route\s+10\.10\.0\.0\s+255\.255\.0\.0', 'route 10.10.0.0 255.255.255.0', content)
             
             custom_content = f"# Dedicated OpenVPN Client Profile for CRRU CTF User: {safe_username}\n" + content
             response = make_response(custom_content)
             response.headers["Content-Type"] = "application/x-openvpn-profile"
             response.headers["Content-Disposition"] = f"attachment; filename=crrulearnctf_{safe_username}.ovpn"
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "-1"
             return response
     except Exception as e:
         print(f"Error in download_vpn_config: {e}")
@@ -474,6 +500,20 @@ def admin_edit_module(module_id):
 @admins_only
 def admin_delete_module(module_id):
     module = TutorialModule.query.filter_by(id=module_id).first_or_404()
+    # Clear circular references before deleting to avoid IntegrityError
+    module.pre_test_lesson_id = None
+    module.post_test_lesson_id = None
+    db.session.commit()
+    
+    # Explicitly clean up all child progress and quiz answer records for all lessons in this module
+    lessons = TutorialLesson.query.filter_by(module_id=module_id).all()
+    lesson_ids = [l.id for l in lessons]
+    if lesson_ids:
+        TutorialQuizAnswer.query.filter(TutorialQuizAnswer.lesson_id.in_(lesson_ids)).delete(synchronize_session=False)
+        TutorialProgress.query.filter(TutorialProgress.lesson_id.in_(lesson_ids)).delete(synchronize_session=False)
+        TutorialLesson.query.filter(TutorialLesson.module_id == module_id).delete(synchronize_session=False)
+        db.session.commit()
+    
     db.session.delete(module)
     db.session.commit()
     return redirect(url_for("tutorials.admin_list_modules"))
@@ -540,6 +580,21 @@ def admin_edit_lesson(lesson_id):
 def admin_delete_lesson(lesson_id):
     lesson = TutorialLesson.query.filter_by(id=lesson_id).first_or_404()
     module_id = lesson.module_id
+
+    # If this lesson is assigned as pre_test or post_test on its parent module, clear it
+    parent_module = TutorialModule.query.filter_by(id=module_id).first()
+    if parent_module:
+        if parent_module.pre_test_lesson_id == lesson_id:
+            parent_module.pre_test_lesson_id = None
+        if parent_module.post_test_lesson_id == lesson_id:
+            parent_module.post_test_lesson_id = None
+        db.session.commit()
+
+    # Explicitly clean up child progress and quiz answer records
+    TutorialQuizAnswer.query.filter_by(lesson_id=lesson_id).delete(synchronize_session=False)
+    TutorialProgress.query.filter_by(lesson_id=lesson_id).delete(synchronize_session=False)
+    db.session.commit()
+
     db.session.delete(lesson)
     db.session.commit()
     return redirect(url_for("tutorials.admin_edit_module", module_id=module_id))

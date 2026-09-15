@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="hypGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00a4ef"/>
+      <stop offset="100%" stop-color="#0078d4"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(14, 14)">
+    <!-- 4 Microsoft Tiles with modern slant/perspective or flat grid -->
+    <rect x="0" y="0" width="24" height="24" rx="3" fill="#00a4ef"/>
+    <rect x="28" y="0" width="24" height="24" rx="3" fill="#38bdf8"/>
+    <rect x="0" y="28" width="24" height="24" rx="3" fill="#0284c7"/>
+    <rect x="28" y="28" width="24" height="24" rx="3" fill="#0078d4"/>
+    <!-- Hyper-V Server rack overlay -->
+    <path d="M 6,12 L 20,12 M 6,40 L 20,40 M 34,12 L 46,12 M 34,40 L 46,40" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>

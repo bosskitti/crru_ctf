@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64">
+  <defs>
+    <linearGradient id="hawkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <filter id="hawkGlow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#fbbf24" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <rect width="24" height="24" rx="5" fill="#1e1808" stroke="rgba(251,191,36,0.4)" stroke-width="0.8"/>
+  <g filter="url(#hawkGlow)" transform="translate(3, 3) scale(0.75)">
+    <!-- Futuristic hawk wings in stealth geometric design -->
+    <path fill="url(#hawkGrad)" d="M12 2L2 9l3 2 7-5 7 5 3-2-10-7zm0 5.5L5 12l7 10 7-10-7-4.5zm0 3.5l4 3-4 5.5-4-5.5 4-3z"/>
+  </g>
+</svg>

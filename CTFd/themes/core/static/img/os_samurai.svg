@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64">
+  <defs>
+    <linearGradient id="samGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <filter id="samGlow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#f87171" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <rect width="24" height="24" rx="5" fill="#200d0d" stroke="rgba(248,113,113,0.4)" stroke-width="0.8"/>
+  <g filter="url(#samGlow)" transform="translate(3, 3) scale(0.75)">
+    <!-- Crossed Katana swords & cyber shield -->
+    <path fill="url(#samGrad)" d="M12 2L4 6v6c0 5 3.4 9.8 8 11 4.6-1.2 8-6 8-11V6l-8-4zm-1 5h2v6h-2V7zm0 8h2v2h-2v-2z"/>
+    <path d="M6 3l12 14M18 3L6 17" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+  </g>
+</svg>

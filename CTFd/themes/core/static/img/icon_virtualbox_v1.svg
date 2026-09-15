@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="vboxTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="vboxLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+    <linearGradient id="vboxRight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#075985"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(40, 40)">
+    <!-- Top Face -->
+    <polygon points="0,-32 30,-15 0,2 -30,-15" fill="url(#vboxTop)"/>
+    <!-- Left Face -->
+    <polygon points="-30,-15 0,2 0,34 -30,17" fill="url(#vboxLeft)"/>
+    <!-- Right Face -->
+    <polygon points="0,2 30,-15 30,17 0,34" fill="url(#vboxRight)"/>
+    <!-- Inner Virtualization lines -->
+    <polyline points="0,-20 15,-11 0,-2 -15,-11 0,-20" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.9"/>
+    <line x1="0" y1="-2" x2="0" y2="22" stroke="#ffffff" stroke-width="2" opacity="0.9"/>
+    <line x1="-15" y1="-11" x2="-15" y2="12" stroke="#ffffff" stroke-width="1.5" opacity="0.7"/>
+    <line x1="15" y1="-11" x2="15" y2="12" stroke="#ffffff" stroke-width="1.5" opacity="0.7"/>
+  </g>
+</svg>

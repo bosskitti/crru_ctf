@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="qemuGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7a00"/>
+      <stop offset="100%" stop-color="#e04800"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer circle "Q" -->
+  <circle cx="40" cy="38" r="32" fill="none" stroke="url(#qemuGrad)" stroke-width="6"/>
+  <!-- Q leg -->
+  <path d="M 52,50 L 68,68" stroke="url(#qemuGrad)" stroke-width="7" stroke-linecap="round"/>
+  <!-- Stylized Eagle / Osprey Profile Inside Q -->
+  <path d="M 32,18 C 45,18 55,26 55,38 C 55,48 45,56 35,56 C 28,56 22,50 20,44 C 26,42 32,38 32,30 C 32,24 28,21 32,18 Z" fill="url(#qemuGrad)"/>
+  <!-- Beak -->
+  <polygon points="53,34 65,39 53,44" fill="#fbbf24"/>
+  <!-- Glowing Cyan Eye -->
+  <circle cx="44" cy="30" r="3.5" fill="#00f0ff"/>
+</svg>

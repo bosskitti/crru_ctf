@@ -76,15 +76,9 @@
       overflow-x: hidden;
     }
 
-    /* Horizontal Scanline Overlay */
+    /* Horizontal Scanline Overlay disabled for crisp image clarity */
     body::after {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
-      background-size: 100% 4px;
-      z-index: 9999;
-      pointer-events: none;
+      display: none !important;
     }
 
     /* Force dark backgrounds on all wrapper elements */

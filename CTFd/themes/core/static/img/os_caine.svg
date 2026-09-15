@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64">
+  <defs>
+    <linearGradient id="caineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    <filter id="caineGlow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#c084fc" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <rect width="24" height="24" rx="5" fill="#180e29" stroke="rgba(192,132,252,0.4)" stroke-width="0.8"/>
+  <g filter="url(#caineGlow)" transform="translate(3, 3) scale(0.75)">
+    <!-- Digital forensics cyber eye & crosshairs -->
+    <circle cx="12" cy="12" r="9" fill="none" stroke="url(#caineGrad)" stroke-width="1.8"/>
+    <circle cx="12" cy="12" r="5" fill="none" stroke="url(#caineGrad)" stroke-width="1.5"/>
+    <circle cx="12" cy="12" r="2" fill="url(#caineGrad)"/>
+    <path d="M12 1v4M12 19v4M1 12h4M19 12h4" stroke="url(#caineGrad)" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="vmwCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="vmwBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+    <linearGradient id="vmwDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <!-- Main Isometric Virtualization Cubes -->
+  <g transform="translate(40, 40)">
+    <!-- Top Cube -->
+    <g transform="translate(0, -18)">
+      <polygon points="0,-16 16,-7 0,2 -16,-7" fill="#38bdf8"/>
+      <polygon points="-16,-7 0,2 0,18 -16,9" fill="#0284c7"/>
+      <polygon points="0,2 16,-7 16,9 0,18" fill="#0369a1"/>
+    </g>
+    <!-- Bottom Left Cube -->
+    <g transform="translate(-16, 10)">
+      <polygon points="0,-16 16,-7 0,2 -16,-7" fill="#00f0ff"/>
+      <polygon points="-16,-7 0,2 0,18 -16,9" fill="#0284c7"/>
+      <polygon points="0,2 16,-7 16,9 0,18" fill="#0f766e"/>
+    </g>
+    <!-- Bottom Right Cube -->
+    <g transform="translate(16, 10)">
+      <polygon points="0,-16 16,-7 0,2 -16,-7" fill="#67e8f9"/>
+      <polygon points="-16,-7 0,2 0,18 -16,9" fill="#0284c7"/>
+      <polygon points="0,2 16,-7 16,9 0,18" fill="#1e3a8a"/>
+    </g>
+    <!-- Connecting neon pulse ring -->
+    <circle cx="0" cy="0" r="28" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"/>
+  </g>
+</svg>

@@ -66,7 +66,9 @@ def check_challenge_visibility(f):
                 if request.is_json:
                     abort(403)
                 else:
-                    return redirect(url_for("auth.login", next=request.full_path))
+                    res = redirect(url_for("auth.login", next=request.full_path))
+                    res.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+                    return res
 
         elif v == ChallengeVisibilityTypes.ADMINS:
             if is_admin():

@@ -80,3 +80,13 @@ node_modules/
 
 # Flask Profiler files
 flask_profiler.sql
+
+# Temporary scratch & backup artifacts
+*_backup.json
+b1_sandbox.txt
+b6_quiz.txt
+race_exploit.py
+rendered_*.html
+*.rec
+.env
+.env.*

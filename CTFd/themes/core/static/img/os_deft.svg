@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64">
+  <defs>
+    <linearGradient id="deftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="deftGlow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#34d399" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <rect width="24" height="24" rx="5" fill="#091f16" stroke="rgba(52,211,153,0.4)" stroke-width="0.8"/>
+  <g filter="url(#deftGlow)" transform="translate(3, 3) scale(0.75)">
+    <!-- Forensics Magnifier over binary disk -->
+    <circle cx="10" cy="10" r="7" fill="none" stroke="url(#deftGrad)" stroke-width="2.5"/>
+    <line x1="15" y1="15" x2="22" y2="22" stroke="url(#deftGrad)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="10" cy="10" r="3" fill="url(#deftGrad)"/>
+    <path d="M7 10h6M10 7v6" stroke="#091f16" stroke-width="1"/>
+  </g>
+</svg>

@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLACKSHADE NETWORK // Onion Tactical Directory v4.8</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-darkest: #070a10;
+      --bg-body: #0b0f19;
+      --bg-panel: #111827;
+      --bg-card: #151f32;
+      --bg-hover: #1c2942;
+      --border-subtle: #1e293b;
+      --border-light: #334155;
+      --text-main: #94a3b8;
+      --text-light: #cbd5e1;
+      --text-white: #f1f5f9;
+      --text-muted: #64748b;
+      --accent-cyan: #06b6d4;
+      --accent-glow: #38bdf8;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .tor-bar {
+      background: #05070b;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Consolas', monospace;
+    }
+    .circuit-pill {
+      background: #0f172a;
+      border: 1px solid var(--border-subtle);
+      padding: 3px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #94a3b8;
+    }
+    .circuit-pill:hover { color: #f1f5f9; border-color: var(--border-light); }
+    .onion-url {
+      flex: 1;
+      background: #090d16;
+      border: 1px solid var(--border-subtle);
+      padding: 4px 14px;
+      border-radius: 14px;
+      color: var(--accent-cyan);
+      font-size: 11.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tor-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #10b981;
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .tor-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulseDot 2s infinite;
+    }
+    @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .board-header-banner {
+      background: linear-gradient(180deg, #0e1626 0%, #0b0f19 100%);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 18px 24px 12px;
+    }
+    .header-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .logo-box { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { font-size: 32px; color: #e2e8f0; text-shadow: 0 0 12px rgba(6, 182, 212, 0.4); }
+    .logo-title { font-size: 20px; font-weight: 800; letter-spacing: 1.5px; color: var(--text-white); font-family: 'Consolas', monospace; }
+    .logo-tagline { font-size: 11.5px; color: var(--text-muted); }
+    .header-user-badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-container { background: #0d1320; border-bottom: 1px solid var(--border-subtle); }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      gap: 4px;
+      padding: 0 16px;
+      overflow-x: auto;
+    }
+    .tab-item {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 11px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .tab-item:hover { color: var(--text-white); background: rgba(255,255,255,0.02); }
+    .tab-item.active {
+      color: var(--accent-glow);
+      border-bottom: 2px solid var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.05);
+    }
+    .badge-pill {
+      background: #1e293b;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      color: var(--text-light);
+      font-weight: 700;
+    }
+    .subnav-bar {
+      max-width: 1280px;
+      margin: 14px auto 0;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .breadcrumbs { font-size: 12px; color: var(--text-muted); }
+    .breadcrumbs a { color: var(--text-light); text-decoration: none; cursor: pointer; }
+    .breadcrumbs a:hover { color: var(--accent-glow); }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 4px 10px;
+      gap: 8px;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-white);
+      font-size: 12px;
+      width: 220px;
+    }
+    .layout-grid {
+      max-width: 1280px;
+      margin: 14px auto 40px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 310px;
+      gap: 18px;
+    }
+    @media (max-width: 980px) { .layout-grid { grid-template-columns: 1fr; } }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    .forum-block {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .forum-block-title {
+      background: #0f172a;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .thread-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: background 0.12s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .thread-row:last-child { border-bottom: none; }
+    .thread-row:hover { background: var(--bg-hover); }
+    .thread-icon-col {
+      width: 36px;
+      font-size: 15px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .thread-main-col { flex: 1; padding-right: 14px; min-width: 0; }
+    .thread-heading {
+      color: var(--text-white);
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .thread-row:hover .thread-heading { color: var(--accent-glow); }
+    .thread-snippet {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .thread-counts-col {
+      width: 105px;
+      text-align: right;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+    .thread-last-col {
+      width: 160px;
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      padding-left: 12px;
+      line-height: 1.4;
+    }
+    .thread-last-col strong { color: var(--text-light); font-weight: 600; }
+    .tag-pin {
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 9.5px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid #334155;
+    }
+    .tag-urgent {
+      background: #3f1519;
+      color: #fca5a5;
+      font-size: 9.5px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid #7f1d1d;
+      font-weight: 700;
+    }
+    .side-widget {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .side-widget-header {
+      background: #0f172a;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .side-widget-body { padding: 12px 14px; font-size: 12px; }
+    .network-stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text-muted);
+    }
+    .network-stat-row:last-child { border-bottom: none; }
+    .network-stat-row strong { color: var(--text-light); }
+    .user-chip-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .user-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--text-light);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .user-chip.admin { color: #f87171; border-color: #7f1d1d; }
+    .user-chip.mod { color: #38bdf8; border-color: #0369a1; }
+    .user-chip.vip { color: #fbbf24; border-color: #b45309; }
+    .thread-view-header {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+    .thread-view-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .thread-meta-bar { font-size: 11.5px; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; }
+    .back-link {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-light);
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      text-decoration: none;
+    }
+    .back-link:hover { background: var(--bg-hover); color: var(--text-white); }
+    .post-item {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      margin-bottom: 14px;
+      display: flex;
+      overflow: hidden;
+    }
+    .post-author-box {
+      width: 175px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-subtle);
+      padding: 16px 12px;
+      text-align: center;
+      flex-shrink: 0;
+      font-size: 11.5px;
+    }
+    .author-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 1px solid var(--border-light);
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .author-name { font-weight: 700; color: var(--text-white); font-size: 13px; margin-bottom: 3px; }
+    .author-rank {
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 10px;
+      background: #1e293b;
+      color: #94a3b8;
+      display: inline-block;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .author-rank.adm { background: #3f1519; color: #fca5a5; border: 1px solid #7f1d1d; }
+    .author-rank.mod { background: #0c2d48; color: #7dd3fc; border: 1px solid #0369a1; }
+    .author-rank.vip { background: #382405; color: #fde68a; border: 1px solid #92400e; }
+    .author-stats {
+      text-align: left;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 8px;
+      line-height: 1.5;
+    }
+    .author-stats div { display: flex; justify-content: space-between; }
+    .author-stats span { color: var(--text-light); }
+    .post-content-wrap { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .post-header-bar {
+      background: #0f172a;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    .post-text-body { padding: 16px; color: var(--text-light); font-size: 13px; line-height: 1.65; flex: 1; }
+    .quote-block {
+      background: #090d16;
+      border-left: 3px solid #334155;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      border-radius: 0 4px 4px 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .quote-block-author { font-weight: 600; color: var(--text-light); margin-bottom: 2px; font-size: 11px; }
+    .code-ref {
+      font-family: 'Consolas', monospace;
+      background: #070a10;
+      border: 1px solid #1e293b;
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+    .table-responsive { width: 100%; overflow-x: auto; }
+    .styled-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .styled-table th {
+      background: #0f172a;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .styled-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-subtle); color: var(--text-light); }
+    .styled-table tr:hover { background: var(--bg-hover); }
+    .market-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .market-card-item {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border 0.15s ease;
+    }
+    .market-card-item:hover { border-color: var(--border-light); }
+    .m-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .m-title { font-weight: 700; color: var(--text-white); font-size: 13px; }
+    .m-price {
+      background: #064e3b;
+      color: #34d399;
+      font-family: 'Consolas', monospace;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .m-desc { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin-bottom: 12px; }
+    .m-foot {
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .pagination-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 0;
+      font-size: 12px;
+    }
+    .page-num {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-light);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .page-num.active {
+      background: var(--accent-cyan);
+      color: #041017;
+      font-weight: 700;
+      border-color: var(--accent-cyan);
+    }
+    @media (max-width: 768px) {
+      .post-item { flex-direction: column; }
+      .post-author-box {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        padding: 10px 14px;
+      }
+      .author-avatar { margin: 0; }
+      .author-stats { display: none; }
+      .thread-counts-col, .thread-last-col { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tor Mockup -->
+  <div class="tor-bar">
+    <div class="circuit-pill" onclick="showTab('pgp')">
+      <i class="fa-solid fa-shield-halved"></i> Guard: DE (94.130.x) &gt; Relay: RO &gt; Exit: Onion
+    </div>
+    <div class="onion-url" id="tor-url-display">
+      <i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/board/index.php
+    </div>
+    <div class="tor-status">
+      <div class="tor-dot"></div> CIRCUIT ACTIVE
+    </div>
+  </div>
+
+  <!-- Header Banner -->
+  <header class="board-header-banner">
+    <div class="header-content">
+      <div class="logo-box">
+        <div class="logo-icon"><i class="fa-solid fa-skull-crossbones"></i></div>
+        <div>
+          <div class="logo-title">BLACKSHADE NETWORK</div>
+          <div class="logo-tagline">Secure Tactical Dispatch, Intelligence Archive & PGP Escrow Directory</div>
+        </div>
+      </div>
+      <div class="header-user-badge">
+        <div><i class="fa-solid fa-user-secret"></i> Session: <strong style="color:var(--text-white);">Guest_8819</strong></div>
+        <div style="color:var(--border-light);">|</div>
+        <div>Clearance: <span style="color:#38bdf8;">Tier-2 Covert</span></div>
+        <div style="color:var(--border-light);">|</div>
+        <div><i class="fa-solid fa-signal"></i> 41ms</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top Navigation Tabs -->
+  <nav class="nav-container">
+    <div class="nav-inner">
+      <button class="tab-item active" id="btn-tab-home" onclick="showTab('home')">
+        <i class="fa-solid fa-house"></i> Home
+      </button>
+      <button class="tab-item" id="btn-tab-opsec" onclick="showTab('opsec')">
+        <i class="fa-solid fa-comments"></i> OpSec & Comms <span class="badge-pill">16</span>
+      </button>
+      <button class="tab-item" id="btn-tab-intel" onclick="showTab('intel')">
+        <i class="fa-solid fa-database"></i> Intel Drops <span class="badge-pill">8</span>
+      </button>
+      <button class="tab-item" id="btn-tab-market" onclick="showTab('market')">
+        <i class="fa-solid fa-cart-shopping"></i> Escrow Market <span class="badge-pill">12</span>
+      </button>
+      <button class="tab-item" id="btn-tab-drops" onclick="showTab('drops')">
+        <i class="fa-solid fa-box-archive"></i> Dead Drops <span class="badge-pill">12</span>
+      </button>
+      <button class="tab-item" id="btn-tab-pgp" onclick="showTab('pgp')">
+        <i class="fa-solid fa-key"></i> PGP Vault
+      </button>
+    </div>
+  </nav>
+
+  <!-- Breadcrumbs & Search -->
+  <div class="subnav-bar">
+    <div class="breadcrumbs" id="crumb-trail">
+      <a onclick="showTab('home')">BlackShade</a> &gt; <span id="crumb-current">Home</span>
+    </div>
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);"></i>
+      <input type="text" id="forum-filter" placeholder="Filter thread titles..." onkeyup="filterThreads()">
+    </div>
+  </div>
+
+  <!-- Layout Grid -->
+  <div class="layout-grid">
+
+    <!-- MAIN COLUMN -->
+    <div class="content-col">
+
+      <!-- ================= TAB: HOME ================= -->
+      <div class="tab-section active" id="page-home">
+        
+        <div class="forum-block">
+          <div class="forum-block-title">
+            <span>CORE DIRECTORY SECTORS</span>
+            <span>Realtime Sync</span>
+          </div>
+          <div>
+            <div class="thread-row" onclick="showTab('opsec')">
+              <div class="thread-icon-col"><i class="fa-solid fa-shield-halved" style="color:#38bdf8;"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Operational Security & Tactical Dispatch <span class="tag-pin">PRIMARY</span></div>
+                <div class="thread-snippet">Discussions regarding relay seizure countermeasures, burner radios, out-of-band handlers...</div>
+              </div>
+              <div class="thread-counts-col">16 Topics<br>142 Posts</div>
+              <div class="thread-last-col"><strong>Phantom_Op</strong>Yesterday 22:15</div>
+            </div>
+
+            <div class="thread-row" onclick="showTab('intel')">
+              <div class="thread-icon-col"><i class="fa-solid fa-database" style="color:#a855f7;"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Intelligence Archives & Signal Dumps <span class="tag-pin">LEAKS</span></div>
+                <div class="thread-snippet">Border patrol radar frequencies, provincial tower logs, Mekong patrol logs...</div>
+              </div>
+              <div class="thread-counts-col">8 Dumps<br>68 Posts</div>
+              <div class="thread-last-col"><strong>0xKhaos</strong>Today 02:40</div>
+            </div>
+
+            <div class="thread-row" onclick="showTab('market')">
+              <div class="thread-icon-col"><i class="fa-solid fa-scale-balanced" style="color:#10b981;"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Automated Multisig Escrow Market</div>
+                <div class="thread-snippet">Cryptographic hardware, Chiang Rai mountain retreat passes, anonymous 5G SIM packs...</div>
+              </div>
+              <div class="thread-counts-col">12 Listings<br>520 Deals</div>
+              <div class="thread-last-col"><strong>Nemesis_TH</strong>Today 03:12</div>
+            </div>
+
+            <div class="thread-row" onclick="showTab('drops')">
+              <div class="thread-icon-col"><i class="fa-solid fa-location-crosshairs" style="color:#f59e0b;"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Regional Dead Drop Logistics</div>
+                <div class="thread-snippet">Physical lockers and dead-letter boxes across Chiang Rai, Chiang Mai, and Vientiane...</div>
+              </div>
+              <div class="thread-counts-col">12 Sectors<br>84 Checks</div>
+              <div class="thread-last-col"><strong>Ghost_Courier</strong>Today 01:40</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="forum-block">
+          <div class="forum-block-title">
+            <span>ACTIVE OPERATIONAL DISCUSSIONS</span>
+            <span>Showing top recent threads</span>
+          </div>
+          <div>
+            <div class="thread-row" onclick="openThread('urgent-opsec')">
+              <div class="thread-icon-col"><i class="fa-solid fa-bullhorn" style="color:#f87171;"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">
+                  [ADVISORY] Fallback Comms & Out-of-Band Handler Routing
+                  <span class="tag-urgent">LOCKED</span>
+                  <span class="tag-pin">22 POSTS</span>
+                </div>
+                <div class="thread-snippet">Emergency instructions following Frankfurt/Singapore exit relay seizures...</div>
+              </div>
+              <div class="thread-counts-col">22 Replies<br>1,480 Views</div>
+              <div class="thread-last-col"><strong>Phantom_Op</strong>Yesterday 22:15</div>
+            </div>
+
+            <div class="thread-row" onclick="openThread('graphene')">
+              <div class="thread-icon-col"><i class="fa-solid fa-mobile-screen"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">GrapheneOS vs CalyxOS for northern border burner devices</div>
+                <div class="thread-snippet">Testing baseband isolation and LTE-only enforcement with Thai carriers...</div>
+              </div>
+              <div class="thread-counts-col">6 Replies<br>410 Views</div>
+              <div class="thread-last-col"><strong>NightStalker</strong>Yesterday 19:40</div>
+            </div>
+
+            <div class="thread-row" onclick="openThread('burner')">
+              <div class="thread-icon-col"><i class="fa-solid fa-tower-cell"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Cellular tracking along Route 1 corridor post-2024</div>
+                <div class="thread-snippet">Automated IMEI-IMSI correlation filters observed near Mae Chan...</div>
+              </div>
+              <div class="thread-counts-col">5 Replies<br>522 Views</div>
+              <div class="thread-last-col"><strong>CipherViper</strong>2 days ago</div>
+            </div>
+
+            <div class="thread-row" onclick="openThread('monero')">
+              <div class="thread-icon-col"><i class="fa-brands fa-monero"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Monero 2-of-3 Multisig Settlement for Northern Sector</div>
+                <div class="thread-snippet">Confirming multisig escrow release parameters for the border team...</div>
+              </div>
+              <div class="thread-counts-col">4 Replies<br>290 Views</div>
+              <div class="thread-last-col"><strong>ShadowBroker</strong>Yesterday 14:20</div>
+            </div>
+
+            <div class="thread-row" onclick="openThread('keylogger')">
+              <div class="thread-icon-col"><i class="fa-solid fa-keyboard"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Hardware keylogger deployments in border cybercafes</div>
+                <div class="thread-snippet">Passive USB dongles installed in transit hub internet kiosks...</div>
+              </div>
+              <div class="thread-counts-col">4 Replies<br>318 Views</div>
+              <div class="thread-last-col"><strong>RedSpecter</strong>3 days ago</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ================= TAB: OPSEC & COMMS (16 THREADS) ================= -->
+      <div class="tab-section" id="page-opsec">
+        <div class="forum-block">
+          <div class="forum-block-title">
+            <span>OPERATIONAL SECURITY & COMMUNICATIONS (16 THREADS)</span>
+            <span>Order by: Last Active</span>
+          </div>
+          <div id="opsec-thread-list">
+
+            <!-- 1. The Key Thread -->
+            <div class="thread-row" onclick="openThread('urgent-opsec')" data-title="fallback comms out-of-band handler routing relay compromise">
+              <div class="thread-icon-col"><i class="fa-solid fa-thumbtack" style="color:#f87171;"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">
+                  [ADVISORY] Fallback Comms & Out-of-Band Handler Routing
+                  <span class="tag-urgent">LOCKED</span>
+                  <span class="tag-pin">22 POSTS</span>
+                </div>
+                <div class="thread-snippet">Emergency coordination between cell leads regarding VVIP security handler contact...</div>
+              </div>
+              <div class="thread-counts-col">22 Replies<br>1,480 Views</div>
+              <div class="thread-last-col"><strong>Phantom_Op</strong>Yesterday 22:15</div>
+            </div>
+
+            <!-- 2 -->
+            <div class="thread-row" onclick="openThread('graphene')" data-title="grapheneos calyxos northern border burner devices">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">GrapheneOS vs CalyxOS for northern border burner devices</div>
+                <div class="thread-snippet">Testing baseband isolation and LTE-only enforcement with Thai carriers...</div>
+              </div>
+              <div class="thread-counts-col">6 Replies<br>410 Views</div>
+              <div class="thread-last-col"><strong>NightStalker</strong>Yesterday 19:40</div>
+            </div>
+
+            <!-- 3 -->
+            <div class="thread-row" onclick="openThread('burner')" data-title="cellular tracking route 1 corridor post-2024 imei imsi">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Cellular tracking along Route 1 corridor post-2024</div>
+                <div class="thread-snippet">Automated IMEI-IMSI correlation filters observed near Mae Chan...</div>
+              </div>
+              <div class="thread-counts-col">5 Replies<br>522 Views</div>
+              <div class="thread-last-col"><strong>CipherViper</strong>2 days ago</div>
+            </div>
+
+            <!-- 4 -->
+            <div class="thread-row" onclick="openThread('monero')" data-title="monero multisig settlement northern sector xmr">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Monero 2-of-3 Multisig Settlement for Northern Sector</div>
+                <div class="thread-snippet">Confirming multisig escrow release parameters for the border team...</div>
+              </div>
+              <div class="thread-counts-col">4 Replies<br>290 Views</div>
+              <div class="thread-last-col"><strong>ShadowBroker</strong>Yesterday 14:20</div>
+            </div>
+
+            <!-- 5 -->
+            <div class="thread-row" onclick="openThread('keylogger')" data-title="hardware keylogger deployments border cybercafes usb">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Hardware keylogger deployments in border cybercafes</div>
+                <div class="thread-snippet">Passive USB dongles installed in transit hub internet kiosks...</div>
+              </div>
+              <div class="thread-counts-col">4 Replies<br>318 Views</div>
+              <div class="thread-last-col"><strong>RedSpecter</strong>3 days ago</div>
+            </div>
+
+            <!-- 6 -->
+            <div class="thread-row" onclick="openThread('simcard')" data-title="burner sim registration cambodia laos roaming cross-border">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Burner SIM registration via Cambodia / Laos cross-border roaming</div>
+                <div class="thread-snippet">Preventing Thai telecom registration mandates by utilizing Unitel roaming profiles...</div>
+              </div>
+              <div class="thread-counts-col">3 Replies<br>198 Views</div>
+              <div class="thread-last-col"><strong>BangkokSIMs</strong>3 days ago</div>
+            </div>
+
+            <!-- 7 -->
+            <div class="thread-row" onclick="openThread('silentsms')" data-title="silent sms type 0 detection rooted pixel devices">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Silent SMS (Type 0) detection scripts for rooted Pixel devices</div>
+                <div class="thread-snippet">Monitoring ping messages sent by state cellular monitoring units...</div>
+              </div>
+              <div class="thread-counts-col">3 Replies<br>245 Views</div>
+              <div class="thread-last-col"><strong>0xKhaos</strong>4 days ago</div>
+            </div>
+
+            <!-- 8 -->
+            <div class="thread-row" onclick="openThread('faraday')" data-title="faraday bags rf shielding 5g mmwave field extraction">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Faraday bags RF shielding effectiveness against 5G mmWave</div>
+                <div class="thread-snippet">Testing dual-layer copper-nickel weave against forensic radio isolation...</div>
+              </div>
+              <div class="thread-counts-col">3 Replies<br>170 Views</div>
+              <div class="thread-last-col"><strong>DeltaCell_7</strong>4 days ago</div>
+            </div>
+
+            <!-- 9 -->
+            <div class="thread-row" onclick="openThread('bgp')" data-title="bgp route anomalies observed cat tot backbone nodes">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">BGP route anomalies observed on CAT / TOT backbone nodes</div>
+                <div class="thread-snippet">Possible prefix hijacking targeting Tor relay IP ranges across Southeast Asia...</div>
+              </div>
+              <div class="thread-counts-col">4 Replies<br>312 Views</div>
+              <div class="thread-last-col"><strong>CipherViper</strong>5 days ago</div>
+            </div>
+
+            <!-- 10 -->
+            <div class="thread-row" onclick="openThread('tails')" data-title="tails persistence volume corruption hard power-off">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Tails 6.2 persistence volume corruption after emergency unplugs</div>
+                <div class="thread-snippet">LUKS header recovery script for flash drives pulled during raid drills...</div>
+              </div>
+              <div class="thread-counts-col">3 Replies<br>189 Views</div>
+              <div class="thread-last-col"><strong>NightStalker</strong>5 days ago</div>
+            </div>
+
+            <!-- 11 -->
+            <div class="thread-row" onclick="openThread('imsicatcher')" data-title="imsi catcher detection apps aimsicd snoopsnitch">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">IMSI catcher detection apps (AIMSICD vs SnoopSnitch)</div>
+                <div class="thread-snippet">Qualcomm diag driver requirements for detecting mobile cell towers...</div>
+              </div>
+              <div class="thread-counts-col">5 Replies<br>420 Views</div>
+              <div class="thread-last-col"><strong>0xKhaos</strong>6 days ago</div>
+            </div>
+
+            <!-- 12 -->
+            <div class="thread-row" onclick="openThread('satellite')" data-title="satellite uplink encryption iridium burst transmissions">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Satellite uplink encryption (Iridium burst transmissions)</div>
+                <div class="thread-snippet">Pre-shared OTP encryption on 160-character SBD packets...</div>
+              </div>
+              <div class="thread-counts-col">3 Replies<br>165 Views</div>
+              <div class="thread-last-col"><strong>SatHacker</strong>6 days ago</div>
+            </div>
+
+            <!-- 13 -->
+            <div class="thread-row" onclick="openThread('vhfrepeater')" data-title="vhf frequency hopping repeater network chiang rai ridge">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">VHF frequency hopping repeater network across Chiang Rai ridge</div>
+                <div class="thread-snippet">Deploying solar-powered relay boxes on Doi Tung and Mae Salong ridges...</div>
+              </div>
+              <div class="thread-counts-col">4 Replies<br>280 Views</div>
+              <div class="thread-last-col"><strong>CipherViper</strong>1 week ago</div>
+            </div>
+
+            <!-- 14 -->
+            <div class="thread-row" onclick="openThread('checkpoints')" data-title="counter-surveillance highway 118 patrol checkpoints">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">Counter-surveillance tactics near Highway 118 patrol checkpoints</div>
+                <div class="thread-snippet">Stationary camera installations and automated license plate recognition spots...</div>
+              </div>
+              <div class="thread-counts-col">4 Replies<br>335 Views</div>
+              <div class="thread-last-col"><strong>VVIP_Courier</strong>1 week ago</div>
+            </div>
+
+            <!-- 15 -->
+            <div class="thread-row" onclick="openThread('yubikey')" data-title="yubikey 5 nfc hardware token backup field couriers">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">YubiKey 5 NFC hardware token backup strategies for field couriers</div>
+                <div class="thread-snippet">Offline airgapped seed storage for FIDO2 and OpenPGP card slots...</div>
+              </div>
+              <div class="thread-counts-col">3 Replies<br>210 Views</div>
+              <div class="thread-last-col"><strong>Phantom_Op</strong>1 week ago</div>
+            </div>
+
+            <!-- 16 -->
+            <div class="thread-row" onclick="openThread('singaporecase')" data-title="opsec failure case study singapore exit relay seized">
+              <div class="thread-icon-col"><i class="fa-solid fa-comment-dots"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">OpSec failure case study: How Singapore exit relay was seized</div>
+                <div class="thread-snippet">Analysis of payment provider KYC leaks that allowed authorities to correlate hardware...</div>
+              </div>
+              <div class="thread-counts-col">5 Replies<br>610 Views</div>
+              <div class="thread-last-col"><strong>0xKhaos</strong>1 week ago</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="pagination-bar">
+          <span style="color:var(--text-muted); margin-right: 8px;">Page 1 of 1 (16 Topics)</span>
+          <span class="page-num active">1</span>
+        </div>
+      </div>
+
+
+      <!-- ================= TAB: INTEL DROPS (8 ARCHIVES) ================= -->
+      <div class="tab-section" id="page-intel">
+        <div class="forum-block">
+          <div class="forum-block-title">
+            <span>INTELLIGENCE ARCHIVES & SIGNAL DUMPS (8 ARCHIVES)</span>
+            <span>Verified Hashes</span>
+          </div>
+          <div>
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[LEAK] Northern Thailand Microwave Relay Repeaters (2001-2006)</div>
+                <div class="thread-snippet">Internal frequency charts for state VHF/UHF tower repeaters across Chiang Rai province...</div>
+              </div>
+              <div class="thread-counts-col">12.4 MB<br>7 Replies</div>
+              <div class="thread-last-col"><strong>0xKhaos</strong>Yesterday</div>
+            </div>
+
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[DOCS] Golden Triangle Agricultural Reserve Boundary Surveys</div>
+                <div class="thread-snippet">Elevation maps, unpatrolled footpaths, and historic forest boundary markers...</div>
+              </div>
+              <div class="thread-counts-col">45.1 MB<br>12 Replies</div>
+              <div class="thread-last-col"><strong>ShadowBroker</strong>3 days ago</div>
+            </div>
+
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[LOGS] Chiang Rai Provincial Road Checkpoint Patrol Schedules (Q3)</div>
+                <div class="thread-snippet">Shift change timings for mobile highway police stations along Route 1 and 118...</div>
+              </div>
+              <div class="thread-counts-col">3.2 MB<br>18 Replies</div>
+              <div class="thread-last-col"><strong>VVIP_Courier</strong>4 days ago</div>
+            </div>
+
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[SIGINT] Mekong River Patrol Boat Radio Frequencies & Call Signs</div>
+                <div class="thread-snippet">Marine VHF channels 16, 68, 71 intercept recordings and callsign registry...</div>
+              </div>
+              <div class="thread-counts-col">8.9 MB<br>5 Replies</div>
+              <div class="thread-last-col"><strong>RedSpecter</strong>5 days ago</div>
+            </div>
+
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[DATA] Northern Cell Tower Baseband Identification Database</div>
+                <div class="thread-snippet">MCC/MNC/LAC/CellID mapping for all AIS and True 4G/5G towers in Chiang Rai...</div>
+              </div>
+              <div class="thread-counts-col">18.7 MB<br>14 Replies</div>
+              <div class="thread-last-col"><strong>CipherViper</strong>6 days ago</div>
+            </div>
+
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[ARCHIVE] Mae Fah Luang Airport Private Flight Clearance Manifests</div>
+                <div class="thread-snippet">Tail numbers and cargo manifests for chartered twin-turboprop flights...</div>
+              </div>
+              <div class="thread-counts-col">5.4 MB<br>9 Replies</div>
+              <div class="thread-last-col"><strong>DeltaCell_7</strong>1 week ago</div>
+            </div>
+
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[BLUEPRINT] Golden Triangle Safehouse Structural Specifications #02</div>
+                <div class="thread-snippet">Underground bunker layouts, auxiliary generator wiring, and ventilation schematics...</div>
+              </div>
+              <div class="thread-counts-col">31.0 MB<br>6 Replies</div>
+              <div class="thread-last-col"><strong>ShadowBroker</strong>2 weeks ago</div>
+            </div>
+
+            <div class="thread-row">
+              <div class="thread-icon-col"><i class="fa-solid fa-file-shield"></i></div>
+              <div class="thread-main-col">
+                <div class="thread-heading">[REGISTRY] Foreign Diplomatic & VIP Vehicle Escort Transponder IDs</div>
+                <div class="thread-snippet">Automated tollway transponder IDs and VIP convoy beacon codes...</div>
+              </div>
+              <div class="thread-counts-col">1.8 MB<br>11 Replies</div>
+              <div class="thread-last-col"><strong>Nemesis_TH</strong>2 weeks ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ================= TAB: ESCROW MARKET (12 LISTINGS) ================= -->
+      <div class="tab-section" id="page-market">
+        <div class="forum-block">
+          <div class="forum-block-title">
+            <span>MULTISIG ESCROW MARKETPLACE (12 LISTINGS)</span>
+            <span>All sales settled in Monero (XMR)</span>
+          </div>
+          <div style="padding: 16px;">
+            <div class="market-list-grid">
+              
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Chiang Rai Mountain Safehouse Keycard #04</span>
+                    <span class="m-price">0.85 XMR</span>
+                  </div>
+                  <div class="m-desc">RFID bypass badge and physical master sequence for safehouse retreat near Mae Chan. Zero cameras.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>ShadowBroker</strong> (99.8%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Encrypted VHF Baseband Radio Transceiver</span>
+                    <span class="m-price">1.40 XMR</span>
+                  </div>
+                  <div class="m-desc">Pre-flashed frequency hopping radio. Compatible with northern ridge relays. No GPS logging.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>CipherViper</strong> (100%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">VIP Northern Corridor Transit Clearance</span>
+                    <span class="m-price">3.20 XMR</span>
+                  </div>
+                  <div class="m-desc">Official courier documentation for vehicle passage along provincial checkpoints without vehicle search.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>VVIP_Courier</strong> (99.2%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Anonymous Pre-Activated 5G SIM Pack (x10)</span>
+                    <span class="m-price">0.25 XMR</span>
+                  </div>
+                  <div class="m-desc">Clean tourist passport registrations. Instant high-speed data across northern Thailand with zero KYC link.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>BangkokSIMs</strong> (98.6%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Garmin inReach Satellite Terminal (Custom FW)</span>
+                    <span class="m-price">2.10 XMR</span>
+                  </div>
+                  <div class="m-desc">Patched satellite communicator firmware to suppress location coordinates on distress beacons.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>SatHacker</strong> (99.5%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">GrapheneOS Hardened Pixel 7a Burner</span>
+                    <span class="m-price">0.60 XMR</span>
+                  </div>
+                  <div class="m-desc">Factory sealed, physical microphones removed. Pre-loaded with Briar, Session, and Tor Browser.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>NightStalker</strong> (100%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Military Grade Faraday Duffel (45L)</span>
+                    <span class="m-price">0.18 XMR</span>
+                  </div>
+                  <div class="m-desc">Triple layered shielding. Blocks RFID, GPS, WiFi, Bluetooth, and cellular 5G mmWave signals.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>DeltaCell_7</strong> (97.9%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Custom Drone RF Jammer (2.4GHz / 5.8GHz)</span>
+                    <span class="m-price">1.85 XMR</span>
+                  </div>
+                  <div class="m-desc">Directional antenna backpack unit. Forces commercial UAVs into failsafe land-in-place mode.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>Spectre_77</strong> (99.1%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Mekong River Night Crossing Liaison</span>
+                    <span class="m-price">4.50 XMR</span>
+                  </div>
+                  <div class="m-desc">Unmonitored boat transit service from Chiang Saen to Lao PDR bank. Includes physical escort.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>Ghost_Courier</strong> (100%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Chameleon Ultra NFC / RFID Emulator</span>
+                    <span class="m-price">0.32 XMR</span>
+                  </div>
+                  <div class="m-desc">High and low frequency RFID reader/writer/emulator. Pre-configured with Mifare Classic crack dictionary.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>CipherViper</strong> (100%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Airgapped Raspberry Pi 4 Hardware Vault</span>
+                    <span class="m-price">0.45 XMR</span>
+                  </div>
+                  <div class="m-desc">Zero wireless modules. Configured with paper-backup seeds and electrum multisig signer.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>0xKhaos</strong> (99.4%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+              <div class="market-card-item">
+                <div>
+                  <div class="m-top">
+                    <span class="m-title">Lao PDR Commercial Transit Vehicle Plates</span>
+                    <span class="m-price">1.10 XMR</span>
+                  </div>
+                  <div class="m-desc">Original stamped metal plates with matching tax disc for cross-border logistics trucks.</div>
+                </div>
+                <div class="m-foot">
+                  <span>Vendor: <strong>RedSpecter</strong> (98.2%)</span>
+                  <span>Escrow Active</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ================= TAB: DEAD DROPS (12 SECTORS) ================= -->
+      <div class="tab-section" id="page-drops">
+        <div class="forum-block">
+          <div class="forum-block-title">
+            <span>REGIONAL DEAD DROP INVENTORY (12 SECTORS)</span>
+            <span>Physical coordinate markers</span>
+          </div>
+          <div class="table-responsive">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>SECTOR CODE</th>
+                  <th>PHYSICAL LOCATION & DESCRIPTION</th>
+                  <th>STATUS</th>
+                  <th>LAST INSPECTION</th>
+                  <th>OPERATOR</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>DROP-CR-01</code></td>
+                  <td>Chiang Rai - Kok River Underpass Milestone 4</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>Yesterday 18:20</td>
+                  <td>VVIP_Courier</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-CR-02</code></td>
+                  <td>Chiang Rai - Highway Route 1 Drainage Culvert</td>
+                  <td><span style="color:#ef4444;">COMPROMISED</span></td>
+                  <td>2 days ago</td>
+                  <td>Phantom_Op</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-CR-03</code></td>
+                  <td>Chiang Rai - Mae Chan Mountain Overlook Pine Tree #12</td>
+                  <td><span style="color:#f59e0b;">PENDING PICKUP</span></td>
+                  <td>Today 05:15</td>
+                  <td>ShadowBroker</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-CR-04</code></td>
+                  <td>Chiang Saen - Historic Moat Brick Niche</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>Yesterday 11:30</td>
+                  <td>RedSpecter</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-CM-01</code></td>
+                  <td>Chiang Mai - Nimman Luggage Locker #14</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>Yesterday 23:40</td>
+                  <td>NightStalker</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-CM-02</code></td>
+                  <td>Chiang Mai - Superhighway Kilometer 8 Overpass</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>3 days ago</td>
+                  <td>DeltaCell_7</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-CM-04</code></td>
+                  <td>Chiang Mai - Hang Dong Abandoned Brick Kiln</td>
+                  <td><span style="color:#ef4444;">COMPROMISED</span></td>
+                  <td>Today 04:10</td>
+                  <td>Ghost_Courier</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-BKK-03</code></td>
+                  <td>Bangkok - Hua Lamphong Railway Storage B-22</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>2 days ago</td>
+                  <td>0xKhaos</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-BKK-09</code></td>
+                  <td>Bangkok - Bang Na Transit Terminal Locker 18</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>Yesterday 12:00</td>
+                  <td>Nemesis_TH</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-BKK-12</code></td>
+                  <td>Bangkok - Khlong Toei Port Warehouse Perimeter N-4</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>Today 00:30</td>
+                  <td>0xKhaos</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-VTE-01</code></td>
+                  <td>Vientiane - Sikhottabong Riverbank Anchor Point</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>3 days ago</td>
+                  <td>Ghost_Courier</td>
+                </tr>
+                <tr>
+                  <td><code>DROP-VTE-02</code></td>
+                  <td>Vientiane - Mekong River Crossing Ferry Ramp Pillar</td>
+                  <td><span style="color:#10b981;">SECURED</span></td>
+                  <td>Yesterday 09:15</td>
+                  <td>RedSpecter</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ================= TAB: PGP VAULT ================= -->
+      <div class="tab-section" id="page-pgp">
+        <div class="forum-block">
+          <div class="forum-block-title">
+            <span>PUBLIC PGP KEYRING</span>
+            <span>4096-bit RSA Verification Registry</span>
+          </div>
+          <div style="padding: 18px; font-size: 12px; line-height: 1.65;">
+            
+            <div style="margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div style="font-weight:700; color:var(--text-white); margin-bottom: 3px;">Phantom_Op (Board Administrator)</div>
+              <div style="color:var(--text-muted);">Key ID: <code>0x4D8891CAFE2210BC</code> | Fingerprint: <code>E1B2 8F99 04AC 221C 5B89 7781 FE34 9901 4D88 91CA</code></div>
+            </div>
+
+            <div style="margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div style="font-weight:700; color:var(--text-white); margin-bottom: 3px;">ShadowBroker (Logistics Lead)</div>
+              <div style="color:var(--text-muted);">Key ID: <code>0x992B110034AC911D</code> | Fingerprint: <code>77F1 A230 994B 1120 44CD 89A1 0422 188B 992B 1100</code></div>
+            </div>
+
+            <div style="margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div style="font-weight:700; color:var(--text-white); margin-bottom: 3px;">CipherViper (Technical & Cryptography Cell)</div>
+              <div style="color:var(--text-muted);">Key ID: <code>0x5501889FA11288B3</code> | Fingerprint: <code>221C 88AB 99FE 1102 3341 BCDE 0019 8812 5501 889F</code></div>
+            </div>
+
+            <div style="margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div style="font-weight:700; color:var(--text-white); margin-bottom: 3px;">0xKhaos (Senior Field Reconnaissance)</div>
+              <div style="color:var(--text-muted);">Key ID: <code>0x88BC19992019AC21</code> | Fingerprint: <code>99A1 BB22 3344 5566 7788 9900 AABB CCDD 88BC 1999</code></div>
+            </div>
+
+            <div style="margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div style="font-weight:700; color:var(--text-white); margin-bottom: 3px;">VVIP_Courier (Escorted Transit Merchant)</div>
+              <div style="color:var(--text-muted);">Key ID: <code>0x33418899AABBDD12</code> | Fingerprint: <code>0011 2233 4455 6677 8899 AABB CCDD EEFF 3341 8899</code></div>
+            </div>
+
+            <div style="margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div style="font-weight:700; color:var(--text-white); margin-bottom: 3px;">LUANG_KENG (VVIP Personal Security Escort)</div>
+              <div style="color:#f59e0b; font-weight:600; margin-bottom: 2px;">STATUS: KEY REVOKED / OPERATING OUT-OF-BAND</div>
+              <div style="color:var(--text-muted); font-size: 11.5px;">
+                PGP key revoked under directive #14 following Tor exit node surveillance. Operative active under handle <span class="code-ref">luang_keng</span> on designated external sandbox platform. No Tor dispatch.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ================= THE FULL 22-POST DISCUSSION THREAD ================= -->
+      <div class="tab-section" id="view-thread-urgent-opsec">
+        <a class="back-link" onclick="showTab('opsec')"><i class="fa-solid fa-arrow-left"></i> Return to OpSec & Comms</a>
+        
+        <div class="thread-view-header">
+          <div class="thread-view-title">
+            <i class="fa-solid fa-bullhorn" style="color:#f87171;"></i>
+            [ADVISORY] Fallback Comms & Out-of-Band Handler Routing
+            <span class="tag-urgent">LOCKED BY MODERATOR</span>
+          </div>
+          <div class="thread-meta-bar">
+            <span><i class="fa-solid fa-folder"></i> /covert-dispatch/</span>
+            <span><i class="fa-solid fa-user"></i> Started by Phantom_Op</span>
+            <span><i class="fa-solid fa-clock"></i> Yesterday 20:45 UTC</span>
+            <span><i class="fa-solid fa-comments"></i> 22 Replies</span>
+          </div>
+        </div>
+
+        <!-- POST 1 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#f87171;"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="author-name">Phantom_Op</div>
+            <div class="author-rank adm">Moderator</div>
+            <div class="author-stats"><div>Joined: <span>Jan 2021</span></div><div>Posts: <span>1,489</span></div><div>Rep: <span>+984</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#1 // Yesterday 20:45 UTC</span><span>PGP SIGNED</span></div>
+            <div class="post-text-body">
+              ATTENTION ALL CELLS: Federal cyber task forces seized two critical Tor exit relays in Frankfurt and Singapore earlier this morning. Do not post raw transfer keys, drop GPS pings, or escrow tokens on this onion board until further notice. We are enforcing an out-of-band communication protocol for all active field shipments.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 2 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#fb923c;"><i class="fa-solid fa-satellite-dish"></i></div>
+            <div class="author-name">DeltaCell_7</div>
+            <div class="author-rank">Operative</div>
+            <div class="author-stats"><div>Joined: <span>May 2022</span></div><div>Posts: <span>188</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#2 // Yesterday 20:50 UTC</span><span>In reply to #1</span></div>
+            <div class="post-text-body">
+              Acknowledged. Does this compromise impact the scheduled Northern transit? The physical courier handoff in Chiang Rai is timed for tomorrow at dawn. If we cannot post tokens here, how does the receiving team authenticate?
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 3 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#ec4899;"><i class="fa-solid fa-skull"></i></div>
+            <div class="author-name">0xKhaos</div>
+            <div class="author-rank">Senior Op</div>
+            <div class="author-stats"><div>Joined: <span>Jun 2021</span></div><div>Posts: <span>812</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#3 // Yesterday 20:55 UTC</span><span>In reply to #1</span></div>
+            <div class="post-text-body">
+              I monitored the Frankfurt node outage at 03:14 UTC. Route telemetry indicated active packet interception before the connection dropped. The seizure was coordinated with Europol and Southeast Asian law enforcement.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 4 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#f59e0b;"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="author-name">VVIP_Courier</div>
+            <div class="author-rank vip">Merchant</div>
+            <div class="author-stats"><div>Joined: <span>Aug 2022</span></div><div>Posts: <span>342</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#4 // Yesterday 21:02 UTC</span><span>In reply to #2</span></div>
+            <div class="post-text-body">
+              This is critical. The primary authentication token for the Chiang Rai package is held by the VVIP's personal security handler. If we can't reach him through darknet relays, the entire transfer stalls. Who holds his alternate comms?
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 5 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#f87171;"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="author-name">Phantom_Op</div>
+            <div class="author-rank adm">Moderator</div>
+            <div class="author-stats"><div>Joined: <span>Jan 2021</span></div><div>Posts: <span>1,489</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#5 // Yesterday 21:08 UTC</span><span>In reply to #4</span></div>
+            <div class="post-text-body">
+              <div class="quote-block"><div class="quote-block-author">VVIP_Courier wrote:</div>Who holds his alternate comms?</div>
+              The handler moved completely off Tor months ago under operational directive #14. His cover identity is established inside a mainstream civilian platform. ShadowBroker handles his dispatch routing.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 6 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#38bdf8;"><i class="fa-solid fa-globe"></i></div>
+            <div class="author-name">ShadowBroker</div>
+            <div class="author-rank mod">Logistics</div>
+            <div class="author-stats"><div>Joined: <span>Mar 2021</span></div><div>Posts: <span>928</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#6 // Yesterday 21:14 UTC</span><span>In reply to #5</span></div>
+            <div class="post-text-body">
+              Confirmed. The handler is operating inside a massive global online sandbox gaming platform. Millions of active players, blocky 3D characters, user-generated environments. Signals intelligence filters ignore that platform completely.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 7 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#94a3b8;"><i class="fa-solid fa-eye"></i></div>
+            <div class="author-name">RedSpecter</div>
+            <div class="author-rank">Operative</div>
+            <div class="author-stats"><div>Joined: <span>Feb 2023</span></div><div>Posts: <span>145</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#7 // Yesterday 21:18 UTC</span><span>In reply to #6</span></div>
+            <div class="post-text-body">
+              There are half a dozen massive sandbox games with blocky graphics. Are you talking about Minecraft, Roblox, or something else? We cannot search blind without knowing the exact service.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 8 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#a855f7;"><i class="fa-solid fa-laptop-code"></i></div>
+            <div class="author-name">CipherViper</div>
+            <div class="author-rank">Tech Cell</div>
+            <div class="author-stats"><div>Joined: <span>Nov 2022</span></div><div>Posts: <span>518</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#8 // Yesterday 21:22 UTC</span><span>In reply to #7</span></div>
+            <div class="post-text-body">
+              It is not Minecraft. It is the proprietary sandbox platform with the tilted red square-and-O logo where custom player avatars and creator marketplaces operate. The platform launched globally around 2006.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 9 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#64748b;"><i class="fa-solid fa-glasses"></i></div>
+            <div class="author-name">NightStalker</div>
+            <div class="author-rank">Operative</div>
+            <div class="author-stats"><div>Joined: <span>Oct 2022</span></div><div>Posts: <span>210</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#9 // Yesterday 21:26 UTC</span><span>In reply to #8</span></div>
+            <div class="post-text-body">
+              That platform has over 200 million registered accounts. How is the courier team supposed to locate one specific profile among millions? Do we search by display name, user ID, or what?
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 10 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#38bdf8;"><i class="fa-solid fa-globe"></i></div>
+            <div class="author-name">ShadowBroker</div>
+            <div class="author-rank mod">Logistics</div>
+            <div class="author-stats"><div>Joined: <span>Mar 2021</span></div><div>Posts: <span>928</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#10 // Yesterday 21:30 UTC</span><span>In reply to #9</span></div>
+            <div class="post-text-body">
+              The handle was chosen intentionally by the operative himself. It matches his field role and customary title under the VVIP's household. Think of how personal security escorts and senior handlers in northern networks are addressed in Thai terminology.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 11 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#ec4899;"><i class="fa-solid fa-skull"></i></div>
+            <div class="author-name">0xKhaos</div>
+            <div class="author-rank">Senior Op</div>
+            <div class="author-stats"><div>Joined: <span>Jun 2021</span></div><div>Posts: <span>812</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#11 // Yesterday 21:33 UTC</span><span>In reply to #10</span></div>
+            <div class="post-text-body">
+              Are you referring to a generic rank, like a military escort title, or his specific operating pseudonym? There are dozens of Thai phonetic romanizations used in police registries.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 12 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#a855f7;"><i class="fa-solid fa-laptop-code"></i></div>
+            <div class="author-name">CipherViper</div>
+            <div class="author-rank">Tech Cell</div>
+            <div class="author-stats"><div>Joined: <span>Nov 2022</span></div><div>Posts: <span>518</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#12 // Yesterday 21:36 UTC</span><span>In reply to #11</span></div>
+            <div class="post-text-body">
+              It is not a formal military rank. It is the specific phonetic alias registered in our internal logs since early 2024. ShadowBroker, just give the field courier the exact handle so they do not misroute the package.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 13 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#fb923c;"><i class="fa-solid fa-satellite-dish"></i></div>
+            <div class="author-name">DeltaCell_7</div>
+            <div class="author-rank">Operative</div>
+            <div class="author-stats"><div>Joined: <span>May 2022</span></div><div>Posts: <span>188</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#13 // Yesterday 21:40 UTC</span><span>In reply to #12</span></div>
+            <div class="post-text-body">
+              Agreed. We are burning daylight debating etymology. Drop the contact info so courier dispatch can verify credentials before curfew.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 14: THE HIDDEN HANDLE -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#38bdf8;"><i class="fa-solid fa-globe"></i></div>
+            <div class="author-name">ShadowBroker</div>
+            <div class="author-rank mod">Logistics</div>
+            <div class="author-stats"><div>Joined: <span>Mar 2021</span></div><div>Posts: <span>928</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#14 // Yesterday 21:44 UTC</span><span>In reply to #13</span></div>
+            <div class="post-text-body">
+              Fine, listen carefully. I dropped the dead drop coordinate manifest at locker CR-03 earlier tonight. The handler's username on the platform is <span class="code-ref">luang_keng</span> — written in lowercase as registered. Before sending any direct message, cross-check the visual avatar: custom 3D model wearing a dark gray tactical bodyguard suit, sunglasses, and an earpiece headset. His profile About section contains the raw base64 authentication string. Pull that string, decode it locally, and derive the verification hash according to the formula inside before initiating contact.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 15 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#f59e0b;"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="author-name">VVIP_Courier</div>
+            <div class="author-rank vip">Merchant</div>
+            <div class="author-stats"><div>Joined: <span>Aug 2022</span></div><div>Posts: <span>342</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#15 // Yesterday 21:48 UTC</span><span>In reply to #14</span></div>
+            <div class="post-text-body">
+              Received and acknowledged. The courier team will locate the profile on the gaming platform now. We will verify the avatar gear matches before extracting the About payload.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 16 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#64748b;"><i class="fa-solid fa-glasses"></i></div>
+            <div class="author-name">NightStalker</div>
+            <div class="author-rank">Operative</div>
+            <div class="author-stats"><div>Joined: <span>Oct 2022</span></div><div>Posts: <span>210</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#16 // Yesterday 21:51 UTC</span><span>In reply to #14</span></div>
+            <div class="post-text-body">
+              Just confirming the exact spelling so our recon team does not scrape the wrong account: all lowercase, underscore in the middle? And the avatar is tactical bodyguard themed, correct?
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 17 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#a855f7;"><i class="fa-solid fa-laptop-code"></i></div>
+            <div class="author-name">CipherViper</div>
+            <div class="author-rank">Tech Cell</div>
+            <div class="author-stats"><div>Joined: <span>Nov 2022</span></div><div>Posts: <span>518</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#17 // Yesterday 21:55 UTC</span><span>In reply to #16</span></div>
+            <div class="post-text-body">
+              Yes, search the platform directly by username. The profile display name shows in all caps in the web view. Profile statistics show roughly 14 friends and a few followers, keeping a deliberately low profile.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 18 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#94a3b8;"><i class="fa-solid fa-eye"></i></div>
+            <div class="author-name">RedSpecter</div>
+            <div class="author-rank">Operative</div>
+            <div class="author-stats"><div>Joined: <span>Feb 2023</span></div><div>Posts: <span>145</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#18 // Yesterday 21:58 UTC</span><span>In reply to #17</span></div>
+            <div class="post-text-body">
+              Is the About description payload encrypted with a secondary key, or is it standard Base64 encoding?
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 19 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#38bdf8;"><i class="fa-solid fa-globe"></i></div>
+            <div class="author-name">ShadowBroker</div>
+            <div class="author-rank mod">Logistics</div>
+            <div class="author-stats"><div>Joined: <span>Mar 2021</span></div><div>Posts: <span>928</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#19 // Yesterday 22:03 UTC</span><span>In reply to #18</span></div>
+            <div class="post-text-body">
+              Standard Base64. When decoded, it reveals the hash format directive and the target string to compute. Once you run the MD5 checksum on the specified string, wrap it in the required flag format to confirm.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 20 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#ec4899;"><i class="fa-solid fa-skull"></i></div>
+            <div class="author-name">0xKhaos</div>
+            <div class="author-rank">Senior Op</div>
+            <div class="author-stats"><div>Joined: <span>Jun 2021</span></div><div>Posts: <span>812</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#20 // Yesterday 22:07 UTC</span><span>In reply to #19</span></div>
+            <div class="post-text-body">
+              Profile located on platform. Visual confirmation positive: character avatar matches tactical description, sunglasses and comms headset visible. Payload string located in description field. Good work on the cover setup.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 21 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#f59e0b;"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="author-name">VVIP_Courier</div>
+            <div class="author-rank vip">Merchant</div>
+            <div class="author-stats"><div>Joined: <span>Aug 2022</span></div><div>Posts: <span>342</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#21 // Yesterday 22:11 UTC</span><span>In reply to #20</span></div>
+            <div class="post-text-body">
+              Ground units in Chiang Rai are rolling out now. We will derive the token hash and authenticate with the handler prior to midnight. We are going dark on cellular channels.
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 22 -->
+        <div class="post-item">
+          <div class="post-author-box">
+            <div class="author-avatar" style="color:#f87171;"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="author-name">Phantom_Op</div>
+            <div class="author-rank adm">Moderator</div>
+            <div class="author-stats"><div>Joined: <span>Jan 2021</span></div><div>Posts: <span>1,489</span></div></div>
+          </div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar"><span>#22 // Yesterday 22:15 UTC</span><span>THREAD CLOSED</span></div>
+            <div class="post-text-body">
+              All operational units have received their assignments. Do not quote or reference the handler account further on this board. Thread is permanently locked. Maintain strict OPSEC.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- SUB THREAD: GRAPHENE -->
+      <div class="tab-section" id="view-thread-graphene">
+        <a class="back-link" onclick="showTab('opsec')"><i class="fa-solid fa-arrow-left"></i> Return to OpSec & Comms</a>
+        <div class="thread-view-header">
+          <div class="thread-view-title">GrapheneOS vs CalyxOS for northern border burner devices</div>
+          <div class="thread-meta-bar"><span>Started by NightStalker</span><span>6 Replies</span></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">NightStalker</div><div class="author-rank">Operative</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#1 // 2 days ago</div><div class="post-text-body">Testing Pixel 6a units running GrapheneOS along highway checkpoints. LTE-only mode successfully prevents 2G stingray downgrade attacks. Baseband sandboxing functioning properly.</div></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">CipherViper</div><div class="author-rank">Tech Cell</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#2 // Yesterday</div><div class="post-text-body">Can confirm. CalyxOS still relies on microG which can leak push notification tokens to Google FCM servers if not explicitly firewalled via NetGuard. Stick with pure GrapheneOS.</div></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">0xKhaos</div><div class="author-rank">Senior Op</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#3 // Yesterday</div><div class="post-text-body">Also make sure to enable the auto-reboot timer after 4 hours of inactivity. It returns the device to Before-First-Unlock (BFU) state, which prevents Cellebrite brute force attempts.</div></div>
+        </div>
+      </div>
+
+      <!-- SUB THREAD: BURNER -->
+      <div class="tab-section" id="view-thread-burner">
+        <a class="back-link" onclick="showTab('opsec')"><i class="fa-solid fa-arrow-left"></i> Return to OpSec & Comms</a>
+        <div class="thread-view-header">
+          <div class="thread-view-title">Cellular tracking along Route 1 corridor post-2024</div>
+          <div class="thread-meta-bar"><span>Started by CipherViper</span><span>5 Replies</span></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">CipherViper</div><div class="author-rank">Tech Cell</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#1 // 3 days ago</div><div class="post-text-body">Provincial cell towers near Mae Chan are logging automated IMSI sweeps. Hardware turned on anywhere within 40km of the border will correlate with provincial CCTV gantries. Power down devices during transit.</div></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">DeltaCell_7</div><div class="author-rank">Operative</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#2 // 2 days ago</div><div class="post-text-body">We noticed license plate recognition cameras paired with directional RF sniffers at the Mae Sai highway checkpoint. If a phone associates with the tower at the exact second a car passes, it flags the driver.</div></div>
+        </div>
+      </div>
+
+      <!-- SUB THREAD: MONERO -->
+      <div class="tab-section" id="view-thread-monero">
+        <a class="back-link" onclick="showTab('opsec')"><i class="fa-solid fa-arrow-left"></i> Return to OpSec & Comms</a>
+        <div class="thread-view-header">
+          <div class="thread-view-title">Monero 2-of-3 Multisig Settlement for Northern Sector</div>
+          <div class="thread-meta-bar"><span>Started by ShadowBroker</span><span>4 Replies</span></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">ShadowBroker</div><div class="author-rank mod">Logistics</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#1 // Yesterday</div><div class="post-text-body">Escrow outputs for northern couriers updated to block height 2,980,114. Two of three signatures required from Merchant, Logistics Lead, and Arbiter before funds release.</div></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">VVIP_Courier</div><div class="author-rank vip">Merchant</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#2 // Yesterday</div><div class="post-text-body">Signature round 1 generated and broadcasted to escrow mempool. Awaiting final counter-signature upon drop verification.</div></div>
+        </div>
+      </div>
+
+      <!-- SUB THREAD: KEYLOGGER -->
+      <div class="tab-section" id="view-thread-keylogger">
+        <a class="back-link" onclick="showTab('opsec')"><i class="fa-solid fa-arrow-left"></i> Return to OpSec & Comms</a>
+        <div class="thread-view-header">
+          <div class="thread-view-title">Hardware keylogger deployments in border cybercafes</div>
+          <div class="thread-meta-bar"><span>Started by RedSpecter</span><span>4 Replies</span></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">RedSpecter</div><div class="author-rank">Operative</div></div>
+          <div class="post-content-wrap"><div class="post-header-bar">#1 // 3 days ago</div><div class="post-text-body">Always check the back of desktop computers at bus terminal cybercafes before plugging in anything. In Chiang Khong we found two inline PS/2 and USB hardware keystroke interceptors installed behind the desks.</div></div>
+        </div>
+      </div>
+
+      <!-- GENERIC ARCHIVED THREAD -->
+      <div class="tab-section" id="view-thread-generic">
+        <a class="back-link" onclick="showTab('opsec')"><i class="fa-solid fa-arrow-left"></i> Return to OpSec & Comms</a>
+        <div class="thread-view-header">
+          <div class="thread-view-title" id="generic-thread-title">Discussion Topic</div>
+          <div class="thread-meta-bar"><span>Board: /covert-dispatch/</span><span>Status: ARCHIVED LOG</span></div>
+        </div>
+        <div class="post-item">
+          <div class="post-author-box"><div class="author-name">Cell_Op</div><div class="author-rank">Operative</div></div>
+          <div class="post-content-wrap">
+            <div class="post-header-bar">#1 // Field Dispatch</div>
+            <div class="post-text-body">
+              Standard operating procedures apply for this sector. Ensure all local caches are wiped with srm or shredded using physical degaussing coils before leaving safehouse zones. Consult the PGP vault for public signing keys.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar-col">
+
+      <div class="side-widget">
+        <div class="side-widget-header"><i class="fa-solid fa-id-card"></i> YOUR SESSION</div>
+        <div class="side-widget-body">
+          <div class="network-stat-row"><span>Handle:</span><strong>Guest_8819</strong></div>
+          <div class="network-stat-row"><span>Auth:</span><span style="color:#10b981;">Anonymous Onion</span></div>
+          <div class="network-stat-row"><span>IP Address:</span><span style="color:#94a3b8; font-family:monospace;">127.0.0.1 (Socks5)</span></div>
+          <div class="network-stat-row"><span>PGP Key:</span><span style="color:#f59e0b;">Not Linked</span></div>
+        </div>
+      </div>
+
+      <div class="side-widget">
+        <div class="side-widget-header"><i class="fa-solid fa-server"></i> LIVE NETWORK STATUS</div>
+        <div class="side-widget-body">
+          <div class="network-stat-row"><span>Active Relays:</span><strong>1,429</strong></div>
+          <div class="network-stat-row"><span>Compromised Nodes:</span><strong style="color:#ef4444;">2 (Isolated)</strong></div>
+          <div class="network-stat-row"><span>Escrow Volume:</span><strong>184.5 XMR</strong></div>
+          <div class="network-stat-row"><span>Network Load:</span><span style="color:#10b981;">Nominal (18%)</span></div>
+          <div class="network-stat-row"><span>Sync Epoch:</span><span style="font-family:monospace;">#9411-B</span></div>
+        </div>
+      </div>
+
+      <div class="side-widget">
+        <div class="side-widget-header"><i class="fa-solid fa-users"></i> ACTIVE OPERATIVES (14 ONLINE)</div>
+        <div class="side-widget-body">
+          <div class="user-chip-list">
+            <span class="user-chip admin"><i class="fa-solid fa-shield"></i> Phantom_Op</span>
+            <span class="user-chip mod"><i class="fa-solid fa-globe"></i> ShadowBroker</span>
+            <span class="user-chip"><i class="fa-solid fa-skull"></i> 0xKhaos</span>
+            <span class="user-chip vip"><i class="fa-solid fa-truck"></i> VVIP_Courier</span>
+            <span class="user-chip"><i class="fa-solid fa-code"></i> CipherViper</span>
+            <span class="user-chip"><i class="fa-solid fa-eye"></i> RedSpecter</span>
+            <span class="user-chip"><i class="fa-solid fa-glasses"></i> NightStalker</span>
+            <span class="user-chip"><i class="fa-solid fa-satellite"></i> DeltaCell_7</span>
+            <span class="user-chip"><i class="fa-solid fa-bolt"></i> Nemesis_TH</span>
+            <span class="user-chip"><i class="fa-solid fa-ghost"></i> Ghost_Courier</span>
+            <span class="user-chip"><i class="fa-solid fa-sim-card"></i> BangkokSIMs</span>
+            <span class="user-chip"><i class="fa-solid fa-satellite-dish"></i> SatHacker</span>
+            <span class="user-chip"><i class="fa-solid fa-mask"></i> Spectre_77</span>
+            <span class="user-chip"><i class="fa-solid fa-user"></i> Guest_8819</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-widget">
+        <div class="side-widget-header"><i class="fa-solid fa-feather"></i> WARRANT CANARY</div>
+        <div class="side-widget-body" style="font-size:11px; color:var(--text-muted); line-height:1.5;">
+          No warrants, court orders, or national security letters have been served to BlackShade infrastructure operators as of 2026-09-08.<br><br>
+          <span style="font-family:monospace; color:#38bdf8;">PGP SIG: 8F99 04AC FE34 9901</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+
+      const page = document.getElementById('page-' + tabId);
+      if (page) page.classList.add('active');
+
+      const btn = document.getElementById('btn-tab-' + tabId);
+      if (btn) btn.classList.add('active');
+
+      const torUrl = document.getElementById('tor-url-display');
+      const crumb = document.getElementById('crumb-current');
+
+      if (tabId === 'home') {
+        torUrl.innerHTML = '<i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/board/index.php';
+        crumb.textContent = 'Home';
+      } else if (tabId === 'opsec') {
+        torUrl.innerHTML = '<i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/board/opsec.php';
+        crumb.textContent = 'OpSec & Comms';
+      } else if (tabId === 'intel') {
+        torUrl.innerHTML = '<i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/board/archives.php';
+        crumb.textContent = 'Intel Drops';
+      } else if (tabId === 'market') {
+        torUrl.innerHTML = '<i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/market/escrow.php';
+        crumb.textContent = 'Escrow Market';
+      } else if (tabId === 'drops') {
+        torUrl.innerHTML = '<i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/drops/inventory.php';
+        crumb.textContent = 'Dead Drops';
+      } else if (tabId === 'pgp') {
+        torUrl.innerHTML = '<i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/security/pgp_vault.php';
+        crumb.textContent = 'PGP Vault';
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openThread(threadId) {
+      document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+
+      const btn = document.getElementById('btn-tab-opsec');
+      if (btn) btn.classList.add('active');
+
+      const torUrl = document.getElementById('tor-url-display');
+      const crumb = document.getElementById('crumb-trail');
+
+      let target = document.getElementById('view-thread-' + threadId);
+      if (target) {
+        target.classList.add('active');
+      } else {
+        target = document.getElementById('view-thread-generic');
+        target.classList.add('active');
+        document.getElementById('generic-thread-title').textContent = threadId.replace('-', ' ').toUpperCase();
+      }
+
+      torUrl.innerHTML = '<i class="fa-solid fa-lock"></i> http://blacksh4d3v7kmo6d3x9q2jklz90p.onion/board/thread.php?id=' + threadId;
+      crumb.innerHTML = '<a onclick="showTab(\'home\')">BlackShade</a> &gt; <a onclick="showTab(\'opsec\')">OpSec</a> &gt; ' + threadId;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function filterThreads() {
+      const input = document.getElementById('forum-filter').value.toLowerCase();
+      const rows = document.querySelectorAll('#opsec-thread-list .thread-row');
+      rows.forEach(row => {
+        const text = (row.dataset.title || '') + ' ' + row.innerText.toLowerCase();
+        if (text.includes(input)) {
+          row.style.display = 'flex';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

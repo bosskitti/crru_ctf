@@ -97,7 +97,9 @@ def authed_only(f):
             if request.is_json or request.accept_mimetypes.best == "text/event-stream":
                 abort(403)
             else:
-                return redirect(url_for("auth.login", next=request.full_path))
+                res = redirect(url_for("auth.login", next=request.full_path))
+                res.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+                return res
 
     return authed_only_wrapper
 
