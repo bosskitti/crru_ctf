@@ -84,7 +84,6 @@ Copy `.env.example` to `.env` and fill in:
 | `OPENVPN_REMOTE_HOST` | Node B public IP/hostname | ✅ |
 | `OPENVPN_REMOTE_PORT` | Node B OpenVPN port (default: `1194`) | ✅ |
 | `DEEPSEEK_API_KEY` | DeepSeek API key for AI chat | optional |
-| `ANTHROPIC_API_KEY` | Anthropic API key | optional |
 | `FRP_TOKEN` | FRP authentication token | optional |
 
 > ⚠️ **Never commit `.env` to version control.** Use `.env.example` as a template only.
